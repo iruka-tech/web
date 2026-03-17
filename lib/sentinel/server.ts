@@ -1,14 +1,8 @@
-interface SentinelRegisterResponse {
-  api_key?: string;
-  apiKey?: string;
-  key?: string;
-  token?: string;
-  access_token?: string;
-  user_id?: string;
-  userId?: string;
-  id?: string;
-  data?: SentinelRegisterResponse;
-}
+import 'server-only';
+
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { SESSION_COOKIE } from '@/lib/auth/constants';
 
 const SENTINEL_BASE_URL_FALLBACK = 'http://localhost:3000/api/v1';
 
@@ -35,84 +29,107 @@ export const buildSentinelApiUrl = (path: string, search: string = '') => {
   return `${getSentinelApiBaseUrl()}${normalizedPath}${search}`;
 };
 
-const pickString = (
-  payload: SentinelRegisterResponse | undefined,
-  keys: Array<keyof SentinelRegisterResponse>
-) => {
-  if (!payload) {
+const getSentinelSessionCookieHeader = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  if (!token) {
     return null;
   }
 
-  for (const key of keys) {
-    const value = payload[key];
-    if (typeof value === 'string' && value.length > 0) {
-      return value;
-    }
-  }
-
-  if (payload.data) {
-    return pickString(payload.data, keys);
-  }
-
-  return null;
+  return `${SESSION_COOKIE}=${token}`;
 };
 
-export const registerSentinelUser = async ({
-  appUserId,
-}: {
-  appUserId: string;
-}) => {
-  const registerAdminKey = process.env.SENTINEL_REGISTER_ADMIN_KEY;
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-
-  if (registerAdminKey) {
-    headers['X-Admin-Key'] = registerAdminKey;
-  }
-
-  let response: Response;
-  try {
-    response = await fetch(buildSentinelApiUrl('/auth/register'), {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        name: `supabase-${appUserId}`,
-      }),
-      cache: 'no-store',
-    });
-  } catch (error) {
-    throw new Error(
-      `Unable to reach Sentinel at ${getSentinelApiBaseUrl()}: ${error instanceof Error ? error.message : 'fetch failed'}`
-    );
-  }
-
-  let payload: SentinelRegisterResponse | undefined;
-  try {
-    payload = (await response.json()) as SentinelRegisterResponse;
-  } catch {
-    payload = undefined;
-  }
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      throw new Error('Sentinel register unauthorized (set SENTINEL_REGISTER_ADMIN_KEY to match REGISTER_ADMIN_KEY)');
+const buildSentinelAuthHeaders = async (headersInit?: HeadersInit) => {
+  const headers = new Headers(headersInit);
+  if (!headers.has('X-API-Key') && !headers.has('Authorization') && !headers.has('Cookie')) {
+    const cookieHeader = await getSentinelSessionCookieHeader();
+    if (cookieHeader) {
+      headers.set('Cookie', cookieHeader);
     }
-    throw new Error(`Sentinel register failed (${response.status})`);
   }
 
-  const apiKey = pickString(payload, ['api_key', 'apiKey', 'key', 'token', 'access_token']);
-  if (!apiKey) {
-    throw new Error('Sentinel register response missing api key');
+  return headers;
+};
+
+export const fetchSentinel = async (path: string, init: RequestInit = {}) => {
+  const headers = await buildSentinelAuthHeaders(init.headers);
+
+  if (init.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
   }
 
-  const sentinelUserId = pickString(payload, ['user_id', 'userId', 'id']);
-  if (!sentinelUserId) {
-    throw new Error('Sentinel register response missing user id');
+  return fetch(buildSentinelApiUrl(path), {
+    ...init,
+    headers,
+    cache: 'no-store',
+  });
+};
+
+const copyResponseHeaders = (from: Response, to: Headers) => {
+  const contentType = from.headers.get('content-type');
+  if (contentType) {
+    to.set('content-type', contentType);
   }
 
-  return {
-    apiKey,
-    sentinelUserId,
-  };
+  const cacheControl = from.headers.get('cache-control');
+  if (cacheControl) {
+    to.set('cache-control', cacheControl);
+  }
+
+  const setCookies =
+    typeof from.headers.getSetCookie === 'function'
+      ? from.headers.getSetCookie()
+      : from.headers.get('set-cookie')
+        ? [from.headers.get('set-cookie') as string]
+        : [];
+
+  for (const value of setCookies) {
+    to.append('set-cookie', value);
+  }
+};
+
+export const proxyRequestToSentinel = async (request: Request, path: string, search = '') => {
+  const headers = new Headers();
+
+  const contentType = request.headers.get('content-type');
+  if (contentType) {
+    headers.set('content-type', contentType);
+  }
+
+  const accept = request.headers.get('accept');
+  if (accept) {
+    headers.set('accept', accept);
+  }
+
+  const authorization = request.headers.get('authorization');
+  if (authorization) {
+    headers.set('authorization', authorization);
+  }
+
+  const apiKey = request.headers.get('x-api-key');
+  if (apiKey) {
+    headers.set('x-api-key', apiKey);
+  }
+
+  const adminKey = request.headers.get('x-admin-key');
+  if (adminKey) {
+    headers.set('x-admin-key', adminKey);
+  }
+
+  const hasBody = request.method !== 'GET' && request.method !== 'HEAD';
+  const body = hasBody ? await request.text() : undefined;
+
+  const response = await fetchSentinel(`${path}${search}`, {
+    method: request.method,
+    headers,
+    body,
+  });
+
+  const nextHeaders = new Headers();
+  copyResponseHeaders(response, nextHeaders);
+
+  return new NextResponse(await response.text(), {
+    status: response.status,
+    headers: nextHeaders,
+  });
 };

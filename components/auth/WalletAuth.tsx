@@ -52,6 +52,8 @@ export function WalletAuth({ onSuccess, returnTo = '/app' }: WalletAuthProps) {
         address,
         chainId,
         nonce: nonceResponse.nonce,
+        domain: nonceResponse.domain,
+        uri: nonceResponse.uri,
       });
       const signature = await signMessageAsync({ message });
       await verifySiwe({ message, signature });

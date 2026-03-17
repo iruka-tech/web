@@ -4,7 +4,7 @@ import { SignalRow } from '@/components/app/SignalRow';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { getAuthenticatedUser, getWalletAddressFromUser } from '@/lib/auth/session';
-import { requestSentinelForUser } from '@/lib/sentinel/user-server';
+import { requestSentinel, SentinelRequestError } from '@/lib/sentinel/user-server';
 import { getTelegramLinkStatus } from '@/lib/telegram/link-state';
 import type { SignalRecord } from '@/lib/types/signal';
 
@@ -14,13 +14,16 @@ const byUpdatedAtDesc = (left: SignalRecord, right: SignalRecord) =>
 export default async function AppHome() {
   const user = await getAuthenticatedUser();
   let signals: SignalRecord[] = [];
-  let signalsError: string | null = null;
+  let signalsError: { message: string; status?: number } | null = null;
 
   if (user) {
     try {
-      signals = await requestSentinelForUser<SignalRecord[]>(user, '/signals');
+      signals = await requestSentinel<SignalRecord[]>('/signals');
     } catch (error) {
-      signalsError = error instanceof Error ? error.message : 'Unable to load signals.';
+      signalsError =
+        error instanceof SentinelRequestError
+          ? { message: error.message, status: error.status }
+          : { message: error instanceof Error ? error.message : 'Unable to load signals.' };
     }
   }
 
@@ -28,7 +31,9 @@ export default async function AppHome() {
   const walletAddress = user ? getWalletAddressFromUser(user) : null;
   const recentSignals = orderedSignals.slice(0, 5);
   const hasSignals = orderedSignals.length > 0;
-  const telegramStatus = user ? await getTelegramLinkStatus(user) : { linked: false, linkedAt: null };
+  const telegramStatus = user
+    ? await getTelegramLinkStatus()
+    : { linked: false, linkedAt: null, appUserId: null, telegramUsername: null };
   const primaryAction = hasSignals
     ? {
         href: '/signals',
@@ -93,7 +98,7 @@ export default async function AppHome() {
       {signalsError ? (
         <Card className="border-amber-500/30 bg-amber-500/5">
           <p className="text-foreground">The overview loaded, but Sentinel signal data is unavailable.</p>
-          <p className="mt-2 text-sm text-secondary">{signalsError}</p>
+          <p className="mt-2 text-sm text-secondary">{signalsError.message}</p>
         </Card>
       ) : null}
 

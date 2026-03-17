@@ -11,7 +11,9 @@ export default async function NewSignalPage({ searchParams }: NewSignalPageProps
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const presetParam = resolvedSearchParams?.preset;
   const user = await getAuthenticatedUser();
-  const telegramStatus = user ? await getTelegramLinkStatus(user) : { linked: false, linkedAt: null };
+  const telegramStatus = user
+    ? await getTelegramLinkStatus()
+    : { linked: false, linkedAt: null, appUserId: null, telegramUsername: null };
   const hasPreset = (value: string): value is SignalTemplateId =>
     SIGNAL_TEMPLATE_PRESETS.some((preset) => preset.id === value);
   const initialPreset =

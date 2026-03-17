@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { SignalDslPanel } from '@/components/app/SignalDslPanel';
 import { Button } from '@/components/ui/Button';
 import { getAuthenticatedUser } from '@/lib/auth/session';
-import { requestSentinelForUser, SentinelRequestError } from '@/lib/sentinel/user-server';
+import { requestSentinel, SentinelRequestError } from '@/lib/sentinel/user-server';
 import type { SignalHistoryResponse, SignalNotificationLogEntry, SignalRecord, SignalRunLogEntry } from '@/lib/types/signal';
 
 interface SignalDetailPageProps {
@@ -59,8 +59,8 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
 
   try {
     [signal, history] = await Promise.all([
-      requestSentinelForUser<SignalRecord>(user, `/signals/${id}`),
-      requestSentinelForUser<SignalHistoryResponse>(user, `/signals/${id}/history?include_notifications=true`),
+      requestSentinel<SignalRecord>(`/signals/${id}`),
+      requestSentinel<SignalHistoryResponse>(`/signals/${id}/history?include_notifications=true`),
     ]);
   } catch (error) {
     if (error instanceof SentinelRequestError && error.status === 404) {

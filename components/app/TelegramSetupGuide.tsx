@@ -19,11 +19,11 @@ const guideSteps = [
   },
   {
     title: 'Send /start',
-    body: 'The bot returns a one-time pairing code.',
+    body: 'The bot sends a connect button for this Telegram chat.',
   },
   {
-    title: 'Paste the code here',
-    body: 'Once connected, Telegram will show as ready for this account.',
+    title: 'Tap Connect Account',
+    body: 'Sentinel will attach Telegram to the signed-in account automatically.',
   },
 ];
 
@@ -117,7 +117,7 @@ export function TelegramSetupGuide({
                   <div>
                     <p className="text-foreground">After setup</p>
                     <p className="mt-1 text-sm leading-relaxed text-secondary">
-                      Once the green check appears, you are done unless you want to relink Telegram.
+                      If Sentinel asks you to sign in, do that once and the Telegram link will finish automatically.
                     </p>
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { Inter, JetBrains_Mono, EB_Garamond } from 'next/font/google';
 import './globals.css';
 import { WagmiProviders } from '@/components/auth/WagmiProviders';
@@ -26,93 +27,129 @@ const ebGaramond = EB_Garamond({
   style: ['normal', 'italic'],
 });
 
-const siteUrl = 'https://sentinel.monarchlend.xyz';
+const DEFAULT_SITE_URL = 'https://sentinel.monarchlend.xyz';
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: 'Sentinel - DeFi Signals That Matter',
-    template: '%s | Sentinel',
-  },
-  description: 'Aggregate on-chain events into meaningful signals. Get Telegram alerts or trigger your agent via webhook. Follow the liquidity. Built by Monarch.',
-  keywords: [
-    'DeFi',
-    'DeFi monitoring',
-    'blockchain alerts',
-    'crypto signals',
-    'on-chain events',
-    'Morpho',
-    'smart money tracking',
-    'whale alerts',
-    'liquidity tracking',
-    'position monitoring',
-    'liquidation alerts',
-    'DeFi notifications',
-    'Web3 infrastructure',
-    'blockchain signals',
-  ],
-  authors: [{ name: 'Monarch', url: 'https://monarchlend.xyz' }],
-  creator: 'Monarch',
-  publisher: 'Monarch',
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '');
+
+const getRequestSiteUrl = async () => {
+  const headerStore = await headers();
+  const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host');
+  if (!host) {
+    return DEFAULT_SITE_URL;
+  }
+
+  const forwardedProto = headerStore.get('x-forwarded-proto');
+  const protocol =
+    forwardedProto ??
+    (host.startsWith('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https');
+
+  return trimTrailingSlash(`${protocol}://${host}`);
+};
+
+export async function generateMetadata(): Promise<Metadata> {
+  const siteUrl = await getRequestSiteUrl();
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: 'Sentinel - DeFi Signals That Matter',
+      template: '%s | Sentinel',
+    },
+    description: 'Aggregate on-chain events into meaningful signals. Get Telegram alerts or trigger your agent via webhook. Follow the liquidity. Built by Monarch.',
+    keywords: [
+      'DeFi',
+      'DeFi monitoring',
+      'blockchain alerts',
+      'crypto signals',
+      'on-chain events',
+      'Morpho',
+      'smart money tracking',
+      'whale alerts',
+      'liquidity tracking',
+      'position monitoring',
+      'liquidation alerts',
+      'DeFi notifications',
+      'Web3 infrastructure',
+      'blockchain signals',
+    ],
+    authors: [{ name: 'Monarch', url: 'https://monarchlend.xyz' }],
+    creator: 'Monarch',
+    publisher: 'Monarch',
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-  openGraph: {
-    title: 'Sentinel - DeFi Signals That Matter',
-    description: 'Aggregate on-chain events into meaningful signals. Follow the liquidity. Built by Monarch.',
-    url: siteUrl,
-    siteName: 'Sentinel by Monarch',
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Sentinel - DeFi Signals That Matter',
-    description: 'Aggregate on-chain events into meaningful signals. Follow the liquidity.',
-    creator: '@monarchxyz',
-    site: '@monarchxyz',
-  },
-  alternates: {
-    canonical: siteUrl,
-  },
-  category: 'technology',
-};
+    openGraph: {
+      title: 'Sentinel - DeFi Signals That Matter',
+      description: 'Aggregate on-chain events into meaningful signals. Follow the liquidity. Built by Monarch.',
+      url: siteUrl,
+      siteName: 'Sentinel by Monarch',
+      locale: 'en_US',
+      type: 'website',
+      images: [
+        {
+          url: `${siteUrl}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: 'Sentinel - Event Triggers for DeFi Agents',
+          type: 'image/png',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Sentinel - DeFi Signals That Matter',
+      description: 'Aggregate on-chain events into meaningful signals. Follow the liquidity.',
+      creator: '@monarchxyz',
+      site: '@monarchxyz',
+      images: [
+        {
+          url: `${siteUrl}/twitter-image`,
+          alt: 'Sentinel - Event Triggers for DeFi Agents',
+        },
+      ],
+    },
+    alternates: {
+      canonical: siteUrl,
+    },
+    category: 'technology',
+  };
+}
 
-// JSON-LD structured data
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'Sentinel',
-  description: 'DeFi signal monitoring. Aggregate on-chain events into meaningful alerts. Follow the liquidity.',
-  url: siteUrl,
-  applicationCategory: 'FinanceApplication',
-  operatingSystem: 'Web',
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'USD',
-  },
-  author: {
-    '@type': 'Organization',
-    name: 'Monarch',
-    url: 'https://monarchlend.xyz',
-  },
-  keywords: 'DeFi, blockchain monitoring, signals, alerts, Morpho, liquidity tracking',
-};
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteUrl = await getRequestSiteUrl();
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Sentinel',
+    description: 'DeFi signal monitoring. Aggregate on-chain events into meaningful alerts. Follow the liquidity.',
+    url: siteUrl,
+    applicationCategory: 'FinanceApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'Monarch',
+      url: 'https://monarchlend.xyz',
+    },
+    keywords: 'DeFi, blockchain monitoring, signals, alerts, Morpho, liquidity tracking',
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

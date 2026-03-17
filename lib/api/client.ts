@@ -37,12 +37,7 @@ const extractErrorMessage = (
   return message?.toString() || fallbackMessage;
 };
 
-const getDefaultBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_API_BASE_URL) {
-    return process.env.NEXT_PUBLIC_API_BASE_URL;
-  }
-  return 'https://api.sentinel.monarch.xyz';
-};
+const getDefaultBaseUrl = () => '';
 
 export const createApiClient = (options: ApiClientOptions = {}) => {
   const baseUrl = options.baseUrl ?? getDefaultBaseUrl();

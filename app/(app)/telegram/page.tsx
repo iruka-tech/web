@@ -6,18 +6,67 @@ import { getAuthenticatedUser } from '@/lib/auth/session';
 import { telegramBotLabel, telegramBotUrl } from '@/lib/telegram/config';
 import { getTelegramLinkStatus } from '@/lib/telegram/link-state';
 
-export default async function TelegramPage() {
+interface TelegramPageProps {
+  searchParams?: Promise<{ telegram?: string }> | { telegram?: string };
+}
+
+const telegramNotice = (value: string | undefined) => {
+  switch (value) {
+    case 'linked':
+      return {
+        tone: 'success' as const,
+        message: 'Telegram is now connected to this account.',
+      };
+    case 'expired':
+      return {
+        tone: 'error' as const,
+        message: 'That Telegram link has expired. Open the bot again to create a fresh one.',
+      };
+    case 'missing-token':
+      return {
+        tone: 'error' as const,
+        message: 'The Telegram handoff was missing its token. Open the bot again and use the latest connect button.',
+      };
+    case 'failed':
+      return {
+        tone: 'error' as const,
+        message: 'Telegram could not be linked right now. Try the bot again in a moment.',
+      };
+    default:
+      return null;
+  }
+};
+
+export default async function TelegramPage({ searchParams }: TelegramPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   const user = await getAuthenticatedUser();
-  const telegramStatus = user ? await getTelegramLinkStatus(user) : { linked: false, linkedAt: null };
+  const telegramStatus = user
+    ? await getTelegramLinkStatus()
+    : { linked: false, linkedAt: null, appUserId: null, telegramUsername: null };
+  const notice = telegramNotice(resolvedSearchParams?.telegram);
 
   return (
     <div className="space-y-6">
+      {notice ? (
+        <div
+          className={`rounded-sm border px-4 py-3 text-sm ${
+            notice.tone === 'success'
+              ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-700'
+              : 'border-amber-500/30 bg-amber-500/5 text-foreground'
+          }`}
+        >
+          {notice.message}
+        </div>
+      ) : null}
+
       <section className="rounded-[16px] border border-border bg-surface p-6 sm:p-8">
         <div className="max-w-3xl">
           <p className="text-xs uppercase tracking-[0.3em] text-secondary">Telegram</p>
           <h1 className="mt-3 font-zen text-3xl sm:text-4xl">Telegram settings</h1>
           <p className="mt-3 text-secondary">
-            {telegramStatus.linked ? 'Telegram is linked for this account.' : 'Link Telegram once to receive alerts.'}
+            {telegramStatus.linked
+              ? 'Telegram is linked for this account.'
+              : 'Open the bot once and complete the connect step there.'}
           </p>
         </div>
 
@@ -47,7 +96,13 @@ export default async function TelegramPage() {
         </div>
       </section>
 
-      <TelegramConnectPanel initialStatus={telegramStatus} />
+      <TelegramConnectPanel
+        initialStatus={{
+          linked: telegramStatus.linked,
+          linkedAt: telegramStatus.linkedAt,
+          telegramUsername: telegramStatus.telegramUsername,
+        }}
+      />
     </div>
   );
 }

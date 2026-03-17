@@ -1,7 +1,5 @@
 import 'server-only';
-import type { User } from '@supabase/supabase-js';
-import { buildSentinelApiUrl } from '@/lib/sentinel/server';
-import { ensureProfileWithSentinelApiKey } from '@/lib/supabase/profiles';
+import { fetchSentinel } from '@/lib/sentinel/server';
 
 export class SentinelRequestError extends Error {
   status: number;
@@ -28,25 +26,8 @@ const parseResponsePayload = async (response: Response) => {
   }
 };
 
-export const requestSentinelForUser = async <T>(
-  user: User,
-  path: string,
-  init: RequestInit = {}
-): Promise<T> => {
-  const { apiKey } = await ensureProfileWithSentinelApiKey({ user });
-
-  const headers = new Headers(init.headers);
-  headers.set('X-API-Key', apiKey);
-
-  if (init.body && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
-  }
-
-  const response = await fetch(buildSentinelApiUrl(path), {
-    ...init,
-    headers,
-    cache: 'no-store',
-  });
+export const requestSentinel = async <T>(path: string, init: RequestInit = {}): Promise<T> => {
+  const response = await fetchSentinel(path, init);
 
   const payload = await parseResponsePayload(response);
   if (!response.ok) {

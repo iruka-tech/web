@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SESSION_COOKIE, WALLET_SESSION_COOKIE } from '@/lib/auth/constants';
+import { SESSION_COOKIE } from '@/lib/auth/constants';
 import { buildLoginHref } from '@/lib/auth/redirect';
+import { buildRequestUrl } from '@/lib/http/origin';
 
 const getRequestPath = (request: NextRequest) => {
   const search = request.nextUrl.search;
@@ -9,14 +10,12 @@ const getRequestPath = (request: NextRequest) => {
 
 export function middleware(request: NextRequest) {
   const sessionToken = request.cookies.get(SESSION_COOKIE)?.value;
-  const walletSessionToken = request.cookies.get(WALLET_SESSION_COOKIE)?.value;
 
-  if (sessionToken || walletSessionToken) {
+  if (sessionToken) {
     return NextResponse.next();
   }
 
-  const loginUrl = new URL(buildLoginHref(getRequestPath(request)), request.url);
-  return NextResponse.redirect(loginUrl);
+  return NextResponse.redirect(buildRequestUrl(request, buildLoginHref(getRequestPath(request))));
 }
 
 export const config = {

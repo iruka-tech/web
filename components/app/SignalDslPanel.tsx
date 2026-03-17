@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/Card';
+import { CodeBlock } from '@/components/ui/CodeBlock';
 import { cn } from '@/lib/utils';
 import { countTrackedWallets, describeSignalDefinition, getSignalMarketId } from '@/lib/signals/templates';
 import type { SignalRecord } from '@/lib/types/signal';
@@ -97,14 +98,14 @@ export function SignalDslPanel({
           <p className="text-sm text-foreground">Raw DSL</p>
           <span className="text-xs text-secondary">JSON definition sent to Sentinel</span>
         </div>
-        <pre
-          className={cn(
-            'overflow-x-auto rounded-md bg-[#0d1117] p-4 text-xs leading-relaxed text-[#e6edf3]',
-            compact ? 'max-h-[360px] overflow-y-auto' : ''
-          )}
-        >
-          {JSON.stringify(signal.definition, null, 2)}
-        </pre>
+        <div className={cn(compact ? 'max-h-[360px] overflow-auto' : '')}>
+          <CodeBlock
+            code={JSON.stringify(signal.definition, null, 2)}
+            language="json"
+            showHeader={false}
+            className="rounded-md border border-[#30363d]"
+          />
+        </div>
       </div>
     </Card>
   );
