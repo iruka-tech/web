@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { getAuthenticatedUser } from '@/lib/auth/session';
 import { requestSentinel, SentinelRequestError } from '@/lib/sentinel/user-server';
+import { getTelegramLinkStatus } from '@/lib/telegram/link-state';
+import { buildTemplateEntryPath } from '@/lib/telegram/setup-flow';
 import type { SignalRecord } from '@/lib/types/signal';
 
 const byUpdatedAtDesc = (left: SignalRecord, right: SignalRecord) =>
@@ -28,6 +30,24 @@ export default async function SignalsPage() {
 
   const orderedSignals = [...signals].sort(byUpdatedAtDesc);
   const hasSignals = orderedSignals.length > 0;
+  const telegramStatus = user
+    ? await getTelegramLinkStatus()
+    : { linked: false, linkedAt: null, appUserId: null, telegramUsername: null };
+  const createSignalHref = buildTemplateEntryPath(telegramStatus.linked);
+  const createSignalLabel = hasSignals
+    ? telegramStatus.linked
+      ? 'Add new signal'
+      : 'Set up Telegram'
+    : telegramStatus.linked
+      ? 'Create first signal'
+      : 'Set up Telegram';
+  const description = hasSignals
+    ? telegramStatus.linked
+      ? 'Review the signals you already run and add a new one when needed.'
+      : 'Review the signals you already run. Finish Telegram setup before adding another.'
+    : telegramStatus.linked
+      ? 'You do not have any signals yet. Create one first, then this page becomes the inventory.'
+      : 'Connect Telegram first, then return here to start your first signal template.';
 
   return (
     <div className="space-y-6">
@@ -35,18 +55,14 @@ export default async function SignalsPage() {
         <div className="max-w-3xl">
           <p className="text-xs uppercase tracking-[0.3em] text-secondary">Signals</p>
           <h1 className="mt-3 font-zen text-3xl sm:text-4xl">Signal workspace</h1>
-          <p className="mt-3 text-secondary">
-            {hasSignals
-              ? 'Review the signals you already run and add a new one when needed.'
-              : 'You do not have any signals yet. Create one first, then this page becomes the inventory.'}
-          </p>
+          <p className="mt-3 text-secondary">{description}</p>
         </div>
 
         <div className="mt-6">
-          <Link href="/signals/new" className="no-underline">
+          <Link href={createSignalHref} className="no-underline">
             <Button size="lg" className="gap-2">
               <RiAddLine className="h-5 w-5" />
-              {hasSignals ? 'Add new signal' : 'Create first signal'}
+              {createSignalLabel}
             </Button>
           </Link>
         </div>
@@ -71,13 +87,15 @@ export default async function SignalsPage() {
         </Card>
       ) : (
         <Card className="rounded-[16px] border-dashed text-center">
-          <p className="font-zen text-2xl text-foreground">No signals yet</p>
+          <p className="font-zen text-2xl text-foreground">{telegramStatus.linked ? 'No signals yet' : 'Telegram required first'}</p>
           <p className="mx-auto mt-3 max-w-xl text-sm text-secondary">
-            Create a signal first. Template choices and configuration live in the builder, not on this inventory page.
+            {telegramStatus.linked
+              ? 'Create a signal first. Template choices and configuration live in the builder, not on this inventory page.'
+              : 'Connect Telegram first, then return here to choose a template and create your first signal.'}
           </p>
           <div className="mt-6">
-            <Link href="/signals/new" className="no-underline">
-              <Button>Create first signal</Button>
+            <Link href={createSignalHref} className="no-underline">
+              <Button>{telegramStatus.linked ? 'Create first signal' : 'Set up Telegram'}</Button>
             </Link>
           </div>
         </Card>

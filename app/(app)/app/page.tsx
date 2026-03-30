@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { getAuthenticatedUser, getWalletAddressFromUser } from '@/lib/auth/session';
 import { requestSentinel, SentinelRequestError } from '@/lib/sentinel/user-server';
 import { getTelegramLinkStatus } from '@/lib/telegram/link-state';
+import { buildTemplateEntryPath } from '@/lib/telegram/setup-flow';
 import type { SignalRecord } from '@/lib/types/signal';
 
 const byUpdatedAtDesc = (left: SignalRecord, right: SignalRecord) =>
@@ -34,29 +35,38 @@ export default async function AppHome() {
   const telegramStatus = user
     ? await getTelegramLinkStatus()
     : { linked: false, linkedAt: null, appUserId: null, telegramUsername: null };
+  const createSignalHref = buildTemplateEntryPath(telegramStatus.linked);
   const primaryAction = hasSignals
     ? {
         href: '/signals',
         label: 'Open signal workspace',
         description: 'Signals are the operating surface. Review live definitions, inspect DSL output, or add another signal from there.',
       }
-    : {
-        href: '/signals/new',
-        label: 'Create your first signal',
-        description: 'Start with a template, update the market and wallets, then let Sentinel register the JSON definition for you.',
-      };
+    : telegramStatus.linked
+      ? {
+          href: createSignalHref,
+          label: 'Create your first signal',
+          description: 'Start with a template, update the market and wallets, then let Sentinel register the JSON definition for you.',
+        }
+      : {
+          href: createSignalHref,
+          label: 'Set up Telegram',
+          description: 'Template signals deliver through Telegram. Connect it once before you open the builder.',
+        };
+  const pageTitle = hasSignals ? 'Signal workspace' : telegramStatus.linked ? 'Start with a signal' : 'Set up Telegram first';
+  const pageDescription = hasSignals
+    ? 'Use the signal workspace to review and manage what is already live.'
+    : telegramStatus.linked
+      ? 'Start by creating your first signal. Telegram is already ready for delivery.'
+      : 'Template signals deliver through Telegram. Connect it once before you open the builder.';
 
   return (
     <div className="space-y-6">
       <section className="rounded-[16px] border border-border bg-surface p-6 sm:p-8">
         <div className="max-w-3xl">
           <p className="text-xs uppercase tracking-[0.3em] text-secondary">Workspace</p>
-          <h1 className="mt-3 font-zen text-3xl sm:text-4xl">{hasSignals ? 'Signal workspace' : 'Start with a signal'}</h1>
-          <p className="mt-3 text-secondary">
-            {hasSignals
-              ? 'Use the signal workspace to review and manage what is already live.'
-              : 'Start by creating your first signal. Telegram and other setup steps can wait until after that.'}
-          </p>
+          <h1 className="mt-3 font-zen text-3xl sm:text-4xl">{pageTitle}</h1>
+          <p className="mt-3 text-secondary">{pageDescription}</p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link href={primaryAction.href} className="no-underline">
               <Button size="md" className="gap-2">
@@ -66,10 +76,10 @@ export default async function AppHome() {
             </Link>
             {hasSignals ? (
               <Link
-                href="/signals/new"
+                href={createSignalHref}
                 className="inline-flex items-center gap-2 text-sm text-secondary transition-colors hover:text-foreground no-underline"
               >
-                Create another signal
+                {telegramStatus.linked ? 'Create another signal' : 'Set up Telegram to create another'}
                 <RiArrowRightLine className="h-4 w-4" />
               </Link>
             ) : null}
@@ -87,11 +97,15 @@ export default async function AppHome() {
             <span>{orderedSignals.length}</span>
             <span>signal{orderedSignals.length === 1 ? '' : 's'} registered</span>
           </div>
-          {telegramStatus.linked ? (
-            <div className="inline-flex items-center gap-2 rounded-sm border border-emerald-500/30 bg-emerald-500/5 px-3 py-1.5 text-emerald-700">
-              <span>Telegram ready</span>
-            </div>
-          ) : null}
+          <div
+            className={`inline-flex items-center gap-2 rounded-sm border px-3 py-1.5 ${
+              telegramStatus.linked
+                ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-700'
+                : 'border-border bg-background/70 text-secondary'
+            }`}
+          >
+            <span>{telegramStatus.linked ? 'Telegram ready' : 'Telegram setup required'}</span>
+          </div>
         </div>
       </section>
 
@@ -124,14 +138,16 @@ export default async function AppHome() {
         <Card className="rounded-[16px] border-dashed text-center">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-secondary">Getting Started</p>
-            <h2 className="mt-2 font-zen text-2xl">No signals yet</h2>
+            <h2 className="mt-2 font-zen text-2xl">{telegramStatus.linked ? 'No signals yet' : 'Telegram comes first'}</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-secondary">
-              Start with the signal builder. Template selection and configuration happen there, not on the dashboard.
+              {telegramStatus.linked
+                ? 'Start with the signal builder. Template selection and configuration happen there, not on the dashboard.'
+                : 'Connect Telegram first, then come back here to choose a template and configure your first signal.'}
             </p>
           </div>
           <div className="mt-6">
-            <Link href="/signals/new" className="no-underline">
-              <Button>Create first signal</Button>
+            <Link href={createSignalHref} className="no-underline">
+              <Button>{telegramStatus.linked ? 'Create first signal' : 'Set up Telegram'}</Button>
             </Link>
           </div>
         </Card>

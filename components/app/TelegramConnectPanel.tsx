@@ -1,8 +1,10 @@
+import Link from 'next/link';
 import { RiCheckboxCircleLine, RiSettings3Line, RiTelegram2Line } from 'react-icons/ri';
 import { TelegramSetupGuide } from '@/components/app/TelegramSetupGuide';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { telegramBotLabel, telegramBotUrl } from '@/lib/telegram/config';
+import { telegramBotLabel } from '@/lib/telegram/config';
+import { buildTelegramStartPath, DEFAULT_TEMPLATE_PATH } from '@/lib/telegram/setup-flow';
 
 interface TelegramConnectPanelProps {
   initialStatus: {
@@ -10,6 +12,7 @@ interface TelegramConnectPanelProps {
     linkedAt: string | null;
     telegramUsername: string | null;
   };
+  returnTo?: string | null;
 }
 
 const formatLinkedAt = (value: string | null) => {
@@ -20,9 +23,11 @@ const formatLinkedAt = (value: string | null) => {
   return new Date(value).toLocaleDateString();
 };
 
-export function TelegramConnectPanel({ initialStatus }: TelegramConnectPanelProps) {
+export function TelegramConnectPanel({ initialStatus, returnTo }: TelegramConnectPanelProps) {
   const linkedDate = formatLinkedAt(initialStatus.linkedAt);
   const isLinked = initialStatus.linked;
+  const openTelegramHref = buildTelegramStartPath(returnTo);
+  const isTemplateFlow = Boolean(returnTo?.startsWith(DEFAULT_TEMPLATE_PATH));
 
   return (
     <Card className="space-y-5">
@@ -31,7 +36,11 @@ export function TelegramConnectPanel({ initialStatus }: TelegramConnectPanelProp
           <p className="text-xs uppercase tracking-[0.3em] text-secondary">Telegram</p>
           <h2 className="mt-2 font-zen text-2xl">Telegram settings</h2>
           <p className="mt-2 text-sm text-secondary">
-            {isLinked ? 'Telegram is ready.' : 'Open the bot once and Sentinel will connect this account when you return.'}
+            {isLinked
+              ? 'Telegram is ready.'
+              : isTemplateFlow
+                ? 'Open the bot once and finish Telegram before you start building a signal.'
+                : 'Open the bot once and Sentinel will connect this account when you return.'}
           </p>
         </div>
         <div
@@ -62,12 +71,12 @@ export function TelegramConnectPanel({ initialStatus }: TelegramConnectPanelProp
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <a href={telegramBotUrl} target="_blank" rel="noreferrer" className="inline-flex w-fit no-underline">
+            <Link href={openTelegramHref} className="inline-flex w-fit no-underline">
               <Button type="button" variant="secondary" className="gap-2">
                 Open {telegramBotLabel}
                 <RiTelegram2Line className="h-4 w-4" />
               </Button>
-            </a>
+            </Link>
           </div>
         </>
       ) : (
@@ -76,15 +85,15 @@ export function TelegramConnectPanel({ initialStatus }: TelegramConnectPanelProp
             Open {telegramBotLabel}, send <span className="font-mono text-foreground">/start</span>, then tap the connect button in Telegram. If you need to sign in first, Sentinel will finish the link when you return.
           </div>
 
-          <a href={telegramBotUrl} target="_blank" rel="noreferrer" className="inline-flex w-fit no-underline">
+          <Link href={openTelegramHref} className="inline-flex w-fit no-underline">
             <Button type="button" variant="secondary" className="gap-2">
               Open {telegramBotLabel}
               <RiTelegram2Line className="h-4 w-4" />
             </Button>
-          </a>
+          </Link>
 
           <div className="flex flex-wrap items-center gap-3">
-            <TelegramSetupGuide triggerLabel="Need help" triggerVariant="ghost" />
+            <TelegramSetupGuide triggerLabel="Need help" triggerVariant="ghost" returnTo={returnTo} />
           </div>
         </>
       )}

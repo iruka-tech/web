@@ -1,15 +1,18 @@
 'use client';
 
 import { useEffect, useId, useState } from 'react';
+import Link from 'next/link';
 import { RiCloseLine, RiQuestionLine, RiTelegram2Line } from 'react-icons/ri';
 import { Button } from '@/components/ui/Button';
-import { telegramBotLabel, telegramBotUrl } from '@/lib/telegram/config';
+import { telegramBotLabel } from '@/lib/telegram/config';
+import { buildTelegramStartPath } from '@/lib/telegram/setup-flow';
 
 interface TelegramSetupGuideProps {
   triggerLabel?: string;
   triggerVariant?: 'primary' | 'secondary' | 'ghost';
   triggerSize?: 'sm' | 'md' | 'lg';
   className?: string;
+  returnTo?: string | null;
 }
 
 const guideSteps = [
@@ -32,9 +35,11 @@ export function TelegramSetupGuide({
   triggerVariant = 'ghost',
   triggerSize = 'sm',
   className,
+  returnTo,
 }: TelegramSetupGuideProps) {
   const [isOpen, setIsOpen] = useState(false);
   const titleId = useId();
+  const openTelegramHref = buildTelegramStartPath(returnTo);
 
   useEffect(() => {
     if (!isOpen) {
@@ -124,12 +129,12 @@ export function TelegramSetupGuide({
               </div>
 
               <div className="flex justify-end border-t border-border/80 pt-5">
-                <a href={telegramBotUrl} target="_blank" rel="noreferrer" className="no-underline">
+                <Link href={openTelegramHref} className="no-underline">
                   <Button type="button" className="gap-2" onClick={() => setIsOpen(false)}>
                     Open {telegramBotLabel}
                     <RiTelegram2Line className="h-4 w-4" />
                   </Button>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

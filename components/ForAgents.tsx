@@ -38,14 +38,15 @@ export function ForAgents() {
               </h2>
               
               <p className="text-secondary leading-relaxed mb-6">
-                Sentinel is built for agents first. Humans define the signal once, then agents receive the same
-                structured result through webhook delivery and react without custom parsing glue.
+                Sentinel works naturally with agents because the DSL is structured enough for them to understand,
+                create, update, or cancel signals directly from human intent. Agents can also run adaptive monitoring
+                flows, subscribing to follow-up signals when one event fires and retiring them when the situation changes.
               </p>
 
               <ul className="space-y-3 text-secondary">
                 <li className="flex items-center gap-3">
                   <RiRobot2Line className="w-5 h-5 text-[#ff6b35]" />
-                  <span>One signal model for operators and agents</span>
+                  <span>DSL that agents can read and modify directly</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <RiRobot2Line className="w-5 h-5 text-[#ff6b35]" />
@@ -53,7 +54,7 @@ export function ForAgents() {
                 </li>
                 <li className="flex items-center gap-3">
                   <RiRobot2Line className="w-5 h-5 text-[#ff6b35]" />
-                  <span>Fast setup for opinionated automation</span>
+                  <span>Adaptive monitoring flows for autonomous reactions</span>
                 </li>
               </ul>
             </motion.div>

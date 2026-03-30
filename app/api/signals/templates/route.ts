@@ -2,12 +2,24 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth/session';
 import { buildSignalTemplate, SignalTemplateError, type SignalTemplateRequest } from '@/lib/signals/templates';
 import { requestSentinel, SentinelRequestError } from '@/lib/sentinel/user-server';
+import { getTelegramLinkStatus } from '@/lib/telegram/link-state';
 import type { CreateSignalRequest, SignalRecord } from '@/lib/types/signal';
 
 export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
+
+  const telegramStatus = await getTelegramLinkStatus();
+  if (!telegramStatus.linked) {
+    return NextResponse.json(
+      {
+        error: 'telegram_required',
+        details: 'Connect Telegram before creating a template signal.',
+      },
+      { status: 403 }
+    );
   }
 
   let payload: SignalTemplateRequest;

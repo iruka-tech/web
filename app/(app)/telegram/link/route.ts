@@ -3,28 +3,47 @@ import { SESSION_COOKIE } from '@/lib/auth/constants';
 import { buildLoginHref } from '@/lib/auth/redirect';
 import { buildRequestUrl } from '@/lib/http/origin';
 import { fetchSentinel } from '@/lib/sentinel/server';
+import { buildTelegramPath, resolveTelegramReturnTo, TELEGRAM_RETURN_TO_COOKIE } from '@/lib/telegram/setup-flow';
 
 const redirectTo = (request: NextRequest, location: string) =>
   NextResponse.redirect(buildRequestUrl(request, location));
-
-const buildTelegramSettingsPath = (status?: string) => {
-  const params = new URLSearchParams();
-  if (status) {
-    params.set('telegram', status);
-  }
-  const search = params.toString();
-  return search ? `/telegram?${search}` : '/telegram';
-};
 
 const buildLoginPath = (request: NextRequest) => {
   const returnTo = `${request.nextUrl.pathname}${request.nextUrl.search}`;
   return buildLoginHref(returnTo);
 };
 
+const getPendingReturnTo = (request: NextRequest) =>
+  resolveTelegramReturnTo(request.cookies.get(TELEGRAM_RETURN_TO_COOKIE)?.value);
+
+const expirePendingReturnTo = (response: NextResponse) => {
+  response.cookies.set(TELEGRAM_RETURN_TO_COOKIE, '', {
+    httpOnly: true,
+    maxAge: 0,
+    path: '/',
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+  });
+};
+
+const redirectToWithCleanup = (request: NextRequest, location: string) => {
+  const response = redirectTo(request, location);
+  expirePendingReturnTo(response);
+  return response;
+};
+
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get('token')?.trim();
+  const pendingReturnTo = getPendingReturnTo(request);
+
   if (!token) {
-    return redirectTo(request, buildTelegramSettingsPath('missing-token'));
+    return redirectToWithCleanup(
+      request,
+      buildTelegramPath({
+        status: 'missing-token',
+        returnTo: pendingReturnTo,
+      })
+    );
   }
 
   if (!request.cookies.get(SESSION_COOKIE)?.value) {
@@ -37,7 +56,7 @@ export async function GET(request: NextRequest) {
   });
 
   if (response.ok) {
-    return redirectTo(request, buildTelegramSettingsPath('linked'));
+    return redirectToWithCleanup(request, pendingReturnTo ?? buildTelegramPath({ status: 'linked' }));
   }
 
   if (response.status === 401) {
@@ -45,8 +64,20 @@ export async function GET(request: NextRequest) {
   }
 
   if (response.status === 404) {
-    return redirectTo(request, buildTelegramSettingsPath('expired'));
+    return redirectToWithCleanup(
+      request,
+      buildTelegramPath({
+        status: 'expired',
+        returnTo: pendingReturnTo,
+      })
+    );
   }
 
-  return redirectTo(request, buildTelegramSettingsPath('failed'));
+  return redirectToWithCleanup(
+    request,
+    buildTelegramPath({
+      status: 'failed',
+      returnTo: pendingReturnTo,
+    })
+  );
 }

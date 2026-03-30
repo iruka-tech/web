@@ -6,10 +6,12 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { RiAddLine, RiDashboardLine, RiFlashlightLine, RiLogoutCircleRLine, RiTelegram2Line } from 'react-icons/ri';
 import { Button } from '@/components/ui/Button';
 import { buildLoginHref } from '@/lib/auth/redirect';
+import { buildTemplateEntryPath } from '@/lib/telegram/setup-flow';
 import { cn } from '@/lib/utils';
 
 interface AppShellProps {
   children: ReactNode;
+  telegramLinked: boolean;
 }
 
 const navItems = [
@@ -30,11 +32,14 @@ const isActivePath = (pathname: string | null, href: string) => {
   return pathname === href || pathname.startsWith(`${href}/`);
 };
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, telegramLinked }: AppShellProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const createSignalHref = buildTemplateEntryPath(telegramLinked);
+  const CreateActionIcon = telegramLinked ? RiAddLine : RiTelegram2Line;
+  const createSignalLabel = telegramLinked ? 'Create signal' : 'Set up Telegram';
 
   const currentSearch = searchParams.toString();
   const currentPath = pathname ? `${pathname}${currentSearch ? `?${currentSearch}` : ''}` : undefined;
@@ -92,10 +97,10 @@ export function AppShell({ children }: AppShellProps) {
                 </nav>
 
                 <div className="flex items-center gap-2 self-start lg:self-auto">
-                  <Link href="/signals/new" className="no-underline">
+                  <Link href={createSignalHref} className="no-underline">
                     <Button size="sm" variant="secondary" className="gap-2">
-                      <RiAddLine className="h-4 w-4" />
-                      Create signal
+                      <CreateActionIcon className="h-4 w-4" />
+                      {createSignalLabel}
                     </Button>
                   </Link>
                   <Button variant="secondary" size="sm" className="gap-2" onClick={handleLogout} disabled={isLoggingOut}>

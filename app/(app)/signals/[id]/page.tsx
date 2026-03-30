@@ -5,6 +5,8 @@ import { SignalDslPanel } from '@/components/app/SignalDslPanel';
 import { Button } from '@/components/ui/Button';
 import { getAuthenticatedUser } from '@/lib/auth/session';
 import { requestSentinel, SentinelRequestError } from '@/lib/sentinel/user-server';
+import { getTelegramLinkStatus } from '@/lib/telegram/link-state';
+import { buildTemplateEntryPath } from '@/lib/telegram/setup-flow';
 import type { SignalHistoryResponse, SignalNotificationLogEntry, SignalRecord, SignalRunLogEntry } from '@/lib/types/signal';
 
 interface SignalDetailPageProps {
@@ -71,6 +73,9 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
     throw error;
   }
 
+  const telegramStatus = await getTelegramLinkStatus();
+  const createSignalHref = buildTemplateEntryPath(telegramStatus.linked);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
@@ -85,8 +90,8 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
           <Link href="/signals" className="no-underline">
             <Button variant="secondary">Back to inventory</Button>
           </Link>
-          <Link href="/signals/new" className="no-underline">
-            <Button>Create another</Button>
+          <Link href={createSignalHref} className="no-underline">
+            <Button>{telegramStatus.linked ? 'Create another' : 'Set up Telegram'}</Button>
           </Link>
           <SignalDeleteButton signalId={signal.id} signalName={signal.name} redirectTo="/signals" />
         </div>
