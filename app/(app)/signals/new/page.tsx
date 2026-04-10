@@ -1,16 +1,17 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { RiArrowRightLine, RiCompass3Line, RiSlideshowLine } from 'react-icons/ri';
+import { RiArrowRightLine, RiRobot2Line, RiUser3Line } from 'react-icons/ri';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { getAuthenticatedUser } from '@/lib/auth/session';
 import {
-  ADVANCED_TEMPLATE_PATH,
-  buildTelegramPath,
+  AGENT_TEMPLATE_PATH,
+  HUMAN_TEMPLATE_PATH,
+  buildTemplateEntryPath,
   buildTemplatePath,
-  SIMPLE_TEMPLATE_PATH,
 } from '@/lib/telegram/setup-flow';
 import { getTelegramLinkStatus } from '@/lib/telegram/link-state';
+import { CREATE_SIGNAL_PERSONAS } from '@/lib/signals/create-flow-catalog';
 
 interface NewSignalPageProps {
   searchParams?: Promise<{ preset?: string }> | { preset?: string };
@@ -29,23 +30,14 @@ export default async function NewSignalPage({ searchParams }: NewSignalPageProps
     ? await getTelegramLinkStatus()
     : { linked: false, linkedAt: null, appUserId: null, telegramUsername: null };
 
-  if (!telegramStatus.linked) {
-    redirect(
-      buildTelegramPath({
-        status: 'required',
-        returnTo: '/signals/new',
-      })
-    );
-  }
-
   return (
     <div className="space-y-6">
       <section className="rounded-[16px] border border-border bg-surface p-6 sm:p-8">
         <div className="max-w-3xl">
           <p className="text-xs uppercase tracking-[0.3em] text-secondary">Create</p>
-          <h1 className="mt-3 font-zen text-3xl sm:text-4xl">Choose an entry mode</h1>
+          <h1 className="mt-3 font-zen text-3xl sm:text-4xl">Choose who is creating the signal</h1>
           <p className="mt-3 text-secondary">
-            Start with Morpho-assisted search when you want vaults, markets, and holder lists filled in for you. Use advanced mode when you want full manual control over templates and raw inputs.
+            Keep the top level clean: human users start from guided vault and protocol use cases, while agent users get pointed at the docs for open-ended signal authoring.
           </p>
         </div>
       </section>
@@ -54,24 +46,32 @@ export default async function NewSignalPage({ searchParams }: NewSignalPageProps
         <Card className="space-y-5">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#ff6b35]/10 text-[#ff6b35]">
-              <RiCompass3Line className="h-5 w-5" />
+              <RiUser3Line className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-secondary">Simple</p>
-              <h2 className="mt-1 font-zen text-2xl">Morpho-assisted</h2>
+              <p className="text-xs uppercase tracking-[0.25em] text-secondary">
+                {CREATE_SIGNAL_PERSONAS[0]?.eyebrow}
+              </p>
+              <h2 className="mt-1 font-zen text-2xl">{CREATE_SIGNAL_PERSONAS[0]?.title}</h2>
             </div>
           </div>
           <p className="text-sm text-secondary">
-            Search Morpho vaults or markets, pull top holders from the official Morpho API, and create signals by selecting addresses instead of collecting them manually.
+            {CREATE_SIGNAL_PERSONAS[0]?.description}
           </p>
           <div className="space-y-2 text-sm text-secondary">
             <p>Supports today:</p>
-            <p>Morpho vault holder withdrawals</p>
-            <p>Morpho market supplier exits</p>
+            <p>Vault examples for Morpho and Euler</p>
+            <p>Protocol example for Morpho markets</p>
+            <p>Custom vault watch fallback when assisted search cannot find what you need</p>
           </div>
-          <Link href={SIMPLE_TEMPLATE_PATH} className="no-underline">
+          {!telegramStatus.linked ? (
+            <p className="text-sm text-secondary">
+              Telegram is still required for human-created managed alerts. The CTA below will route through Telegram setup first.
+            </p>
+          ) : null}
+          <Link href={buildTemplateEntryPath(telegramStatus.linked, HUMAN_TEMPLATE_PATH)} className="no-underline">
             <Button className="gap-2">
-              Open simple mode
+              {CREATE_SIGNAL_PERSONAS[0]?.cta}
               <RiArrowRightLine className="h-4 w-4" />
             </Button>
           </Link>
@@ -80,25 +80,27 @@ export default async function NewSignalPage({ searchParams }: NewSignalPageProps
         <Card className="space-y-5">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#ff6b35]/10 text-[#ff6b35]">
-              <RiSlideshowLine className="h-5 w-5" />
+              <RiRobot2Line className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-secondary">Advanced</p>
-              <h2 className="mt-1 font-zen text-2xl">Manual templates</h2>
+              <p className="text-xs uppercase tracking-[0.25em] text-secondary">
+                {CREATE_SIGNAL_PERSONAS[1]?.eyebrow}
+              </p>
+              <h2 className="mt-1 font-zen text-2xl">{CREATE_SIGNAL_PERSONAS[1]?.title}</h2>
             </div>
           </div>
           <p className="text-sm text-secondary">
-            Fill in market ids, vault contracts, owners, wallets, and thresholds yourself. This is the right path when you already know the exact inputs or want to work ahead of future simple integrations.
+            {CREATE_SIGNAL_PERSONAS[1]?.description}
           </p>
           <div className="space-y-2 text-sm text-secondary">
             <p>Includes today:</p>
-            <p>Morpho whale templates</p>
-            <p>ERC-4626 percentage withdrawal template</p>
-            <p>ERC-20 raw-event templates</p>
+            <p>Docs links for DSL and API references</p>
+            <p>Starter prompt for user-provided agents</p>
+            <p>Room for a fuller agent-native builder later</p>
           </div>
-          <Link href={ADVANCED_TEMPLATE_PATH} className="no-underline">
+          <Link href={AGENT_TEMPLATE_PATH} className="no-underline">
             <Button variant="secondary" className="gap-2">
-              Open advanced mode
+              {CREATE_SIGNAL_PERSONAS[1]?.cta}
               <RiArrowRightLine className="h-4 w-4" />
             </Button>
           </Link>

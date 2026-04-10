@@ -17,6 +17,7 @@ import {
   describeSignalDefinition,
   getTemplatePreset,
   parseWhaleAddresses,
+  type SignalTemplateKind,
   type SignalTemplateId,
   type SignalTemplateRequest,
 } from '@/lib/signals/templates';
@@ -94,6 +95,28 @@ const buildDefaultState = (templateId: SignalTemplateId): BuilderFormState => {
     cooldownMinutes: String(preset.defaults.cooldownMinutes),
   };
 };
+
+const TEMPLATE_GROUPS: Array<{
+  title: string;
+  description: string;
+  kinds: SignalTemplateKind[];
+}> = [
+  {
+    title: 'Vaults',
+    description: 'Fallback vault watches when the assisted flow cannot find the exact vault or owner set yet.',
+    kinds: ['erc4626-withdraw'],
+  },
+  {
+    title: 'Protocols',
+    description: 'Protocol-specific templates for detailed indexed surfaces such as Morpho markets.',
+    kinds: ['morpho-whale'],
+  },
+  {
+    title: 'Raw events',
+    description: 'Direct event-level monitoring when you want lower-level flow checks instead of state metrics.',
+    kinds: ['erc20-transfer'],
+  },
+];
 
 export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramLinked = false }: SignalBuilderFormProps) {
   const router = useRouter();
@@ -256,21 +279,35 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
   return (
     <div className="space-y-6">
       <div className="rounded-md border border-border bg-surface p-4">
-        <p className="text-xs uppercase tracking-[0.3em] text-secondary mb-2">Template</p>
-        <div className="flex flex-wrap gap-2">
-          {SIGNAL_TEMPLATE_PRESETS.map((option) => (
-            <button
-              key={option.id}
-              className={`rounded-sm border px-3 py-2 text-sm transition-colors ${
-                selectedPreset === option.id
-                  ? 'border-[#1f2328] bg-[#1f2328]/4 text-foreground'
-                  : 'border-border text-secondary hover:text-foreground hover:bg-hovered'
-              }`}
-              onClick={() => setSelectedPreset(option.id)}
-              type="button"
-            >
-              {option.title}
-            </button>
+        <p className="mb-2 text-xs uppercase tracking-[0.3em] text-secondary">Template</p>
+        <p className="mb-4 max-w-3xl text-sm text-secondary">
+          This is the manual fallback route. Pick the closest template family, then fill the exact vault, market, owner, or token inputs yourself.
+        </p>
+
+        <div className="space-y-4">
+          {TEMPLATE_GROUPS.map((group) => (
+            <div key={group.title} className="space-y-2">
+              <div>
+                <p className="text-sm text-foreground">{group.title}</p>
+                <p className="text-sm text-secondary">{group.description}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {SIGNAL_TEMPLATE_PRESETS.filter((option) => group.kinds.includes(option.kind)).map((option) => (
+                  <button
+                    key={option.id}
+                    className={`rounded-sm border px-3 py-2 text-sm transition-colors ${
+                      selectedPreset === option.id
+                        ? 'border-[#1f2328] bg-[#1f2328]/4 text-foreground'
+                        : 'border-border text-secondary hover:bg-hovered hover:text-foreground'
+                    }`}
+                    onClick={() => setSelectedPreset(option.id)}
+                    type="button"
+                  >
+                    {option.title}
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -497,7 +534,7 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Button onClick={handleSubmit} disabled={isSubmitting || Boolean(previewError) || !telegramLinked}>
-              {isSubmitting ? 'Creating signal...' : telegramLinked ? 'Create signal from template' : 'Connect Telegram to create'}
+              {isSubmitting ? 'Creating signal...' : telegramLinked ? 'Create custom signal' : 'Connect Telegram to create'}
             </Button>
             <Button variant="secondary" type="button" onClick={() => setFormState(buildDefaultState(selectedPreset))}>
               Reset fields
