@@ -3,15 +3,19 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { RiArrowRightLine } from 'react-icons/ri';
+import { CreateFlowHeader } from '@/components/app/CreateFlowHeader';
 import { MorphoMarketSignalBuilder } from '@/components/app/MorphoMarketSignalBuilder';
 import { VaultUseCaseBuilder } from '@/components/app/VaultUseCaseBuilder';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { HelpHint } from '@/components/ui/HelpHint';
 import {
   ASSISTED_PROTOCOL_EXAMPLES,
   ASSISTED_VAULT_EXAMPLES,
   CUSTOM_SIGNAL_FALLBACK,
   HUMAN_SIGNAL_CATEGORIES,
+  SENTINEL_ONE_LINER,
+  getHumanSignalCategory,
   type HumanSignalCategoryId,
 } from '@/lib/signals/create-flow-catalog';
 import { CUSTOM_TEMPLATE_PATH } from '@/lib/telegram/setup-flow';
@@ -20,21 +24,21 @@ import type { SupportedVaultProtocolId } from '@/lib/vault-discovery/types';
 export function HumanSignalBuilder() {
   const [category, setCategory] = useState<HumanSignalCategoryId>('vaults');
   const [selectedVaultProtocol, setSelectedVaultProtocol] = useState<SupportedVaultProtocolId>('morpho');
+  const selectedCategory = getHumanSignalCategory(category);
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[16px] border border-border bg-surface p-6 sm:p-8">
-        <div className="max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.3em] text-secondary">Human builder</p>
-          <h1 className="mt-3 font-zen text-3xl sm:text-4xl">Start from simple examples</h1>
-          <p className="mt-3 text-secondary">
-            Choose the operating layer first. Vaults are for ERC-4626-style owner withdrawal watches. Protocols are for indexed, protocol-specific surfaces such as Morpho markets.
-          </p>
-        </div>
-      </section>
+      <CreateFlowHeader
+        eyebrow="Human builder"
+        title="Start from simple examples"
+        summary={`${SENTINEL_ONE_LINER} Pick a layer, then pick a source.`}
+      />
 
       <div className="rounded-md border border-border bg-surface p-4">
-        <p className="text-xs uppercase tracking-[0.3em] text-secondary">Choose a layer</p>
+        <div className="flex items-center gap-2">
+          <p className="text-xs uppercase tracking-[0.3em] text-secondary">Layer</p>
+          <HelpHint text={selectedCategory.helpText} />
+        </div>
         <div className="mt-3 flex flex-wrap gap-2">
           {HUMAN_SIGNAL_CATEGORIES.map((option) => (
             <button
@@ -51,9 +55,6 @@ export function HumanSignalBuilder() {
             </button>
           ))}
         </div>
-        <p className="mt-3 max-w-3xl text-sm text-secondary">
-          {HUMAN_SIGNAL_CATEGORIES.find((option) => option.id === category)?.description}
-        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -78,17 +79,25 @@ export function HumanSignalBuilder() {
                       : 'border-border bg-surface text-foreground hover:bg-hovered'
                   } ${!isLive ? 'cursor-not-allowed opacity-65' : ''}`}
                 >
-                  <p className="text-xs uppercase tracking-[0.25em] text-secondary">{example.badge}</p>
-                  <h2 className="mt-2 font-zen text-2xl">{example.title}</h2>
-                  <p className="mt-2 text-sm text-secondary">{example.description}</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.25em] text-secondary">{example.badge}</p>
+                      <h2 className="mt-2 font-zen text-2xl">{example.title}</h2>
+                    </div>
+                    <HelpHint text={example.helpText} align="right" />
+                  </div>
                 </button>
               );
             })
           : ASSISTED_PROTOCOL_EXAMPLES.map((example) => (
               <div key={example.id} className="rounded-md border border-[#1f2328] bg-surface p-5 text-left">
-                <p className="text-xs uppercase tracking-[0.25em] text-secondary">{example.badge}</p>
-                <h2 className="mt-2 font-zen text-2xl">{example.title}</h2>
-                <p className="mt-2 text-sm text-secondary">{example.description}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.25em] text-secondary">{example.badge}</p>
+                    <h2 className="mt-2 font-zen text-2xl">{example.title}</h2>
+                  </div>
+                  <HelpHint text={example.helpText} align="right" />
+                </div>
               </div>
             ))}
       </div>
@@ -102,8 +111,10 @@ export function HumanSignalBuilder() {
       <Card className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-secondary">Fallback</p>
-          <h2 className="mt-2 font-zen text-2xl">{CUSTOM_SIGNAL_FALLBACK.title}</h2>
-          <p className="mt-2 max-w-3xl text-sm text-secondary">{CUSTOM_SIGNAL_FALLBACK.description}</p>
+          <div className="mt-2 flex items-center gap-2">
+            <h2 className="font-zen text-2xl">{CUSTOM_SIGNAL_FALLBACK.title}</h2>
+            <HelpHint text={CUSTOM_SIGNAL_FALLBACK.helpText} />
+          </div>
         </div>
         <Link href={CUSTOM_TEMPLATE_PATH} className="no-underline">
           <Button variant="secondary" className="gap-2">

@@ -28,8 +28,8 @@ const getProtocolHeading = (protocol: SupportedVaultProtocolId) =>
 
 const getProtocolDescription = (protocol: SupportedVaultProtocolId) =>
   protocol === 'morpho'
-    ? 'Search official Morpho vault data, pull the largest current holders, and generate an ERC-4626 withdrawal watch.'
-    : 'Search Euler Earn vaults from Euler’s official subgraph, review the largest balances, and generate an ERC-4626 withdrawal watch.';
+    ? 'Pick a Morpho vault, pick holders, and let Sentinel create the alert.'
+    : 'Pick an Euler vault, pick holders, and let Sentinel create the alert.';
 
 const getProtocolSearchPlaceholder = (protocol: SupportedVaultProtocolId) =>
   protocol === 'morpho'

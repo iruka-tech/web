@@ -236,7 +236,7 @@ export function MorphoMarketSignalBuilder() {
             <p className="text-xs uppercase tracking-[0.3em] text-secondary">Protocol source</p>
             <h2 className="mt-2 font-zen text-2xl">Morpho markets</h2>
             <p className="mt-2 text-sm text-secondary">
-              Use the indexed Morpho market layer from your backend, choose supplier wallets, and generate a Morpho supplier-exit watch.
+              Pick a Morpho market, pick suppliers, and let Sentinel watch for coordinated exits.
             </p>
           </div>
 

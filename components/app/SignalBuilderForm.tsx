@@ -11,6 +11,7 @@ import {
 } from 'react-icons/ri';
 import { SignalPresetCard } from '@/components/app/SignalPresetCard';
 import { Button } from '@/components/ui/Button';
+import { HelpHint } from '@/components/ui/HelpHint';
 import {
   SIGNAL_TEMPLATE_PRESETS,
   buildSignalTemplate,
@@ -98,22 +99,26 @@ const buildDefaultState = (templateId: SignalTemplateId): BuilderFormState => {
 
 const TEMPLATE_GROUPS: Array<{
   title: string;
-  description: string;
+  summary: string;
+  helpText: string;
   kinds: SignalTemplateKind[];
 }> = [
   {
     title: 'Vaults',
-    description: 'Fallback vault watches when the assisted flow cannot find the exact vault or owner set yet.',
+    summary: 'Manual vault watches',
+    helpText: 'Use this when the guided vault flow cannot find the exact vault or owner set yet.',
     kinds: ['erc4626-withdraw'],
   },
   {
     title: 'Protocols',
-    description: 'Protocol-specific templates for detailed indexed surfaces such as Morpho markets.',
+    summary: 'Protocol-specific templates',
+    helpText: 'Detailed indexed templates such as Morpho markets.',
     kinds: ['morpho-whale'],
   },
   {
     title: 'Raw events',
-    description: 'Direct event-level monitoring when you want lower-level flow checks instead of state metrics.',
+    summary: 'Event-level monitoring',
+    helpText: 'Use raw events when you want lower-level flow checks instead of state metrics.',
     kinds: ['erc20-transfer'],
   },
 ];
@@ -250,10 +255,10 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
       ? 'ERC-4626 owner withdrawal % signal'
       : 'ERC-20 transfer raw-event signal';
   const previewDescription = isMorphoWhalePreset
-    ? 'Enter a market plus the supplier wallets you want to watch. This UI creates a Sentinel `group` + `change` signal on the canonical `Morpho.Position.supplyShares` state alias.'
+    ? 'Sentinel watches the tracked Morpho suppliers and alerts on coordinated exits.'
     : isErc4626WithdrawPreset
-      ? 'Enter one vault plus the owner wallets you want to watch. This UI creates a Sentinel `group` + `change` signal on `ERC4626.Position.shares` using percentage decrease.'
-      : 'Track gross ERC-20 Transfer volume into or out of one address with Sentinel’s `raw-events` preset. This is flow monitoring, not true net balance change.';
+      ? 'Sentinel watches tracked vault owners and alerts on share withdrawals.'
+      : 'Sentinel watches ERC-20 transfer flow for one address.';
 
   const previewStats = isMorphoWhalePreset
     ? [
@@ -280,16 +285,15 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
     <div className="space-y-6">
       <div className="rounded-md border border-border bg-surface p-4">
         <p className="mb-2 text-xs uppercase tracking-[0.3em] text-secondary">Template</p>
-        <p className="mb-4 max-w-3xl text-sm text-secondary">
-          This is the manual fallback route. Pick the closest template family, then fill the exact vault, market, owner, or token inputs yourself.
-        </p>
+        <p className="mb-4 max-w-3xl text-sm text-secondary">Pick a template family, then fill the exact inputs Sentinel should watch.</p>
 
         <div className="space-y-4">
           {TEMPLATE_GROUPS.map((group) => (
             <div key={group.title} className="space-y-2">
-              <div>
+              <div className="flex items-center gap-2">
                 <p className="text-sm text-foreground">{group.title}</p>
-                <p className="text-sm text-secondary">{group.description}</p>
+                <HelpHint text={group.helpText} />
+                <p className="text-sm text-secondary">{group.summary}</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 {SIGNAL_TEMPLATE_PRESETS.filter((option) => group.kinds.includes(option.kind)).map((option) => (

@@ -6,6 +6,8 @@ import {
   ASSISTED_VAULT_EXAMPLES,
   CREATE_SIGNAL_PERSONAS,
   HUMAN_SIGNAL_CATEGORIES,
+  getCreateSignalPersona,
+  getHumanSignalCategory,
 } from './create-flow-catalog.ts';
 
 test('create-flow personas stay explicit and ordered', () => {
@@ -13,6 +15,7 @@ test('create-flow personas stay explicit and ordered', () => {
     CREATE_SIGNAL_PERSONAS.map((option) => option.id),
     ['human', 'agent']
   );
+  assert.ok(CREATE_SIGNAL_PERSONAS.every((option) => option.summary.length > 0 && option.helpText.length > 0));
 });
 
 test('human categories stay split between vaults and protocols', () => {
@@ -20,6 +23,7 @@ test('human categories stay split between vaults and protocols', () => {
     HUMAN_SIGNAL_CATEGORIES.map((option) => option.id),
     ['vaults', 'protocols']
   );
+  assert.ok(HUMAN_SIGNAL_CATEGORIES.every((option) => option.summary.length > 0 && option.helpText.length > 0));
 });
 
 test('vault examples keep Morpho and Euler live while Aave remains staged', () => {
@@ -33,9 +37,16 @@ test('vault examples keep Morpho and Euler live while Aave remains staged', () =
 test('protocol examples stay anchored on Morpho markets for now', () => {
   assert.equal(ASSISTED_PROTOCOL_EXAMPLES.length, 1);
   assert.equal(ASSISTED_PROTOCOL_EXAMPLES[0]?.id, 'morpho-markets');
+  assert.ok(ASSISTED_PROTOCOL_EXAMPLES.every((option) => option.summary.length > 0 && option.helpText.length > 0));
 });
 
 test('agent route keeps docs resources available', () => {
   assert.equal(AGENT_GUIDE_RESOURCES.length, 3);
   assert.ok(AGENT_GUIDE_RESOURCES.every((resource) => resource.href.length > 0));
+  assert.ok(AGENT_GUIDE_RESOURCES.every((resource) => resource.helpText.length > 0));
+});
+
+test('catalog lookups resolve stable ids', () => {
+  assert.equal(getCreateSignalPersona('human').title.length > 0, true);
+  assert.equal(getHumanSignalCategory('vaults').title, 'Vaults');
 });
