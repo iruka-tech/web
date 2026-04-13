@@ -40,6 +40,7 @@ const getMorphoWhaleTemplateId = (requiredCount: number) => {
 
 export function MorphoMarketSignalBuilder() {
   const router = useRouter();
+  const [isMarketPickerExpanded, setIsMarketPickerExpanded] = useState(true);
   const [search, setSearch] = useState('');
   const deferredSearch = useDeferredValue(search);
   const [markets, setMarkets] = useState<MorphoMarketSummary[]>([]);
@@ -232,70 +233,96 @@ export function MorphoMarketSignalBuilder() {
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
       <div className="space-y-6">
         <Card className="space-y-5">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-secondary">Protocol source</p>
-            <h2 className="mt-2 font-zen text-2xl">Morpho markets</h2>
-            <p className="mt-2 text-sm text-secondary">
-              Pick a Morpho market, pick suppliers, and let Sentinel watch for coordinated exits.
-            </p>
-          </div>
-
-          <label className="flex flex-col gap-2 text-sm text-secondary">
-            Search markets
-            <div className="relative">
-              <RiSearchLine className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary" />
-              <input
-                type="text"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search loan / collateral pair or market id"
-                className="w-full rounded-sm border border-border bg-transparent py-2 pl-9 pr-3 text-sm text-foreground"
-              />
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-secondary">Protocol source</p>
+              <h2 className="mt-2 font-zen text-2xl">Morpho markets</h2>
+              <p className="mt-2 text-sm text-secondary">
+                Pick a Morpho market, pick suppliers, and let Sentinel watch for coordinated exits.
+              </p>
             </div>
-          </label>
-
-          {resultsLoading ? <p className="text-sm text-secondary">Loading market data...</p> : null}
-          {loadError ? <p className="text-sm text-red-500">{loadError}</p> : null}
-
-          <div className="grid gap-3">
-            {markets.map((market) => {
-              const active = selectedMarket?.marketId === market.marketId;
-
-              return (
-                <button
-                  key={market.marketId}
-                  type="button"
-                  onClick={() => setSelectedMarket(market)}
-                  className={`rounded-sm border px-4 py-3 text-left transition-colors ${
-                    active
-                      ? 'border-[#1f2328] bg-background text-foreground'
-                      : 'border-border bg-background/70 text-secondary hover:bg-hovered hover:text-foreground'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm text-foreground">
-                        {market.loanAssetSymbol}/{market.collateralAssetSymbol}
-                      </p>
-                      <p className="mt-1 truncate font-mono text-xs text-secondary" title={market.marketId}>
-                        {formatCompactAddress(market.marketId)}
-                      </p>
-                    </div>
-                    <div className="shrink-0 text-right text-xs text-secondary">
-                      <p>{formatUsdCompact(market.supplyAssetsUsd)}</p>
-                      <p>{formatPercent(market.utilization)}</p>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-
-            {!resultsLoading && markets.length === 0 ? (
-              <div className="rounded-sm border border-dashed border-border px-4 py-3 text-sm text-secondary">
-                No Morpho markets matched this search yet.
-              </div>
+            {selectedMarket ? (
+              <Button
+                variant="secondary"
+                size="sm"
+                type="button"
+                onClick={() => setIsMarketPickerExpanded((current) => !current)}
+              >
+                {isMarketPickerExpanded ? 'Hide list' : 'Change market'}
+              </Button>
             ) : null}
           </div>
+
+          {selectedMarket && !isMarketPickerExpanded ? (
+            <div className="rounded-sm border border-border/80 bg-background/50 p-4">
+              <p className="text-sm text-foreground">{selectedEntitySummary}</p>
+              <p className="mt-1 font-mono text-xs text-secondary" title={selectedMarket.marketId}>
+                {formatCompactAddress(selectedMarket.marketId)}
+              </p>
+            </div>
+          ) : (
+            <>
+              <label className="flex flex-col gap-2 text-sm text-secondary">
+                Search markets
+                <div className="relative">
+                  <RiSearchLine className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Search loan / collateral pair or market id"
+                    className="w-full rounded-sm border border-border bg-transparent py-2 pl-9 pr-3 text-sm text-foreground"
+                  />
+                </div>
+              </label>
+
+              {resultsLoading ? <p className="text-sm text-secondary">Loading market data...</p> : null}
+              {loadError ? <p className="text-sm text-red-500">{loadError}</p> : null}
+
+              <div className="grid gap-3">
+                {markets.map((market) => {
+                  const active = selectedMarket?.marketId === market.marketId;
+
+                  return (
+                    <button
+                      key={market.marketId}
+                      type="button"
+                      onClick={() => {
+                        setSelectedMarket(market);
+                        setIsMarketPickerExpanded(false);
+                      }}
+                      className={`rounded-sm border px-4 py-3 text-left transition-colors ${
+                        active
+                          ? 'border-[#1f2328] bg-background text-foreground'
+                          : 'border-border bg-background/70 text-secondary hover:bg-hovered hover:text-foreground'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm text-foreground">
+                            {market.loanAssetSymbol}/{market.collateralAssetSymbol}
+                          </p>
+                          <p className="mt-1 truncate font-mono text-xs text-secondary" title={market.marketId}>
+                            {formatCompactAddress(market.marketId)}
+                          </p>
+                        </div>
+                        <div className="shrink-0 text-right text-xs text-secondary">
+                          <p>{formatUsdCompact(market.supplyAssetsUsd)}</p>
+                          <p>{formatPercent(market.utilization)}</p>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+
+                {!resultsLoading && markets.length === 0 ? (
+                  <div className="rounded-sm border border-dashed border-border px-4 py-3 text-sm text-secondary">
+                    No Morpho markets matched this search yet.
+                  </div>
+                ) : null}
+              </div>
+            </>
+          )}
         </Card>
 
         <Card className="space-y-5">
