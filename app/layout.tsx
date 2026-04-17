@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import { Inter, JetBrains_Mono, EB_Garamond } from 'next/font/google';
+import { JetBrains_Mono, Public_Sans, Rajdhani } from 'next/font/google';
 import './globals.css';
 import { WagmiProviders } from '@/components/auth/WagmiProviders';
 
-// Self-hosted fonts via next/font (eliminates render-blocking requests)
-const inter = Inter({
+const publicSans = Public_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-body',
+  weight: ['300', '400', '500', '600'],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -18,13 +18,11 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['400', '500', '600'],
 });
 
-// EB Garamond for elegant headings - sovereignty/narrative vibe
-const ebGaramond = EB_Garamond({
+const rajdhani = Rajdhani({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-serif',
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
+  variable: '--font-display',
+  weight: ['400', '500', '600'],
 });
 
 const DEFAULT_SITE_URL = 'https://megabat.monarchlend.xyz';
@@ -52,26 +50,24 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: 'Megabat - The Sensing Layer for DeFi Agents',
+      default: 'Megabat - Open Data Signals for Smarter Agents',
       template: '%s | Megabat',
     },
     description:
-      'Megabat watches RPC state, indexed history, and raw events continuously, then emits structured signals only when the pattern you defined actually matches. Built by Monarch.',
+      'Megabat watches RPC state, indexed history, and raw events continuously, turning open data into structured signals your agent can actually use. Built by Monarch.',
     keywords: [
-      'DeFi',
-      'DeFi monitoring',
+      'open data agents',
+      'agent signals',
       'blockchain alerts',
-      'crypto signals',
       'state monitoring',
       'indexed history',
       'raw events',
       'archive rpc',
       'signal DSL',
       'state_ref',
-      'position monitoring',
+      'agent intelligence',
       'webhook alerts',
       'telegram alerts',
-      'defi automation',
       'blockchain signals',
     ],
     authors: [{ name: 'Monarch', url: 'https://monarchlend.xyz' }],
@@ -89,7 +85,7 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: 'Megabat - The Sensing Layer for DeFi Agents',
+      title: 'Megabat - Open Data Signals for Smarter Agents',
       description: 'Megabat keeps watch across state, indexed history, and raw events, then emits structured signals only when the pattern matches.',
       url: siteUrl,
       siteName: 'Megabat by Monarch',
@@ -100,21 +96,21 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `${siteUrl}/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Megabat - The sensing layer for DeFi agents',
+          alt: 'Megabat - Open data signals for smarter agents',
           type: 'image/png',
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Megabat - The Sensing Layer for DeFi Agents',
+      title: 'Megabat - Open Data Signals for Smarter Agents',
       description: 'Megabat keeps watch across state, indexed history, and raw events, then emits structured signals only when the pattern matches.',
       creator: '@monarchxyz',
       site: '@monarchxyz',
       images: [
         {
           url: `${siteUrl}/twitter-image`,
-          alt: 'Megabat - The sensing layer for DeFi agents',
+          alt: 'Megabat - Open data signals for smarter agents',
         },
       ],
     },
@@ -135,9 +131,9 @@ export default async function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: 'Megabat',
-    description: 'A sensing layer for DeFi agents across RPC state, indexed history, and raw events.',
+    description: 'A sensing layer that turns open data across RPC state, indexed history, and raw events into structured agent signals.',
     url: siteUrl,
-    applicationCategory: 'FinanceApplication',
+    applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
     offers: {
       '@type': 'Offer',
@@ -149,21 +145,21 @@ export default async function RootLayout({
       name: 'Monarch',
       url: 'https://monarchlend.xyz',
     },
-    keywords: 'DeFi, blockchain monitoring, signals, archive RPC, indexed history, raw events',
+    keywords: 'open data agents, blockchain monitoring, signals, archive RPC, indexed history, raw events',
   };
 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="theme-color" content="#16181a" />
-        <meta name="color-scheme" content="dark" />
+        <meta name="theme-color" content="#f7f1e8" />
+        <meta name="color-scheme" content="light" />
         <link rel="manifest" href="/manifest.json" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} ${ebGaramond.variable} font-inter antialiased`} suppressHydrationWarning>
+      <body className={`${publicSans.variable} ${jetbrainsMono.variable} ${rajdhani.variable} antialiased`} suppressHydrationWarning>
         <WagmiProviders>
           {children}
         </WagmiProviders>

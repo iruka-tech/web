@@ -71,7 +71,7 @@ export function WalletAuth({ onSuccess, returnTo = '/app' }: WalletAuthProps) {
       <p className="text-sm text-secondary">
         Connect a wallet, then sign the message to confirm ownership.
       </p>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error ? <p className="ui-notice text-sm" data-tone="danger">{error}</p> : null}
       <div className="flex flex-col sm:flex-row gap-3">
         {!isConnected && (
           <Button onClick={handleConnect} disabled={isConnecting || isConnectionConnecting || status === 'loading'}>
@@ -92,9 +92,9 @@ export function WalletAuth({ onSuccess, returnTo = '/app' }: WalletAuthProps) {
         )}
       </div>
       {address && (
-        <div className="text-xs text-secondary flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-secondary">
           <span>Connected as</span>
-          <span className="px-2 py-1 rounded-sm bg-[#ff6b35]/10 text-[#ff6b35] font-mono">
+          <span className="ui-chip font-mono" data-tone="accent">
             {address}
           </span>
         </div>

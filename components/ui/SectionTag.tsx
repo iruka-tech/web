@@ -11,13 +11,15 @@ export function SectionTag({ children, className }: SectionTagProps) {
   return (
     <span
       className={cn(
-        'inline-block font-mono text-xs tracking-[0.2em] uppercase',
-        'text-[#ff6b35]/80 border border-[#ff6b35]/20 rounded',
-        'px-2 py-1',
+        'inline-flex items-center gap-2 rounded-[0.45rem] border px-3 py-1.5',
+        'border-[color:color-mix(in_oklch,var(--signal-copper)_34%,var(--stroke-soft))]',
+        'bg-[color:color-mix(in_oklch,var(--signal-copper)_8%,var(--surface-inset))]',
+        'font-mono text-[0.68rem] uppercase tracking-[0.24em] text-[color:var(--ink-secondary)]',
         className,
       )}
     >
-      [ {children} ]
+      <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--signal-copper)]" />
+      {children}
     </span>
   );
 }

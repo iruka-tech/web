@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Header />
 
-      <main className="pt-24 pb-16">
+      <main className="pb-16 pt-28 md:pt-32">
         <div className="page-gutter">
           <DocsExplorer />
         </div>

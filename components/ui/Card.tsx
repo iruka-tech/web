@@ -11,9 +11,7 @@ export function Card({ children, className }: CardProps) {
   return (
     <div
       className={cn(
-        'bg-surface rounded-md p-6',
-        'border border-border',
-        'transition-colors duration-200',
+        'ui-panel p-6',
         className
       )}
     >

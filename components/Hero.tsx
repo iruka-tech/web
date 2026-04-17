@@ -2,10 +2,24 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { RiArrowDownLine } from 'react-icons/ri';
-import { GridAccent } from './ui/GridAccent';
+import { RiArrowDownLine, RiArrowRightLine } from 'react-icons/ri';
+import { CodeBlock } from './ui/CodeBlock';
 import { SectionTag } from './ui/SectionTag';
 import { MEGABAT_SITE_DOCS_PATH } from '@/lib/megabat-links';
+
+const previewSignals = [
+  { label: 'State', value: 'Vault shares dropped 22% across 3 of 5 addresses', tone: 'accent' },
+  { label: 'Indexed', value: 'Net supply turned negative over the last 6h', tone: 'default' },
+  { label: 'Raw', value: 'USDC transfer burst crossed the 1M threshold', tone: 'telegram' },
+] as const;
+
+const previewCode = `signal.when({
+  state: "ERC4626.Position.shares",
+  indexed: "Morpho.Flow.netSupply",
+  raw: "erc20_transfer",
+  logic: "AND",
+  window: "6h"
+});`;
 
 export function Hero() {
   const scrollToSection = () => {
@@ -14,107 +28,121 @@ export function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col pt-14 md:pt-16">
-      {/* Dot grid background with radial fade */}
-      <div
-        className="absolute inset-0 bg-dot-grid pointer-events-none opacity-60"
-        style={{
-          maskImage: 'radial-gradient(ellipse 80% 70% at 30% 40%, black 0%, transparent 70%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 30% 40%, black 0%, transparent 70%)',
-        }}
-        aria-hidden="true"
-      />
+    <section className="relative overflow-hidden pt-28 pb-18 md:pt-34 md:pb-24">
+      <div className="absolute inset-0 bg-dot-grid opacity-[0.1]" aria-hidden="true" />
+      <div className="absolute inset-0 grid-radial-fade bg-line-grid opacity-[0.08]" aria-hidden="true" />
 
-      {/* Grid accent top-right */}
-      <GridAccent position="top-right" variant="dots" size="lg" />
-
-      {/* Content */}
-      <div className="flex-1 flex items-center relative z-10">
-        <div className="page-gutter">
-          <div className="max-w-3xl">
-            {/* Section tag */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-6"
-            >
-              <SectionTag>Continuous Detection</SectionTag>
-            </motion.div>
-
-            {/* Opening line */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="font-serif text-lg text-secondary mb-4 italic"
-            >
-              State, indexed, and raw conditions in one watch loop.
-            </motion.p>
-
-            {/* Main headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] mb-8"
-            >
-              Watch for the
-              <br />
-              <span className="text-[#ff6b35]">exact move that matters</span>.
-            </motion.h1>
-
-            {/* Subtext */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg sm:text-xl text-secondary max-w-xl mb-10 leading-relaxed"
-            >
-              Megabat continuously watches RPC state, indexed history, and raw events, then emits a structured
-              signal only when your pattern matches.
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.25 }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
-              <button
-                onClick={scrollToSection}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff6b35] text-white text-sm font-medium rounded-md hover:bg-[#ff6b35]/90 transition-colors"
+      <div className="page-gutter relative z-10">
+        <div className="ui-hero px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
+          <div className="relative z-10 grid items-end gap-10 xl:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+            <div className="max-w-3xl">
+              <motion.div
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45 }}
               >
-                See How It Works
-                <RiArrowDownLine className="w-4 h-4" />
-              </button>
-              <Link
-                href={MEGABAT_SITE_DOCS_PATH}
-                className="inline-flex items-center justify-center px-6 py-3 border border-border text-secondary text-sm font-medium rounded-md hover:border-[#ff6b35]/30 hover:text-foreground transition-colors no-underline"
+                <SectionTag>Continuous Detection</SectionTag>
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.08 }}
+                className="mt-6 ui-kicker"
               >
-                Read Docs
-              </Link>
+                Built For Operators And Agent Builders
+              </motion.p>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.14 }}
+                className="ui-display mt-5"
+              >
+                Let Megabat listen through the noise until a real signal resolves.
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.2 }}
+                className="ui-copy mt-6 text-base sm:text-lg"
+              >
+                Megabat watches archive RPC state, indexed history, and raw events in one loop.
+                You describe the condition that matters. Megabat keeps watch until it becomes true.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.26 }}
+                className="mt-8 flex flex-col gap-3 sm:flex-row"
+              >
+                <button onClick={scrollToSection} className="w-fit">
+                  <span className="ui-button px-5 py-3.5" data-variant="primary">
+                    Watch The Flow
+                    <RiArrowDownLine className="h-4 w-4" />
+                  </span>
+                </button>
+                <Link href={MEGABAT_SITE_DOCS_PATH} className="no-underline">
+                  <span className="ui-button px-5 py-3.5" data-variant="secondary">
+                    Read The Docs
+                    <RiArrowRightLine className="h-4 w-4" />
+                  </span>
+                </Link>
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.24 }}
+              className="ui-panel space-y-6 p-6 sm:p-7"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="ui-kicker">Watch Loop</div>
+                  <h2 className="mt-3 font-display text-[1.8rem] leading-none text-foreground">
+                    One signal surface.
+                  </h2>
+                </div>
+                <span className="ui-chip" data-tone="accent">
+                  Active
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {previewSignals.map((signal, index) => (
+                  <motion.div
+                    key={signal.value}
+                    initial={{ opacity: 0, x: 18 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.32, delay: 0.34 + index * 0.08 }}
+                    className="ui-panel-ghost px-4 py-3"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="ui-chip" data-tone={signal.tone}>
+                        {signal.label}
+                      </span>
+                      <span className="text-[0.72rem] uppercase tracking-[0.18em] text-[color:var(--ink-muted)]">
+                        Listening
+                      </span>
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-secondary">{signal.value}</p>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="ui-panel-ghost p-4">
+                <div className="ui-kicker">Definition</div>
+                <div className="mt-4">
+                  <CodeBlock code={previewCode} language="typescript" showHeader={false} tone="light" />
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-      >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-6 h-10 border border-secondary/30 rounded-full flex items-start justify-center pt-2"
-        >
-          <div className="w-1 h-2 bg-[#ff6b35] rounded-full" />
-        </motion.div>
-      </motion.div>
     </section>
   );
 }

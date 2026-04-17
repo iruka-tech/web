@@ -33,9 +33,9 @@ export function TelegramConnectPanel({ initialStatus, returnTo }: TelegramConnec
     <Card className="space-y-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-secondary">Telegram</p>
-          <h2 className="mt-2 font-zen text-2xl">Telegram settings</h2>
-          <p className="mt-2 text-sm text-secondary">
+          <div className="ui-kicker">Telegram</div>
+          <h2 className="mt-4 font-display text-[1.85rem] leading-none text-foreground">Telegram settings</h2>
+          <p className="mt-3 text-sm text-secondary">
             {isLinked
               ? 'Telegram is ready.'
               : isTemplateFlow
@@ -44,8 +44,10 @@ export function TelegramConnectPanel({ initialStatus, returnTo }: TelegramConnec
           </p>
         </div>
         <div
-          className={`flex h-10 w-10 items-center justify-center rounded-sm ${
-            isLinked ? 'bg-emerald-500/10 text-emerald-600' : 'bg-[#229ED9]/10 text-[#229ED9]'
+          className={`flex h-11 w-11 items-center justify-center rounded-[0.45rem] border border-border ${
+            isLinked
+              ? 'bg-[color:color-mix(in_oklch,var(--signal-success)_10%,var(--surface-inset))] text-[color:var(--signal-success)]'
+              : 'bg-[color:color-mix(in_oklch,var(--signal-telegram)_10%,var(--surface-inset))] text-[color:var(--signal-telegram)]'
           }`}
         >
           {isLinked ? <RiCheckboxCircleLine className="h-5 w-5" /> : <RiSettings3Line className="h-5 w-5" />}
@@ -54,7 +56,7 @@ export function TelegramConnectPanel({ initialStatus, returnTo }: TelegramConnec
 
       {isLinked ? (
         <>
-          <div className="rounded-sm border border-emerald-500/30 bg-emerald-500/5 p-4">
+          <div className="ui-notice" data-tone="success">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-foreground">Telegram is connected</p>
@@ -81,7 +83,7 @@ export function TelegramConnectPanel({ initialStatus, returnTo }: TelegramConnec
         </>
       ) : (
         <>
-          <div className="rounded-sm border border-border/80 bg-background/50 p-3 text-sm text-secondary">
+          <div className="ui-panel-ghost p-3 text-sm text-secondary">
             Open {telegramBotLabel}, send <span className="font-mono text-foreground">/start</span>, then tap the connect button in Telegram. If you need to sign in first, Megabat will finish the link when you return.
           </div>
 

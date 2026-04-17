@@ -14,7 +14,7 @@ interface SignalRowMenuProps {
 export function SignalRowMenu({ signalId, signalName }: SignalRowMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const menuItemClassName = 'flex h-8 items-center gap-2 rounded-sm px-2 text-sm transition-colors';
+  const menuItemClassName = 'flex h-10 items-center gap-2 rounded-[0.45rem] px-3 text-sm transition-colors';
 
   useEffect(() => {
     if (!isOpen) {
@@ -57,10 +57,10 @@ export function SignalRowMenu({ signalId, signalName }: SignalRowMenuProps) {
       </Button>
 
       {isOpen ? (
-        <div className="absolute right-0 top-full z-20 mt-2 min-w-[160px] rounded-sm border border-border bg-background p-1 shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
+        <div className="ui-menu absolute right-0 top-full z-20 mt-2 min-w-[180px]">
           <Link
             href={`/signals/${signalId}`}
-            className={`${menuItemClassName} text-secondary no-underline hover:bg-hovered hover:text-foreground`}
+            className={`${menuItemClassName} ui-link no-underline hover:bg-hovered hover:text-foreground`}
             onClick={() => setIsOpen(false)}
           >
             <RiEyeLine className="h-4 w-4 shrink-0" />
@@ -71,7 +71,7 @@ export function SignalRowMenu({ signalId, signalName }: SignalRowMenuProps) {
             signalName={signalName}
             size="sm"
             label="Delete"
-            className={`${menuItemClassName} w-full justify-start border-transparent bg-transparent text-red-600 hover:border-transparent hover:bg-red-500/5`}
+            className={`${menuItemClassName} w-full justify-start border-transparent bg-transparent text-[color:color-mix(in_oklch,var(--signal-alert)_80%,white)] hover:border-transparent hover:bg-[color:color-mix(in_oklch,var(--signal-alert)_10%,transparent)]`}
           />
         </div>
       ) : null}

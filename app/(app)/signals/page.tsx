@@ -43,22 +43,31 @@ export default async function SignalsPage() {
       : 'Set up Telegram';
   const description = hasSignals
     ? telegramStatus.linked
-      ? 'Review the signals you already run and add a new one when needed.'
-      : 'Review the signals you already run. Finish Telegram setup before adding another.'
+      ? 'Review the signals already running and add another watch when needed.'
+      : 'Review what is already live. Telegram setup still gates managed template creation.'
     : telegramStatus.linked
-      ? 'You do not have any signals yet. Create one first, then this page becomes the inventory.'
+      ? 'You do not have any signals yet. Create one and this page becomes the inventory.'
       : 'Connect Telegram first, then return here to start your first signal template.';
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[16px] border border-border bg-surface p-6 sm:p-8">
-        <div className="max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.3em] text-secondary">Signals</p>
-          <h1 className="mt-3 font-zen text-3xl sm:text-4xl">Signal workspace</h1>
-          <p className="mt-3 text-secondary">{description}</p>
+      <section className="ui-hero px-6 py-7 sm:px-8 sm:py-8">
+        <div className="relative z-10 max-w-3xl">
+          <div className="ui-kicker">Signals</div>
+          <h1 className="ui-page-title mt-4">Signal workspace</h1>
+          <p className="ui-copy mt-4">{description}</p>
         </div>
 
-        <div className="mt-6">
+        <div className="relative z-10 mt-7 flex flex-wrap gap-3">
+          <span className="ui-chip" data-tone="accent">
+            {orderedSignals.length} active definitions
+          </span>
+          <span className="ui-chip" data-tone={telegramStatus.linked ? 'success' : 'telegram'}>
+            {telegramStatus.linked ? 'Managed delivery ready' : 'Managed delivery unavailable'}
+          </span>
+        </div>
+
+        <div className="relative z-10 mt-7">
           <Link href={createSignalHref} className="no-underline">
             <Button size="lg" className="gap-2">
               <RiAddLine className="h-5 w-5" />
@@ -69,15 +78,17 @@ export default async function SignalsPage() {
       </section>
 
       {signalsError ? (
-        <Card className="border-amber-500/30 bg-amber-500/5">
-          <p className="text-foreground">Signal inventory is unavailable.</p>
-          <p className="mt-2 text-sm text-secondary">{signalsError.message}</p>
+        <Card>
+          <div className="ui-notice" data-tone="danger">
+            <p className="text-foreground">Signal inventory is unavailable.</p>
+            <p className="mt-2 text-sm">{signalsError.message}</p>
+          </div>
         </Card>
       ) : hasSignals ? (
         <Card className="space-y-5">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-secondary">Inventory</p>
-            <h2 className="mt-2 font-zen text-2xl">Registered signals</h2>
+            <div className="ui-kicker">Inventory</div>
+            <h2 className="mt-4 font-display text-[1.9rem] leading-none text-foreground">Registered signals</h2>
           </div>
           <div className="divide-y divide-border/70">
             {orderedSignals.map((signal) => (
@@ -86,14 +97,19 @@ export default async function SignalsPage() {
           </div>
         </Card>
       ) : (
-        <Card className="rounded-[16px] border-dashed text-center">
-          <p className="font-zen text-2xl text-foreground">{telegramStatus.linked ? 'No signals yet' : 'Telegram required first'}</p>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-secondary">
-            {telegramStatus.linked
-              ? 'Create a signal first. Template choices and configuration live in the builder, not on this inventory page.'
-              : 'Connect Telegram first, then return here to choose a template and create your first signal.'}
-          </p>
-          <div className="mt-6">
+        <Card className="text-center">
+          <div className="mx-auto max-w-2xl">
+            <div className="ui-kicker justify-center">Empty Inventory</div>
+            <h2 className="mt-4 font-display text-[2rem] leading-none text-foreground">
+              {telegramStatus.linked ? 'No signals yet' : 'Telegram required first'}
+            </h2>
+            <p className="ui-copy mx-auto mt-4">
+              {telegramStatus.linked
+                ? 'Create a signal first. The builder owns template choice and configuration so this page can stay focused on inventory and review.'
+                : 'Connect Telegram once, then return here to choose a template and create the first managed signal.'}
+            </p>
+          </div>
+          <div className="mt-7">
             <Link href={createSignalHref} className="no-underline">
               <Button>{telegramStatus.linked ? 'Create first signal' : 'Set up Telegram'}</Button>
             </Link>

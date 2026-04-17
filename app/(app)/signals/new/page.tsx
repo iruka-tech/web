@@ -46,14 +46,14 @@ export default async function NewSignalPage({ searchParams }: NewSignalPageProps
         <Card className="space-y-5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#ff6b35]/10 text-[#ff6b35]">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[0.45rem] border border-border bg-[color:color-mix(in_oklch,var(--signal-copper)_10%,var(--surface-inset))] text-[color:var(--signal-copper)]">
                 <RiUser3Line className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.25em] text-secondary">
+                <p className="ui-stat-label">
                   {humanPersona.eyebrow}
                 </p>
-                <h2 className="mt-1 font-zen text-2xl">{humanPersona.title}</h2>
+                <h2 className="mt-3 font-display text-[1.75rem] leading-none text-foreground">{humanPersona.title}</h2>
               </div>
             </div>
             <HelpHint text={humanPersona.helpText} align="right" />
@@ -74,14 +74,14 @@ export default async function NewSignalPage({ searchParams }: NewSignalPageProps
         <Card className="space-y-5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#ff6b35]/10 text-[#ff6b35]">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[0.45rem] border border-border bg-[color:color-mix(in_oklch,var(--signal-copper)_10%,var(--surface-inset))] text-[color:var(--signal-copper)]">
                 <RiRobot2Line className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.25em] text-secondary">
+                <p className="ui-stat-label">
                   {agentPersona.eyebrow}
                 </p>
-                <h2 className="mt-1 font-zen text-2xl">{agentPersona.title}</h2>
+                <h2 className="mt-3 font-display text-[1.75rem] leading-none text-foreground">{agentPersona.title}</h2>
               </div>
             </div>
             <HelpHint text={agentPersona.helpText} align="right" />

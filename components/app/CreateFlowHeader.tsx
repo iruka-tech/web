@@ -6,11 +6,11 @@ interface CreateFlowHeaderProps {
 
 export function CreateFlowHeader({ eyebrow, title, summary }: CreateFlowHeaderProps) {
   return (
-    <section className="rounded-[16px] border border-border bg-surface p-6 sm:p-8">
-      <div className="max-w-3xl">
-        <p className="text-xs uppercase tracking-[0.3em] text-secondary">{eyebrow}</p>
-        <h1 className="mt-3 font-zen text-3xl sm:text-4xl">{title}</h1>
-        {summary ? <p className="mt-3 text-secondary">{summary}</p> : null}
+    <section className="ui-hero px-6 py-7 sm:px-8 sm:py-9">
+      <div className="relative z-10 max-w-3xl">
+        <div className="ui-kicker">{eyebrow}</div>
+        <h1 className="ui-page-title mt-4">{title}</h1>
+        {summary ? <p className="ui-copy mt-4">{summary}</p> : null}
       </div>
     </section>
   );

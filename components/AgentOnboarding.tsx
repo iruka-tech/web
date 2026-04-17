@@ -1,103 +1,47 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { RiRobot2Line, RiCheckLine, RiFileCopyLine } from 'react-icons/ri';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { RiCheckLine, RiFileCopyLine, RiRobot2Line } from 'react-icons/ri';
 import { CodeBlock } from './ui/CodeBlock';
 import { MEGABAT_ARCHITECTURE_DOCS_URL } from '@/lib/megabat-links';
 
-const step1Code = `# megabat-skill.md
-
-You have access to Megabat for blockchain monitoring.
-
-## Capabilities
-- Monitor DeFi positions for changes
-- Track market state aliases and computed refs (utilization, borrow, supply)
-- Query raw event presets or custom ABI events with "type": "raw-events"
-- Receive webhooks when conditions trigger
-
-## Quick Setup
-To monitor a market, create a signal:
-
-POST https://your-megabat-host/api/v1/signals
-X-API-Key: YOUR_API_KEY
-
-{
-  "name": "High Utilization",
-  "definition": {
-    "scope": { "chains": [1], "markets": ["0xMarket"], "protocol": "morpho" },
-    "window": { "duration": "1h" },
-    "conditions": [{
-      "type": "threshold",
-      "metric": "Morpho.Market.utilization",
-      "operator": ">",
-      "value": 0.9,
-      "chain_id": 1,
-      "market_id": "0xMarket"
-    }]
+const steps = [
+  {
+    number: 1,
+    title: 'Teach the agent the surface',
+    description: 'Give the agent the Megabat primitives and DSL shape it can author against.',
+    code: `## Capabilities
+- Monitor open data sources for changes
+- Track market state aliases
+- Query raw event presets
+- Receive structured webhooks`,
+    language: 'markdown',
+    filename: 'megabat-skill.md',
   },
-  "webhook_url": "YOUR_WEBHOOK_URL",
-  "cooldown_minutes": 5,
-  "repeat_policy": { "mode": "cooldown" }
-}`;
-
-const step2Code = `curl -X POST https://your-megabat-host/api/v1/signals \\
+  {
+    number: 2,
+    title: 'Create the signal',
+    description: 'Post one definition to Megabat instead of building bespoke watcher loops.',
+    code: `curl -X POST https://your-megabat-host/api/v1/signals \\
   -H "X-API-Key: $MEGABAT_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Swap Volume Burst",
-    "definition": {
-      "scope": { "chains": [1], "protocol": "all" },
-      "window": { "duration": "30m" },
-      "conditions": [{
-        "type": "raw-events",
-        "aggregation": "sum",
-        "field": "amount0_abs",
-        "operator": ">",
-        "value": 500000,
-        "chain_id": 1,
-        "event": {
-          "kind": "swap",
-          "protocols": ["uniswap_v2", "uniswap_v3"],
-          "contract_addresses": ["0xPoolA", "0xPoolB"]
-        },
-        "filters": [{ "field": "recipient", "op": "eq", "value": "0xReceiver" }]
-      }]
-    },
-    "webhook_url": "https://your-agent.com/webhook",
-    "cooldown_minutes": 10,
-    "repeat_policy": { "mode": "post_first_alert_snooze", "snooze_minutes": 1440 }
-  }'`;
-
-const step3Code = `# When Megabat triggers, you receive:
-{
-  "signal_id": "sig_abc123",
-  "signal_name": "Swap Volume Burst",
-  "triggered_at": "2026-02-02T15:30:00Z",
-  "scope": {
-    "chains": [1],
-    "addresses": ["0xReceiver"]
+  -H "Content-Type: application/json"`,
+    language: 'bash',
+    filename: 'create-signal.sh',
   },
-  "conditions_met": [
-    {
-      "conditionIndex": 0,
-      "conditionType": "simple",
-      "triggered": true,
-      "summary": "500000 > 100000"
-    }
-  ],
-  "context": {
-    "app_user_id": "user_123",
-    "address": "0xReceiver",
-    "chain_id": 1
-  }
-}
-
-# Your agent can then:
-→ Alert the user via Telegram/Discord
-→ Execute on-chain transactions
-→ Log to monitoring systems
-→ Trigger other automations`;
+  {
+    number: 3,
+    title: 'React to delivery',
+    description: 'Use the webhook payload as the execution surface for downstream automation.',
+    code: `{
+  "signal_id": "sig_abc123",
+  "conditions_met": [],
+  "context": { "chain_id": 1 }
+}`,
+    language: 'json',
+    filename: 'webhook-response.json',
+  },
+];
 
 export function AgentOnboarding() {
   const [copiedStep, setCopiedStep] = useState<number | null>(null);
@@ -108,132 +52,63 @@ export function AgentOnboarding() {
     setTimeout(() => setCopiedStep(null), 2000);
   };
 
-  const steps = [
-    {
-      number: 1,
-      title: 'Add Megabat to your agent skills',
-      description: 'Include the Megabat skill in your agent\'s capabilities. This teaches your agent how to create and manage blockchain monitors.',
-      code: step1Code,
-      language: 'markdown',
-      filename: 'megabat-skill.md',
-    },
-    {
-      number: 2,
-      title: 'Create your first signal',
-      description: 'Your agent calls the Megabat API to register a monitoring condition. Use state aliases for common reads or raw-event presets when you need direct decoded logs.',
-      code: step2Code,
-      language: 'bash',
-      filename: 'create-signal.sh',
-    },
-    {
-      number: 3,
-      title: 'React to events',
-      description: 'When conditions trigger, Megabat sends a webhook to your agent. Take action automatically—no polling required.',
-      code: step3Code,
-      language: 'json',
-      filename: 'webhook-response.md',
-    },
-  ];
-
   return (
-    <section id="onboarding" className="relative py-24 md:py-32">
-      {/* Background */}
-      <div className="absolute inset-0 bg-surface" />
-      <div
-        className="absolute inset-0 bg-line-grid opacity-30 pointer-events-none"
-        aria-hidden="true"
-      />
-
-      <div className="page-gutter relative z-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <RiRobot2Line className="w-6 h-6 text-[#ff6b35]" />
-            <span className="text-sm font-medium text-[#ff6b35]">Agent Integration Guide</span>
-          </div>
-          <h2 className="font-zen text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Get Your Agent <span className="text-[#ff6b35]">Watching in Minutes</span>
-          </h2>
-          <p className="text-secondary text-lg max-w-2xl mx-auto">
-            Three steps to give your AI agent eyes on the blockchain. No infrastructure setup, no complex indexers.
+    <section id="onboarding" className="relative py-16 md:py-24">
+      <div className="page-gutter">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="ui-kicker justify-center">Agent Integration</div>
+          <h2 className="ui-section-title mt-5">Three clear handoff steps for agent-based monitoring.</h2>
+          <p className="ui-copy mx-auto mt-4">
+            The integration flow should be teachable, inspectable, and deliberate. No extra ornamental onboarding layer is needed.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Steps */}
-        <div className="space-y-12 max-w-4xl mx-auto">
+        <div className="mx-auto mt-10 max-w-5xl space-y-4">
           {steps.map((step, index) => (
             <motion.div
               key={step.number}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative"
+              transition={{ duration: 0.35, delay: index * 0.06 }}
+              className="ui-panel grid gap-5 px-5 py-5 lg:grid-cols-[84px_minmax(0,0.72fr)_minmax(0,1fr)] lg:items-start"
             >
-              {/* Step indicator */}
-              <div className="flex items-start gap-6">
-                <div className="flex-shrink-0 w-12 h-12 bg-[#ff6b35] rounded-full flex items-center justify-center text-white font-bold text-lg">
-                  {step.number}
-                </div>
-                <div className="flex-1 pt-2">
-                  <h3 className="font-zen text-xl font-bold mb-2">{step.title}</h3>
-                  <p className="text-secondary mb-4">{step.description}</p>
-                  
-                  {/* Code block with copy button */}
-                  <div className="relative group">
-                    <button
-                      onClick={() => copyToClipboard(step.code, step.number)}
-                      className="absolute top-3 right-3 z-10 p-2 rounded-md bg-background/50 hover:bg-background border border-border opacity-0 group-hover:opacity-100 transition-opacity"
-                      aria-label="Copy code"
-                    >
-                      {copiedStep === step.number ? (
-                        <RiCheckLine className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <RiFileCopyLine className="w-4 h-4 text-secondary" />
-                      )}
-                    </button>
-                    <CodeBlock 
-                      code={step.code} 
-                      language={step.language}
-                      filename={step.filename}
-                    />
-                  </div>
-                </div>
+              <div className="flex items-center gap-3 lg:flex-col lg:items-start">
+                <span className="ui-chip" data-tone="accent">
+                  0{step.number}
+                </span>
+                <RiRobot2Line className="h-5 w-5 text-[color:var(--signal-copper)]" />
               </div>
 
-              {/* Connector line */}
-              {index < steps.length - 1 && (
-                <div className="absolute left-6 top-14 bottom-0 w-px bg-gradient-to-b from-[#ff6b35]/50 to-transparent -translate-x-1/2" />
-              )}
+              <div>
+                <h3 className="font-display text-[1.5rem] leading-none text-foreground">{step.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-secondary">{step.description}</p>
+              </div>
+
+              <div className="relative">
+                <button
+                  onClick={() => copyToClipboard(step.code, step.number)}
+                  className="ui-button absolute right-3 top-3 z-10 px-3 py-2"
+                  data-variant="secondary"
+                  aria-label="Copy code"
+                  type="button"
+                >
+                  {copiedStep === step.number ? <RiCheckLine className="h-4 w-4" /> : <RiFileCopyLine className="h-4 w-4" />}
+                </button>
+                <CodeBlock code={step.code} language={step.language} filename={step.filename} tone="light" />
+              </div>
             </motion.div>
           ))}
         </div>
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-center mt-16"
-        >
-          <p className="text-secondary mb-4">Ready to give your agent superpowers?</p>
-          <a
-            href={MEGABAT_ARCHITECTURE_DOCS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#ff6b35] text-white font-medium rounded-md hover:opacity-90 transition-opacity no-underline"
-          >
-            <RiRobot2Line className="w-5 h-5" />
-            Read Full Agent Docs
+        <div className="mt-8 text-center">
+          <a href={MEGABAT_ARCHITECTURE_DOCS_URL} target="_blank" rel="noopener noreferrer" className="no-underline">
+            <span className="ui-button px-5 py-3.5" data-variant="primary">
+              <RiRobot2Line className="h-5 w-5" />
+              Read Full Agent Docs
+            </span>
           </a>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -294,8 +294,8 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
 
   return (
     <div className="space-y-6">
-      <div className="rounded-md border border-border bg-surface p-4">
-        <p className="mb-2 text-xs uppercase tracking-[0.3em] text-secondary">Template</p>
+      <div className="ui-panel p-4">
+        <p className="ui-stat-label mb-2">Template</p>
         <p className="mb-4 max-w-3xl text-sm text-secondary">Pick a template family, then fill the exact inputs Megabat should watch.</p>
 
         <div className="space-y-4">
@@ -310,11 +310,8 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
                 {SIGNAL_TEMPLATE_PRESETS.filter((option) => group.kinds.includes(option.kind)).map((option) => (
                   <button
                     key={option.id}
-                    className={`rounded-sm border px-3 py-2 text-sm transition-colors ${
-                      selectedPreset === option.id
-                        ? 'border-[#1f2328] bg-[#1f2328]/4 text-foreground'
-                        : 'border-border text-secondary hover:bg-hovered hover:text-foreground'
-                    }`}
+                    data-active={selectedPreset === option.id}
+                    className="ui-option px-3 py-2 text-sm"
                     onClick={() => setSelectedPreset(option.id)}
                     type="button"
                   >
@@ -329,137 +326,137 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
 
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] gap-6">
         <SignalPresetCard title={selectedPresetConfig.title} description={selectedPresetConfig.description} icon={presetIcons[selectedPreset]}>
-          <p className="text-xs uppercase tracking-[0.25em] text-secondary">{selectedPresetConfig.accent}</p>
+          <p className="ui-stat-label">{selectedPresetConfig.accent}</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <label className="flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field">
               Signal name
               <input
                 type="text"
                 value={formState.name}
                 onChange={(event) => updateField('name', event.target.value)}
                 placeholder="Optional custom name"
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field">
               Chain ID
               <input
                 type="number"
                 min="1"
                 value={formState.chainId}
                 onChange={(event) => updateField('chainId', event.target.value)}
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
             {isMorphoWhalePreset ? (
               <>
-                <label className="flex flex-col gap-2 text-sm text-secondary">
+                <label className="ui-field">
                   Morpho market ID
                   <input
                     type="text"
                     value={formState.marketId}
                     onChange={(event) => updateField('marketId', event.target.value)}
                     placeholder="0xb8fc70e82bc5... or full Monarch URL"
-                    className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                    className="ui-input"
                   />
-                  <span className="text-xs text-secondary">
+                  <span className="ui-helper">
                     Chain is set separately. If you paste a Monarch market URL, Megabat extracts and stores only the final market id.
                   </span>
                 </label>
 
-                <label className="flex flex-col gap-2 text-sm text-secondary">
+                <label className="ui-field">
                   Wallets required
                   <input
                     type="number"
                     min="1"
                     value={formState.requiredCount}
                     onChange={(event) => updateField('requiredCount', event.target.value)}
-                    className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                    className="ui-input"
                   />
                 </label>
 
-                <label className="flex flex-col gap-2 text-sm text-secondary">
+                <label className="ui-field">
                   Supply drop (%)
                   <input
                     type="number"
                     min="1"
                     value={formState.dropPercent}
                     onChange={(event) => updateField('dropPercent', event.target.value)}
-                    className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                    className="ui-input"
                   />
                 </label>
               </>
             ) : isErc4626WithdrawPreset ? (
               <>
-                <label className="flex flex-col gap-2 text-sm text-secondary">
+                <label className="ui-field">
                   Vault contract
                   <input
                     type="text"
                     value={formState.vaultContract}
                     onChange={(event) => updateField('vaultContract', event.target.value)}
                     placeholder="0x1111111111111111111111111111111111111111"
-                    className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground font-mono"
+                    className="ui-input font-mono"
                   />
-                  <span className="text-xs text-secondary">
+                  <span className="ui-helper">
                     Megabat reads `balanceOf(owner)` on this ERC-4626 vault through archive RPC.
                   </span>
                 </label>
 
-                <label className="flex flex-col gap-2 text-sm text-secondary">
+                <label className="ui-field">
                   Owners required
                   <input
                     type="number"
                     min="1"
                     value={formState.requiredCount}
                     onChange={(event) => updateField('requiredCount', event.target.value)}
-                    className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                    className="ui-input"
                   />
                 </label>
 
-                <label className="flex flex-col gap-2 text-sm text-secondary">
+                <label className="ui-field">
                   Share drop (%)
                   <input
                     type="number"
                     min="1"
                     value={formState.dropPercent}
                     onChange={(event) => updateField('dropPercent', event.target.value)}
-                    className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                    className="ui-input"
                   />
-                  <span className="text-xs text-secondary">
+                  <span className="ui-helper">
                     Triggers when each tracked owner reduces shares by at least this percentage over the window.
                   </span>
                 </label>
               </>
             ) : (
               <>
-                <label className="flex flex-col gap-2 text-sm text-secondary">
+                <label className="ui-field">
                   Token contract
                   <input
                     type="text"
                     value={formState.tokenContract}
                     onChange={(event) => updateField('tokenContract', event.target.value)}
                     placeholder="0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-                    className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground font-mono"
+                    className="ui-input font-mono"
                   />
-                  <span className="text-xs text-secondary">Use the ERC-20 contract that emits the `Transfer` logs you care about.</span>
+                  <span className="ui-helper">Use the ERC-20 contract that emits the `Transfer` logs you care about.</span>
                 </label>
 
-                <label className="flex flex-col gap-2 text-sm text-secondary">
+                <label className="ui-field">
                   Watched address
                   <input
                     type="text"
                     value={formState.watchedAddress}
                     onChange={(event) => updateField('watchedAddress', event.target.value)}
                     placeholder="0x1111111111111111111111111111111111111111"
-                    className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground font-mono"
+                    className="ui-input font-mono"
                   />
-                  <span className="text-xs text-secondary">This can be a vault, router, treasury, adapter, or any wallet address.</span>
+                  <span className="ui-helper">This can be a vault, router, treasury, adapter, or any wallet address.</span>
                 </label>
 
-                <label className="flex flex-col gap-2 text-sm text-secondary">
+                <label className="ui-field">
                   Transfer threshold (base units)
                   <input
                     type="number"
@@ -467,20 +464,20 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
                     step="1"
                     value={formState.amountThreshold}
                     onChange={(event) => updateField('amountThreshold', event.target.value)}
-                    className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                    className="ui-input"
                   />
                 </label>
               </>
             )}
 
-            <label className="flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field">
               Window
               <input
                 type="text"
                 value={formState.windowDuration}
                 onChange={(event) => updateField('windowDuration', event.target.value)}
                 placeholder="24h"
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
@@ -493,48 +490,48 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
               onSnoozeMinutesChange={(value) => updateField('snoozeMinutes', value)}
             />
 
-            <label className="flex flex-col gap-2 text-sm text-secondary sm:col-span-2">
+            <label className="ui-field sm:col-span-2">
               Description
               <input
                 type="text"
                 value={formState.description}
                 onChange={(event) => updateField('description', event.target.value)}
                 placeholder="Optional description shown in Megabat"
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
           </div>
 
           {isMorphoWhalePreset ? (
-            <label className="mt-4 flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field mt-4">
               Wallet addresses
               <textarea
                 value={formState.whaleAddresses}
                 onChange={(event) => updateField('whaleAddresses', event.target.value)}
                 placeholder={`0x1111111111111111111111111111111111111111\n0x2222222222222222222222222222222222222222\n0x3333333333333333333333333333333333333333`}
                 rows={7}
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground font-mono"
+                className="ui-textarea font-mono"
               />
-              <span className="text-xs text-secondary">
+              <span className="ui-helper">
                 One address per line or comma-separated. Use the suppliers you care about most.
               </span>
             </label>
           ) : isErc4626WithdrawPreset ? (
-            <label className="mt-4 flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field mt-4">
               Owner addresses
               <textarea
                 value={formState.ownerAddresses}
                 onChange={(event) => updateField('ownerAddresses', event.target.value)}
                 placeholder={`0x1111111111111111111111111111111111111111\n0x2222222222222222222222222222222222222222\n0x3333333333333333333333333333333333333333`}
                 rows={7}
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground font-mono"
+                className="ui-textarea font-mono"
               />
-              <span className="text-xs text-secondary">
+              <span className="ui-helper">
                 One owner per line or comma-separated. Megabat injects each owner into the group condition at evaluation time.
               </span>
             </label>
           ) : (
-            <div className="mt-4 rounded-sm border border-border/80 bg-background/50 p-4 text-sm text-secondary">
+            <div className="ui-panel-ghost mt-4 p-4 text-sm text-secondary">
               This template uses Megabat’s `raw-events` ERC-20 transfer preset. Thresholds are compared against token base units, not formatted token decimals. It measures gross flow only, not true net balance change. The broader raw-event catalog also includes approvals, ERC-721 events, ERC-4626 deposits and withdrawals, swap presets, and `contract_event` for custom ABI signatures.
             </div>
           )}
@@ -543,7 +540,7 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
             <p className="text-sm text-secondary">Template signals use Telegram delivery. Connect Telegram before creating one.</p>
           ) : null}
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error ? <p className="ui-notice text-sm" data-tone="danger">{error}</p> : null}
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Button onClick={handleSubmit} disabled={isSubmitting || Boolean(previewError) || !telegramLinked}>
@@ -555,37 +552,37 @@ export function SignalBuilderForm({ initialPreset = 'whale-exit-trio', telegramL
           </div>
         </SignalPresetCard>
 
-        <div className="rounded-md border border-border bg-surface p-6 space-y-4">
+        <div className="ui-panel space-y-4 p-6">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-secondary mb-2">Preview</p>
-            <h3 className="font-zen text-xl">{previewTitle}</h3>
-            <p className="text-sm text-secondary mt-2">{previewDescription}</p>
+            <p className="ui-stat-label mb-2">Preview</p>
+            <h3 className="font-display text-[1.75rem] leading-none text-foreground">{previewTitle}</h3>
+            <p className="mt-3 text-sm text-secondary">{previewDescription}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             {previewStats.map((stat) => (
-              <div key={stat.label} className="rounded-sm border border-border/80 bg-background/50 p-3">
-                <p className="text-xs uppercase tracking-[0.25em] text-secondary">{stat.label}</p>
-                <p className="font-zen text-xl mt-2 break-all">{stat.value}</p>
+              <div key={stat.label} className="ui-stat">
+                <p className="ui-stat-label">{stat.label}</p>
+                <p className="ui-stat-value break-all">{stat.value}</p>
               </div>
             ))}
           </div>
 
           {!previewError && previewDefinition && previewPayload ? (
             <>
-              <div className="rounded-sm border border-border/80 bg-background/50 p-4">
+              <div className="ui-panel-ghost p-4">
                 <p className="text-sm text-secondary">{describeSignalDefinition(previewPayload.definition)}</p>
               </div>
               <CodeBlock
                 code={previewDefinition}
                 language="json"
                 filename="signal-preview.json"
-                tone="dark"
+                tone="light"
                 showLineNumbers
               />
             </>
           ) : (
-            <div className="rounded-sm border border-red-500/30 bg-red-500/5 p-4 text-sm text-red-400">
+            <div className="ui-notice text-sm" data-tone="danger">
               {previewError ?? 'Fill in the form to generate a template preview.'}
             </div>
           )}

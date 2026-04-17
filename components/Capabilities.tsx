@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { SectionTag } from './ui/SectionTag';
-import { GridDivider } from './ui/GridDivider';
 import { CodeBlock } from './ui/CodeBlock';
 
 type UseCase = {
@@ -21,51 +20,28 @@ const useCases: UseCase[] = [
     title: 'Vault withdrawal cluster',
     summary: 'Contract-scoped state monitoring for coordinated ERC-4626 share withdrawals.',
     details: [
-      '3 of 5 tracked owners reduce vault shares by at least 1e18 over 7 days.',
-      'Uses the `ERC4626.Position.shares` state alias instead of raw events.',
-      'Large integer thresholds can be authored as decimal strings.',
+      'Watch 3 of 5 tracked owners over one window.',
+      'Use stable state aliases instead of rebuilding plumbing.',
+      'Author large integer thresholds as decimal strings when needed.',
     ],
     code: `{
   "name": "Vault withdrawal cluster",
   "definition": {
-    "scope": {
-      "chains": [1],
-      "addresses": [
-        "0x1111111111111111111111111111111111111111",
-        "0x2222222222222222222222222222222222222222",
-        "0x3333333333333333333333333333333333333333",
-        "0x4444444444444444444444444444444444444444",
-        "0x5555555555555555555555555555555555555555"
-      ],
-      "protocol": "all"
-    },
+    "scope": { "chains": [1], "protocol": "all" },
     "conditions": [
       {
         "type": "group",
-        "addresses": [
-          "0x1111111111111111111111111111111111111111",
-          "0x2222222222222222222222222222222222222222",
-          "0x3333333333333333333333333333333333333333",
-          "0x4444444444444444444444444444444444444444",
-          "0x5555555555555555555555555555555555555555"
-        ],
         "requirement": { "count": 3, "of": 5 },
-        "window": { "duration": "1d" },
-        "logic": "AND",
         "conditions": [
           {
             "type": "change",
             "metric": "ERC4626.Position.shares",
             "direction": "decrease",
-            "by": { "absolute": "1000000000000000000" },
-            "window": { "duration": "7d" },
-            "chain_id": 1,
-            "contract_address": "0xVaultAddress"
+            "by": { "absolute": "1000000000000000000" }
           }
         ]
       }
     ],
-    "logic": "AND",
     "window": { "duration": "7d" }
   }
 }`,
@@ -73,20 +49,16 @@ const useCases: UseCase[] = [
   {
     id: 'treasury-outflow',
     title: 'Treasury outflow',
-    summary: 'A raw-event monitor for large ERC-20 outflows from one treasury or vault.',
+    summary: 'Raw-event monitoring for large ERC-20 movement out of one treasury or vault.',
     details: [
-      'Scan decoded ERC-20 `Transfer` logs directly instead of relying on a derived metric.',
-      'Filter to one sender address and one token contract.',
-      'Trigger when gross outflow over the window exceeds a fixed threshold.',
+      'Read decoded Transfer logs directly.',
+      'Filter to one sender and one token.',
+      'Trigger only when gross outflow crosses the threshold.',
     ],
     code: `{
   "name": "Treasury outflow",
   "definition": {
-    "scope": {
-      "chains": [1],
-      "addresses": ["0x1111111111111111111111111111111111111111"],
-      "protocol": "all"
-    },
+    "scope": { "chains": [1], "protocol": "all" },
     "conditions": [
       {
         "type": "raw-events",
@@ -94,22 +66,9 @@ const useCases: UseCase[] = [
         "field": "value",
         "operator": ">=",
         "value": 5000000,
-        "window": { "duration": "2h" },
-        "chain_id": 1,
-        "event": {
-          "kind": "erc20_transfer",
-          "contract_addresses": ["0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"]
-        },
-        "filters": [
-          {
-            "field": "from",
-            "op": "eq",
-            "value": "0x1111111111111111111111111111111111111111"
-          }
-        ]
+        "filters": [{ "field": "from", "op": "eq", "value": "0xTreasury" }]
       }
     ],
-    "logic": "AND",
     "window": { "duration": "2h" }
   }
 }`,
@@ -121,96 +80,79 @@ export function Capabilities() {
   const activeUseCase = useCases.find((useCase) => useCase.id === activeUseCaseId) ?? useCases[0];
 
   return (
-    <section className="relative">
-      <GridDivider rows={4} />
-
-      <div className="relative py-16 md:py-24 bg-surface">
-        <div
-          className="absolute inset-0 bg-line-grid opacity-40 pointer-events-none"
-          aria-hidden="true"
-        />
-
-        <div className="page-gutter relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mb-12"
-          >
+    <section className="relative py-16 md:py-24">
+      <div className="page-gutter">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)]">
+          <div className="ui-panel p-6 sm:p-7">
             <SectionTag>Detection Patterns</SectionTag>
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl mt-4 mb-3">
-              Two concrete patterns <span className="text-[#ff6b35]">Megabat can detect</span>
-            </h2>
-            <p className="text-secondary max-w-2xl">
-              Click a use case to inspect how the DSL turns subtle but important movement into a signal Megabat can keep watching for.
+            <h2 className="ui-section-title mt-5">Megabat can watch subtle movement without collapsing back to one-off infra.</h2>
+            <p className="ui-copy mt-4">
+              Pick a concrete pattern to inspect how the DSL turns a noisy chain surface into one durable watch.
             </p>
-          </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(300px,0.78fr)_minmax(0,1.22fr)] gap-6 items-start">
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
-                {useCases.map((useCase, index) => {
-                  const isActive = useCase.id === activeUseCaseId;
+            <div className="mt-8 space-y-3">
+              {useCases.map((useCase, index) => {
+                const isActive = useCase.id === activeUseCaseId;
 
-                  return (
-                    <motion.button
-                      key={useCase.id}
-                      type="button"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.08 }}
-                      onClick={() => setActiveUseCaseId(useCase.id)}
-                      className={cn(
-                        'w-full rounded-md border px-4 py-3 text-left transition-colors',
-                        isActive
-                          ? 'border-[#1f2328] bg-background text-foreground'
-                          : 'border-border bg-background/70 text-secondary hover:border-[#ff6b35]/20 hover:text-foreground'
-                      )}
-                    >
-                      <p className="text-sm text-foreground">{useCase.title}</p>
-                    </motion.button>
-                  );
-                })}
-              </div>
+                return (
+                  <motion.button
+                    key={useCase.id}
+                    type="button"
+                    initial={{ opacity: 0, y: 18 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.35, delay: index * 0.08 }}
+                    onClick={() => setActiveUseCaseId(useCase.id)}
+                    data-active={isActive}
+                    className={cn('ui-option w-full px-4 py-4 text-left', isActive && 'text-foreground')}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="ui-kicker">{isActive ? 'Selected Pattern' : 'Pattern'}</div>
+                        <p className="mt-3 font-display text-[1.35rem] leading-none text-foreground">
+                          {useCase.title}
+                        </p>
+                        <p className="mt-3 text-sm leading-relaxed text-[color:var(--ink-primary)]">{useCase.summary}</p>
+                      </div>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
 
-              <motion.div
-                key={activeUseCase.id + '-details'}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className="rounded-md border border-border bg-background/80 p-5"
-              >
-                <p className="text-sm text-foreground">{activeUseCase.title}</p>
-                <p className="mt-2 text-sm text-secondary leading-relaxed">{activeUseCase.summary}</p>
-                <div className="mt-4 space-y-2">
-                  {activeUseCase.details.map((detail) => (
-                    <p key={detail} className="text-sm text-secondary leading-relaxed">
-                      {detail}
-                    </p>
-                  ))}
-                </div>
-              </motion.div>
+          <motion.div
+            key={activeUseCase.id}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.24 }}
+            className="ui-panel p-6 sm:p-7"
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="ui-chip" data-tone="accent">
+                {activeUseCase.title}
+              </span>
+              <span className="ui-chip">DSL Preview</span>
             </div>
 
-            <motion.div
-              key={activeUseCase.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="rounded-md border border-border bg-background/80 p-4 sm:p-5"
-            >
+            <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,0.64fr)_minmax(0,1fr)]">
+              <div className="space-y-3">
+                {activeUseCase.details.map((detail) => (
+                  <div key={detail} className="ui-panel-ghost px-4 py-3">
+                    <p className="text-sm leading-relaxed text-[color:var(--ink-primary)]">{detail}</p>
+                  </div>
+                ))}
+              </div>
+
               <CodeBlock
                 code={activeUseCase.code}
                 language="json"
                 filename={`${activeUseCase.id}.json`}
                 showLineNumbers
                 tone="light"
-                className="rounded-md"
               />
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

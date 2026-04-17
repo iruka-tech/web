@@ -2,199 +2,171 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'Megabat - The sensing layer for DeFi agents';
+export const alt = 'Megabat - Open data signals for smarter agents';
 export const size = {
   width: 1200,
   height: 630,
 };
 export const contentType = 'image/png';
 
-export default async function Image() {
-  return new ImageResponse(
-    (
+function SocialImage() {
+  return (
+    <div
+      style={{
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        backgroundColor: '#f7f1e8',
+        color: '#43362d',
+        padding: '48px',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
       <div
         style={{
-          height: '100%',
+          position: 'absolute',
+          inset: 0,
+          backgroundImage:
+            'linear-gradient(to right, rgba(146, 124, 104, 0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(146, 124, 104, 0.12) 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }}
+      />
+
+      <div
+        style={{
+          position: 'absolute',
+          inset: '0 auto auto 0',
           width: '100%',
+          height: '150px',
+          backgroundColor: 'rgba(175, 139, 101, 0.08)',
+        }}
+      />
+
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
           display: 'flex',
-          backgroundColor: '#16181a',
-          backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(255, 107, 53, 0.12) 0%, transparent 45%), radial-gradient(circle at 80% 70%, rgba(255, 159, 28, 0.08) 0%, transparent 40%)',
-          padding: '48px',
+          width: '100%',
+          gap: '28px',
         }}
       >
-        {/* Grid pattern */}
         <div
           style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
-          }}
-        />
-
-        {/* Left side - Branding */}
-        <div
-          style={{
+            width: '54%',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            width: '50%',
-            paddingRight: '32px',
           }}
         >
-          {/* Logo */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div
               style={{
-                width: '56px',
-                height: '56px',
+                width: '64px',
+                height: '64px',
+                borderRadius: '12px',
+                border: '1px solid rgba(146, 124, 104, 0.32)',
+                backgroundColor: '#fffaf4',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: '16px',
-                backgroundColor: '#ff6b35',
-                color: '#16181a',
-                fontSize: '28px',
-                fontWeight: 700,
-                fontFamily: 'sans-serif',
               }}
             >
-              M
+              <div
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '999px',
+                  border: '4px solid rgba(164, 118, 76, 0.72)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <div style={{ width: '8px', height: '8px', borderRadius: '999px', backgroundColor: '#a46f47' }} />
+              </div>
             </div>
-            <span
-              style={{
-                fontSize: '56px',
-                fontWeight: 'bold',
-                color: 'white',
-                marginLeft: '12px',
-                fontFamily: 'sans-serif',
-              }}
-            >
-              Megabat
-            </span>
-          </div>
-
-          {/* Tagline */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div
-              style={{
-                fontSize: '42px',
-                fontWeight: 'bold',
-                color: 'white',
-                fontFamily: 'sans-serif',
-                lineHeight: 1.2,
-              }}
-            >
-              Detect Subtle Movement
-            </div>
-            <div
-              style={{
-                fontSize: '42px',
-                fontWeight: 'bold',
-                background: 'linear-gradient(135deg, #ff6b35 0%, #ff9f1c 100%)',
-                backgroundClip: 'text',
-                color: 'transparent',
-                fontFamily: 'sans-serif',
-                lineHeight: 1.2,
-              }}
-            >
-              Before It Gets Loud
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: '58px', lineHeight: 1, fontWeight: 500 }}>Megabat</span>
+              <span style={{ fontSize: '16px', letterSpacing: '0.28em', textTransform: 'uppercase', color: '#8e7c6b' }}>
+                Open Data Signals
+              </span>
             </div>
           </div>
 
-          {/* Subtitle */}
-          <div
-            style={{
-              fontSize: '20px',
-              color: '#8e8e8e',
-              fontFamily: 'sans-serif',
-            }}
-          >
-            State, indexed, and raw signals for DeFi agents • Built by Monarch
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ fontSize: '52px', lineHeight: 1.02, fontWeight: 500 }}>
+              Listen through chain noise until the exact pattern resolves.
+            </div>
+            <div style={{ fontSize: '22px', lineHeight: 1.5, color: '#6f5f51' }}>
+              State, indexed history, and raw events for agents built on open data.
+            </div>
           </div>
         </div>
 
-        {/* Right side - Code Preview */}
         <div
           style={{
+            width: '46%',
             display: 'flex',
-            width: '50%',
-            paddingLeft: '16px',
+            alignItems: 'stretch',
           }}
         >
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
               width: '100%',
-              backgroundColor: '#1e2124',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 107, 53, 0.2)',
+              borderRadius: '14px',
+              border: '1px solid rgba(146, 124, 104, 0.28)',
+              backgroundColor: '#fffaf4',
               overflow: 'hidden',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              boxShadow: '0 18px 32px -24px rgba(85, 63, 42, 0.18)',
             }}
           >
-            {/* Code window header */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '12px 16px',
-                backgroundColor: '#16181a',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                justifyContent: 'space-between',
+                padding: '18px 20px',
+                borderBottom: '1px solid rgba(146, 124, 104, 0.2)',
+                backgroundColor: 'rgba(247, 241, 232, 0.92)',
               }}
             >
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ff5f56' }} />
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ffbd2e' }} />
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#27ca40' }} />
-              </div>
-              <span style={{ marginLeft: '16px', color: '#6e6e6e', fontSize: '14px', fontFamily: 'monospace' }}>
-                signal.json
+              <span style={{ fontSize: '15px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#8e7c6b' }}>
+                Watch Loop
               </span>
+              <span style={{ fontSize: '14px', color: '#8b6a4c' }}>Active</span>
             </div>
 
-            {/* Code content */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '20px',
-                fontFamily: 'monospace',
-                fontSize: '16px',
-                lineHeight: 1.6,
-                color: '#e0e0e0',
-              }}
-            >
-              <span><span style={{ color: '#6e6e6e' }}>{'{'}</span></span>
-              <span style={{ paddingLeft: '20px' }}>
-                <span style={{ color: '#ff9f1c' }}>{'"type"'}</span><span style={{ color: '#6e6e6e' }}>:</span> <span style={{ color: '#a5d6ff' }}>{'"threshold"'}</span><span style={{ color: '#6e6e6e' }}>,</span>
-              </span>
-              <span style={{ paddingLeft: '20px' }}>
-                <span style={{ color: '#ff9f1c' }}>{'"metric"'}</span><span style={{ color: '#6e6e6e' }}>:</span> <span style={{ color: '#a5d6ff' }}>{'"ERC4626.Position.shares"'}</span><span style={{ color: '#6e6e6e' }}>,</span>
-              </span>
-              <span style={{ paddingLeft: '20px' }}>
-                <span style={{ color: '#ff9f1c' }}>{'"operator"'}</span><span style={{ color: '#6e6e6e' }}>:</span> <span style={{ color: '#a5d6ff' }}>{'">"'}</span><span style={{ color: '#6e6e6e' }}>,</span>
-              </span>
-              <span style={{ paddingLeft: '20px' }}>
-                <span style={{ color: '#ff9f1c' }}>{'"value"'}</span><span style={{ color: '#6e6e6e' }}>:</span> <span style={{ color: '#79c0ff' }}>0.9</span><span style={{ color: '#6e6e6e' }}>,</span>
-              </span>
-              <span style={{ paddingLeft: '20px' }}>
-                <span style={{ color: '#ff9f1c' }}>{'"window"'}</span><span style={{ color: '#6e6e6e' }}>:</span> <span style={{ color: '#a5d6ff' }}>{'"1h"'}</span>
-              </span>
-              <span><span style={{ color: '#6e6e6e' }}>{'}'}</span></span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '22px 20px' }}>
+              {[
+                'State: ERC4626.Position.shares dropped 22%',
+                'Indexed: net supply turned negative over 6h',
+                'Raw: USDC transfer burst crossed the threshold',
+              ].map((line, index) => (
+                <div
+                  key={line}
+                  style={{
+                    borderRadius: '10px',
+                    border: '1px solid rgba(146, 124, 104, 0.22)',
+                    backgroundColor: index === 0 ? 'rgba(226, 211, 195, 0.55)' : 'rgba(248, 243, 236, 0.95)',
+                    padding: '16px',
+                    fontSize: '18px',
+                    lineHeight: 1.45,
+                    color: '#4c3e34',
+                  }}
+                >
+                  {line}
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
-    ),
-    {
-      ...size,
-    }
+    </div>
   );
+}
+
+export default async function Image() {
+  return new ImageResponse(<SocialImage />, { ...size });
 }

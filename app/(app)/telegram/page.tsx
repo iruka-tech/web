@@ -25,17 +25,17 @@ const telegramNotice = (value: string | undefined) => {
       };
     case 'expired':
       return {
-        tone: 'error' as const,
-        message: 'That Telegram link has expired. Open the bot again to create a fresh one.',
+        tone: 'danger' as const,
+        message: 'That Telegram link expired. Open the bot again to create a fresh one.',
       };
     case 'missing-token':
       return {
-        tone: 'error' as const,
+        tone: 'danger' as const,
         message: 'The Telegram handoff was missing its token. Open the bot again and use the latest connect button.',
       };
     case 'failed':
       return {
-        tone: 'error' as const,
+        tone: 'danger' as const,
         message: 'Telegram could not be linked right now. Try the bot again in a moment.',
       };
     default:
@@ -62,9 +62,9 @@ export default async function TelegramPage({ searchParams }: TelegramPageProps) 
   const description = telegramStatus.linked
     ? isTemplateFlow
       ? 'Telegram is linked. Continue to the signal builder when you are ready.'
-      : 'Telegram is linked for this account.'
+      : 'Telegram is linked for this account and ready for managed delivery.'
     : isTemplateFlow
-      ? 'Template signals deliver through Telegram. Finish this step once before you open the builder.'
+      ? 'Template signals deliver through Telegram. Finish this once before you open the builder.'
       : 'Open the bot once and complete the connect step there.';
   const primaryLabel = telegramStatus.linked
     ? isTemplateFlow
@@ -76,36 +76,23 @@ export default async function TelegramPage({ searchParams }: TelegramPageProps) 
   return (
     <div className="space-y-6">
       {notice ? (
-        <div
-          className={`rounded-sm border px-4 py-3 text-sm ${
-            notice.tone === 'success'
-              ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-700'
-              : notice.tone === 'info'
-                ? 'border-border bg-surface text-foreground'
-              : 'border-amber-500/30 bg-amber-500/5 text-foreground'
-          }`}
-        >
+        <div className="ui-notice" data-tone={notice.tone}>
           {notice.message}
         </div>
       ) : null}
 
-      <section className="rounded-[16px] border border-border bg-surface p-6 sm:p-8">
-        <div className="max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.3em] text-secondary">Telegram</p>
-          <h1 className="mt-3 font-zen text-3xl sm:text-4xl">{heading}</h1>
-          <p className="mt-3 text-secondary">{description}</p>
+      <section className="ui-hero px-6 py-7 sm:px-8 sm:py-8">
+        <div className="relative z-10 max-w-3xl">
+          <div className="ui-kicker">Telegram</div>
+          <h1 className="ui-page-title mt-4">{heading}</h1>
+          <p className="ui-copy mt-4">{description}</p>
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <div
-            className={`inline-flex items-center rounded-sm border px-3 py-1.5 text-sm ${
-              telegramStatus.linked
-                ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-700'
-                : 'border-border bg-background text-secondary'
-            }`}
-          >
+        <div className="relative z-10 mt-7 flex flex-wrap items-center gap-3">
+          <span className="ui-chip" data-tone={telegramStatus.linked ? 'success' : 'telegram'}>
             {telegramStatus.linked ? 'Telegram connected' : 'Not connected yet'}
-          </div>
+          </span>
+
           {telegramStatus.linked ? (
             <Link href={continueHref} className="no-underline">
               <Button size="lg">{primaryLabel}</Button>
@@ -115,6 +102,7 @@ export default async function TelegramPage({ searchParams }: TelegramPageProps) 
               <Button size="lg">{primaryLabel}</Button>
             </Link>
           )}
+
           {showSecondaryCreateButton ? (
             <Link href={DEFAULT_TEMPLATE_PATH} className="no-underline">
               <Button size="lg" variant="secondary">

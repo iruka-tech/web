@@ -61,7 +61,7 @@ export function SignalDeleteButton({
       disabled={isDeleting}
       onClick={handleDelete}
       className={cn(
-        'gap-2 border-red-500/20 text-red-600 hover:border-red-500/30 hover:bg-red-500/5 hover:text-red-700',
+        'gap-2 border-[color:color-mix(in_oklch,var(--signal-alert)_32%,var(--stroke-soft))] text-[color:color-mix(in_oklch,var(--signal-alert)_78%,white)] hover:border-[color:color-mix(in_oklch,var(--signal-alert)_48%,var(--stroke-strong))] hover:bg-[color:color-mix(in_oklch,var(--signal-alert)_10%,var(--surface-inset))] hover:text-[color:color-mix(in_oklch,var(--signal-alert)_88%,white)]',
         className
       )}
     >

@@ -30,8 +30,8 @@ export function AgentSignalGuide() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
         <Card className="space-y-5">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-secondary">Resources</p>
-            <h2 className="mt-2 font-zen text-2xl">Use these with your agent</h2>
+            <div className="ui-kicker">Resources</div>
+            <h2 className="mt-4 font-display text-[1.85rem] leading-none text-foreground">Use these with your agent</h2>
           </div>
 
           <div className="space-y-3">
@@ -39,7 +39,7 @@ export function AgentSignalGuide() {
               <Link
                 key={resource.href}
                 href={resource.href}
-                className="flex items-start justify-between gap-3 rounded-sm border border-border bg-background/50 px-4 py-3 no-underline transition-colors hover:bg-hovered"
+                className="ui-option flex items-start justify-between gap-3 px-4 py-3 no-underline"
               >
                 <div className="flex items-center gap-2">
                   <p className="text-sm text-foreground">{resource.title}</p>
@@ -60,16 +60,16 @@ export function AgentSignalGuide() {
 
         <Card className="space-y-5">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-secondary">Starter prompt</p>
-            <h2 className="mt-2 font-zen text-2xl">Minimal handoff</h2>
+            <div className="ui-kicker">Starter prompt</div>
+            <h2 className="mt-4 font-display text-[1.85rem] leading-none text-foreground">Minimal handoff</h2>
           </div>
 
-          <div className="rounded-sm border border-border/80 bg-background/50 p-4">
+          <div className="ui-panel-ghost p-4">
             <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-secondary">
               <RiFileCodeLine className="h-4 w-4" />
               Agent prompt
             </div>
-            <CodeBlock code={agentPrompt} language="text" filename="agent-prompt.txt" tone="dark" />
+            <CodeBlock code={agentPrompt} language="text" filename="agent-prompt.txt" tone="light" />
           </div>
         </Card>
       </div>

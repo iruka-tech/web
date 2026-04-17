@@ -251,8 +251,8 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
         <Card className="space-y-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-secondary">Vault source</p>
-              <h2 className="mt-2 font-zen text-2xl">{getProtocolHeading(protocol)}</h2>
+              <p className="ui-stat-label">Vault source</p>
+              <h2 className="mt-3 font-display text-[1.8rem] leading-none text-foreground">{getProtocolHeading(protocol)}</h2>
               <p className="mt-2 text-sm text-secondary">{getProtocolDescription(protocol)}</p>
             </div>
             {selectedVault ? (
@@ -268,7 +268,7 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
           </div>
 
           {selectedVault && !isVaultPickerExpanded ? (
-            <div className="rounded-sm border border-border/80 bg-background/50 p-4">
+            <div className="ui-panel-ghost p-4">
               <p className="text-sm text-foreground">{selectedVault.name}</p>
               <p className="mt-1 text-xs text-secondary">
                 {[selectedVault.symbol, assetLabel, formatCompactAddress(selectedVault.address)].filter(Boolean).join(' · ')}
@@ -276,7 +276,7 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
             </div>
           ) : (
             <>
-              <label className="flex flex-col gap-2 text-sm text-secondary">
+              <label className="ui-field">
                 Search vaults
                 <div className="relative">
                   <RiSearchLine className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary" />
@@ -285,13 +285,13 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder={getProtocolSearchPlaceholder(protocol)}
-                    className="w-full rounded-sm border border-border bg-transparent py-2 pl-9 pr-3 text-sm text-foreground"
+                    className="ui-input pl-9"
                   />
                 </div>
               </label>
 
               {resultsLoading ? <p className="text-sm text-secondary">Loading vault data...</p> : null}
-              {loadError ? <p className="text-sm text-red-500">{loadError}</p> : null}
+              {loadError ? <p className="ui-notice text-sm" data-tone="danger">{loadError}</p> : null}
 
               <div className="grid gap-3">
                 {vaults.map((vault) => {
@@ -310,11 +310,8 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
                         setSelectedVault(vault);
                         setIsVaultPickerExpanded(false);
                       }}
-                      className={`rounded-sm border px-4 py-3 text-left transition-colors ${
-                        active
-                          ? 'border-[#1f2328] bg-background text-foreground'
-                          : 'border-border bg-background/70 text-secondary hover:bg-hovered hover:text-foreground'
-                      }`}
+                      data-active={active}
+                      className="ui-option px-4 py-3 text-left"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -334,7 +331,7 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
                 })}
 
                 {!resultsLoading && vaults.length === 0 ? (
-                  <div className="rounded-sm border border-dashed border-border px-4 py-3 text-sm text-secondary">
+                  <div className="ui-panel-ghost px-4 py-3 text-sm text-secondary">
                     No vaults matched this search yet.
                   </div>
                 ) : null}
@@ -346,8 +343,8 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
         <Card className="space-y-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-secondary">Selection</p>
-              <h2 className="mt-2 font-zen text-2xl">{selectedEntitySummary}</h2>
+              <p className="ui-stat-label">Selection</p>
+              <h2 className="mt-3 font-display text-[1.8rem] leading-none text-foreground">{selectedEntitySummary}</h2>
             </div>
             {holdersLoading ? <p className="text-sm text-secondary">Loading holders...</p> : null}
           </div>
@@ -359,9 +356,8 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
               return (
                 <label
                   key={item.address}
-                  className={`flex cursor-pointer items-center justify-between gap-3 rounded-sm border px-3 py-2 text-sm ${
-                    active ? 'border-[#1f2328] bg-background text-foreground' : 'border-border bg-background/70 text-secondary'
-                  }`}
+                  data-active={active}
+                  className="ui-option flex cursor-pointer items-center justify-between gap-3 px-3 py-2 text-sm"
                 >
                   <div className="flex items-center gap-3">
                     <input
@@ -383,42 +379,42 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
             })}
 
             {!holdersLoading && selectedVault && holders.length === 0 ? (
-              <div className="rounded-sm border border-dashed border-border px-4 py-3 text-sm text-secondary">
+              <div className="ui-panel-ghost px-4 py-3 text-sm text-secondary">
                 No holder balances were returned for this vault.
               </div>
             ) : null}
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field">
               Required owners
               <input
                 type="number"
                 min="1"
                 value={requiredCount}
                 onChange={(event) => setRequiredCount(event.target.value)}
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field">
               Share drop (%)
               <input
                 type="number"
                 min="1"
                 value={dropPercent}
                 onChange={(event) => setDropPercent(event.target.value)}
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field">
               Window
               <input
                 type="text"
                 value={windowDuration}
                 onChange={(event) => setWindowDuration(event.target.value)}
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
@@ -431,30 +427,30 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
               onSnoozeMinutesChange={setSnoozeMinutes}
             />
 
-            <label className="flex flex-col gap-2 text-sm text-secondary sm:col-span-2">
+            <label className="ui-field sm:col-span-2">
               Signal name
               <input
                 type="text"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Optional custom name"
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm text-secondary sm:col-span-2">
+            <label className="ui-field sm:col-span-2">
               Description
               <input
                 type="text"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 placeholder="Optional description shown in Megabat"
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
           </div>
 
-          {submitError ? <p className="text-sm text-red-500">{submitError}</p> : null}
+          {submitError ? <p className="ui-notice text-sm" data-tone="danger">{submitError}</p> : null}
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button onClick={handleCreate} disabled={Boolean(previewError) || isSubmitting || !selectedVault || selectionCount === 0}>
@@ -466,47 +462,47 @@ export function VaultUseCaseBuilder({ protocol }: VaultUseCaseBuilderProps) {
 
       <Card className="space-y-5">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-secondary">Preview</p>
-          <h2 className="mt-2 font-zen text-2xl">Vault withdrawal watch</h2>
+          <p className="ui-stat-label">Preview</p>
+          <h2 className="mt-3 font-display text-[1.8rem] leading-none text-foreground">Vault withdrawal watch</h2>
           <p className="mt-2 text-sm text-secondary">
             Generates an ERC-4626 share-withdrawal signal from selected vault holders. This isolates the 4626 logic inside the vault use case instead of treating it as the app’s main entry mode.
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-sm border border-border/80 bg-background/50 p-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-secondary">Selected</p>
-            <p className="mt-2 break-all font-zen text-xl">{selectionCount}</p>
+          <div className="ui-stat">
+            <p className="ui-stat-label">Selected</p>
+            <p className="ui-stat-value break-all">{selectionCount}</p>
           </div>
-          <div className="rounded-sm border border-border/80 bg-background/50 p-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-secondary">Required</p>
-            <p className="mt-2 break-all font-zen text-xl">{requiredCount || '0'}</p>
+          <div className="ui-stat">
+            <p className="ui-stat-label">Required</p>
+            <p className="ui-stat-value break-all">{requiredCount || '0'}</p>
           </div>
-          <div className="rounded-sm border border-border/80 bg-background/50 p-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-secondary">Drop %</p>
-            <p className="mt-2 break-all font-zen text-xl">{dropPercent ? `${dropPercent}%` : '—'}</p>
+          <div className="ui-stat">
+            <p className="ui-stat-label">Drop %</p>
+            <p className="ui-stat-value break-all">{dropPercent ? `${dropPercent}%` : '—'}</p>
           </div>
-          <div className="rounded-sm border border-border/80 bg-background/50 p-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-secondary">Window</p>
-            <p className="mt-2 break-all font-zen text-xl">{windowDuration || '—'}</p>
+          <div className="ui-stat">
+            <p className="ui-stat-label">Window</p>
+            <p className="ui-stat-value break-all">{windowDuration || '—'}</p>
           </div>
         </div>
 
         {!previewError && previewPayload && previewDefinition ? (
           <>
-            <div className="rounded-sm border border-border/80 bg-background/50 p-4">
+            <div className="ui-panel-ghost p-4">
               <p className="text-sm text-secondary">{describeSignalDefinition(previewPayload.definition)}</p>
             </div>
             <CodeBlock
               code={previewDefinition}
               language="json"
               filename="vault-signal-preview.json"
-              tone="dark"
+              tone="light"
               showLineNumbers
             />
           </>
         ) : (
-          <div className="rounded-sm border border-red-500/30 bg-red-500/5 p-4 text-sm text-red-400">
+          <div className="ui-notice text-sm" data-tone="danger">
             {previewError ?? 'Select a vault and holder set to generate a preview.'}
           </div>
         )}

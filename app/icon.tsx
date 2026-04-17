@@ -12,20 +12,40 @@ export default function Icon() {
     (
       <div
         style={{
-          background: 'linear-gradient(135deg, #ff6b35 0%, #ff9f1c 100%)',
+          background: '#f6efe6',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: '6px',
-          color: '#16181a',
+          color: '#4a3c33',
+          border: '1px solid rgba(133, 104, 79, 0.26)',
           fontFamily: 'sans-serif',
           fontSize: 20,
-          fontWeight: 700,
+          fontWeight: 500,
         }}
       >
-        M
+        <div
+          style={{
+            width: 18,
+            height: 18,
+            borderRadius: 999,
+            border: '2px solid rgba(164, 118, 76, 0.72)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: 999,
+              backgroundColor: '#a46f47',
+            }}
+          />
+        </div>
       </div>
     ),
     {

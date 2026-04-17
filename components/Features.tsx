@@ -1,83 +1,64 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { RiGitBranchLine, RiTimeLine, RiDatabase2Line, RiShieldCheckLine } from 'react-icons/ri';
+import { RiDatabase2Line, RiGitBranchLine, RiShieldCheckLine, RiTimeLine } from 'react-icons/ri';
 import { Card } from './ui/Card';
 
 const features = [
   {
     icon: RiGitBranchLine,
-    title: 'Flexible Composable Logic',
-    description: 'Combine conditions with nested AND/OR groups and reusable blocks to model how real strategies behave.',
+    title: 'Composable logic',
+    description: 'Model conditions with nested groups and reusable threshold patterns that mirror real strategy logic.',
   },
   {
     icon: RiTimeLine,
-    title: 'No-Noise Alerting',
-    description: 'Apply time windows and threshold logic so low-signal churn is filtered out before webhook delivery.',
+    title: 'Window-aware alerting',
+    description: 'Use time windows and repeat policy to suppress churn before it ever reaches operators or agents.',
   },
   {
     icon: RiDatabase2Line,
-    title: 'Dynamic Query Engine',
-    description: 'Query protocol state and changes continuously instead of wiring one-off event listeners.',
+    title: 'Multiple source families',
+    description: 'Author one watch across current state, indexed history, and raw event scans without splitting tools.',
   },
   {
     icon: RiShieldCheckLine,
-    title: 'Smart Signal Filtering',
-    description: 'Trigger only when combined conditions are met, not just when any single event happens.',
+    title: 'Structured delivery',
+    description: 'Deliver matched conditions and scope context instead of a noisy event stream that still needs interpretation.',
   },
 ];
 
 export function Features() {
   return (
-    <section id="features" className="relative py-24 md:py-32">
+    <section id="features" className="relative py-16 md:py-24">
       <div className="page-gutter">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <h2 className="font-zen text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Flexible <span className="text-[#ff6b35]">Conditions That Compose</span>
-          </h2>
-          <p className="text-secondary text-lg max-w-2xl mx-auto">
-            Build dynamic, high-signal monitoring logic without drowning your agent in noisy alerts.
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="ui-kicker justify-center">System Traits</div>
+          <h2 className="ui-section-title mt-5">Megabat stays focused on disciplined detection instead of ornamental dashboard clutter.</h2>
+          <p className="ui-copy mx-auto mt-4">
+            The design system should reflect the same posture as the product: quiet where it can be, explicit when it matters.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Feature grid */}
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        <motion.div
+          className="mt-10 grid gap-4 md:grid-cols-2"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={{
-            hidden: {},
-            visible: {
-              transition: {
-                staggerChildren: 0.1
-              }
-            }
-          }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
         >
           {features.map((feature) => (
             <motion.div
               key={feature.title}
-              variants={{
-                hidden: { opacity: 0, y: 30 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-              }}
+              variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35 } } }}
             >
-              <Card className="h-full group">
+              <Card className="h-full">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-[#ff6b35]/10 rounded-lg transition-all duration-300 group-hover:bg-[#ff6b35]/20 group-hover:scale-110">
-                    <feature.icon className="w-6 h-6 text-[#ff6b35]" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[0.45rem] border border-border bg-[color:color-mix(in_oklch,var(--signal-copper)_10%,var(--surface-inset))] text-[color:var(--signal-copper)]">
+                    <feature.icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-zen text-lg font-bold mb-2">{feature.title}</h3>
-                    <p className="text-secondary text-sm leading-relaxed">{feature.description}</p>
+                    <h3 className="font-display text-[1.35rem] leading-none text-foreground">{feature.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-secondary">{feature.description}</p>
                   </div>
                 </div>
               </Card>

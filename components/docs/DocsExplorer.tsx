@@ -731,7 +731,8 @@ export function DocsExplorer() {
   return (
     <div className="mx-auto max-w-6xl">
       <header className="max-w-3xl">
-        <h1 className="text-4xl tracking-tight text-foreground sm:text-5xl">Megabat Docs</h1>
+        <div className="ui-kicker">Docs</div>
+        <h1 className="ui-section-title mt-5">Megabat Docs</h1>
         <p className="mt-4 text-base leading-relaxed text-secondary sm:text-lg">
           Reference for `state_ref`, metric sugar, indexed metrics, raw events, repeat policy, history, auth, delivery, and routes.
         </p>
@@ -759,7 +760,7 @@ export function DocsExplorer() {
 
         <div className="pt-8 lg:pt-0">
           <div className="border-b border-border pb-6">
-            <h2 className="text-3xl tracking-tight text-foreground">{activeSection.label}</h2>
+            <h2 className="font-display text-[2rem] leading-none text-foreground">{activeSection.label}</h2>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-secondary">
               {activeSection.description}
             </p>
@@ -770,14 +771,14 @@ export function DocsExplorer() {
       </div>
 
       <div className="mt-10 flex flex-wrap gap-6 border-t border-border pt-6 text-sm">
-        <Link href="/login" className="text-foreground no-underline transition-colors hover:text-[#ff6b35]">
+        <Link href="/login" className="ui-link no-underline">
           Open app
         </Link>
         <a
           href={MEGABAT_GITHUB_URL}
           target="_blank"
           rel="noreferrer"
-          className="text-foreground no-underline transition-colors hover:text-[#ff6b35]"
+          className="ui-link no-underline"
         >
           GitHub
         </a>

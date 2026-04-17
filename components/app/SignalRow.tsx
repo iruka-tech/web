@@ -18,26 +18,28 @@ export function SignalRow({ signal }: SignalRowProps) {
       <div className="min-w-0">
         <Link
           href={`/signals/${signal.id}`}
-          className="font-zen text-lg text-foreground transition-colors hover:text-[#ff6b35] no-underline"
+          className="font-display text-[1.3rem] leading-none text-foreground transition-colors hover:text-[color:var(--signal-ember)] no-underline"
         >
           {signal.name}
         </Link>
-        <p className="text-sm text-secondary mt-1">{summary}</p>
-        <p className="text-xs text-secondary mt-2">{scopeSummary}</p>
+        <p className="mt-2 text-sm leading-relaxed text-secondary">{summary}</p>
+        <p className="mt-2 text-xs text-secondary">{scopeSummary}</p>
       </div>
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-secondary">Status</p>
-        <p className={signal.is_active ? 'text-[#ff6b35]' : 'text-secondary'}>
-          {signal.is_active ? 'Active' : 'Paused'}
-        </p>
+        <p className="ui-stat-label">Status</p>
+        <span className="mt-2 inline-flex">
+          <span className="ui-chip" data-tone={signal.is_active ? 'accent' : undefined}>
+            {signal.is_active ? 'Active' : 'Paused'}
+          </span>
+        </span>
       </div>
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-secondary">Last Trigger</p>
-        <p className="text-sm text-secondary">{lastTriggeredAt}</p>
+        <p className="ui-stat-label">Last Trigger</p>
+        <p className="mt-2 text-sm text-secondary">{lastTriggeredAt}</p>
       </div>
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-secondary">Updated</p>
-        <p className="text-sm text-secondary">{updatedAt}</p>
+        <p className="ui-stat-label">Updated</p>
+        <p className="mt-2 text-sm text-secondary">{updatedAt}</p>
       </div>
       <div className="sm:justify-self-end">
         <SignalRowMenu signalId={signal.id} signalName={signal.name} />

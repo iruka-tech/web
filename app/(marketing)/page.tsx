@@ -8,16 +8,7 @@ import { Footer } from '@/components/Footer';
 
 export default function MarketingHome() {
   return (
-    <div className="bg-main min-h-screen relative">
-      <div
-        className="fixed inset-0 bg-dot-grid pointer-events-none opacity-50"
-        style={{
-          maskImage: 'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)',
-        }}
-        aria-hidden="true"
-      />
-
+    <div className="relative min-h-screen">
       <Header />
       <main className="relative z-10">
         <Hero />

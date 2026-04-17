@@ -3,53 +3,42 @@
 import { motion } from 'framer-motion';
 import { CodeBlock } from './ui/CodeBlock';
 import { SectionTag } from './ui/SectionTag';
-import { GridDivider } from './ui/GridDivider';
 
 const storyBeats = [
   {
     id: 'problem',
     tag: 'Problem',
-    title: 'Feeds are not signals.',
-    content: `Polling state, querying indexed history, and subscribing to raw events all produce data. The hard part is turning that flow into one durable signal your agent can actually trust.`,
+    title: 'Feeds are not decisions.',
+    content:
+      'Polling state, querying indexed history, and subscribing to raw events all produce motion. Operators still need a trusted condition that separates signal from churn.',
     code: `rpc.read("balanceOf", owner)
 index.query("ProtocolEvent", window)
 events.on("Transfer", notify)
 
-// State, indexed, and raw reads.
-// Too much motion, not enough signal.`,
+// Plenty of motion.
+// Still no decision surface.`,
   },
   {
     id: 'insight',
-    tag: 'Definition',
-    title: 'Describe the pattern, not the plumbing.',
-    content: `The useful abstraction is a DSL for the actual change you care about: scope, thresholds, time windows, and logic gates. That gives your agent a detection rule instead of a bundle of one-off reads.`,
+    tag: 'Abstraction',
+    title: 'Describe the condition, not the plumbing.',
+    content:
+      'Megabat turns the watch target into one explicit pattern: scope, thresholds, time windows, and boolean logic. The result is a durable rule instead of a stack of one-off reads.',
     code: `{
-  "scope": {
-    "chains": [1],
-    "protocol": "all"
-  },
+  "scope": { "chains": [1], "protocol": "all" },
   "conditions": [
     {
       "type": "change",
       "metric": "ERC4626.Position.shares",
       "direction": "decrease",
-      "by": { "percent": 20 },
-      "chain_id": 1,
-      "contract_address": "0xVault",
-      "address": "0xOwner"
+      "by": { "percent": 20 }
     },
     {
       "type": "raw-events",
       "aggregation": "sum",
       "field": "value",
       "operator": ">",
-      "value": 1000000,
-      "chain_id": 1,
-      "event": {
-        "kind": "erc20_transfer",
-        "contract_addresses": ["0xToken"]
-      },
-      "filters": [{ "field": "to", "op": "eq", "value": "0xOwner" }]
+      "value": 1000000
     }
   ],
   "logic": "AND",
@@ -57,61 +46,15 @@ events.on("Transfer", notify)
 }`,
   },
   {
-    id: 'solution',
+    id: 'runtime',
     tag: 'Runtime',
-    title: 'Megabat runs the watch loop.',
-    content: `Once the pattern is defined, Megabat evaluates it continuously across state, indexed, and raw sources, maintains windows, and delivers a structured alert. Your agent gets the signal without owning the monitoring stack.`,
+    title: 'Megabat keeps watch after setup.',
+    content:
+      'Once the pattern exists, Megabat owns the continuous evaluation loop, manages windows, and delivers structured context only when the pattern actually resolves.',
     code: `POST /api/v1/signals
 {
-  "name": "3 of 5 vault owners withdrew >1e18 shares",
-  "definition": {
-    "scope": {
-      "chains": [1],
-      "addresses": [
-        "0x1111111111111111111111111111111111111111",
-        "0x2222222222222222222222222222222222222222",
-        "0x3333333333333333333333333333333333333333",
-        "0x4444444444444444444444444444444444444444",
-        "0x5555555555555555555555555555555555555555"
-      ],
-      "protocol": "all"
-    },
-    "conditions": [
-      {
-        "type": "group",
-        "addresses": [
-          "0x1111111111111111111111111111111111111111",
-          "0x2222222222222222222222222222222222222222",
-          "0x3333333333333333333333333333333333333333",
-          "0x4444444444444444444444444444444444444444",
-          "0x5555555555555555555555555555555555555555"
-        ],
-        "requirement": { "count": 3, "of": 5 },
-        "logic": "AND",
-        "conditions": [
-          {
-            "type": "change",
-            "state_ref": {
-              "protocol": "erc4626",
-              "entity_type": "Position",
-              "field": "shares",
-              "filters": [
-                { "field": "chainId", "op": "eq", "value": 1 },
-                { "field": "contractAddress", "op": "eq", "value": "0xVault" }
-              ]
-            },
-            "direction": "decrease",
-            "by": { "absolute": "1000000000000000000" },
-            "window": { "duration": "1d" },
-            "chain_id": 1
-          }
-        ],
-        "window": { "duration": "1d" }
-      }
-    ],
-    "logic": "AND",
-    "window": { "duration": "7d" }
-  },
+  "name": "Vault withdrawal cluster",
+  "definition": { "...": "..." },
   "delivery": { "provider": "telegram" },
   "cooldown_minutes": 60,
   "repeat_policy": { "mode": "until_resolved" }
@@ -121,36 +64,34 @@ events.on("Transfer", notify)
 
 export function Story() {
   return (
-    <section id="story" className="relative">
-      {/* Grid divider at top */}
-      <GridDivider rows={4} />
+    <section id="story" className="relative py-16 md:py-24">
+      <div className="page-gutter">
+        <div className="mb-10 max-w-3xl">
+          <SectionTag>Why Megabat</SectionTag>
+          <h2 className="ui-section-title mt-5">Megabat is a watch loop for exact conditions, not another stream of raw telemetry.</h2>
+          <p className="ui-copy mt-4">
+            The product exists to make monitoring composable, durable, and useful for the person or agent
+            that needs to act. Every layer below exists to support that one outcome.
+          </p>
+        </div>
 
-      <div className="py-16 md:py-24">
-        <div className="page-gutter">
+        <div className="space-y-6">
           {storyBeats.map((beat, index) => (
             <motion.div
               key={beat.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.5 }}
-              className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center ${
-                index < storyBeats.length - 1 ? 'mb-24 md:mb-32' : ''
-              }`}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.45, delay: index * 0.06 }}
+              className="ui-panel grid gap-6 px-6 py-6 sm:px-7 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:items-start"
             >
-              {/* Text side */}
-              <div className={index % 2 === 1 ? 'lg:order-2' : ''}>
-                <SectionTag>{beat.tag}</SectionTag>
-                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl mt-4 mb-4">
-                  {beat.title}
-                </h2>
-                <p className="text-secondary leading-relaxed">
-                  {beat.content}
-                </p>
+              <div className="relative z-10">
+                <div className="ui-kicker">{beat.tag}</div>
+                <h3 className="mt-4 font-display text-[2rem] leading-none text-foreground">{beat.title}</h3>
+                <p className="ui-copy mt-4">{beat.content}</p>
               </div>
-              
-              {/* Code side */}
-              <div className={index % 2 === 1 ? 'lg:order-1' : ''}>
+
+              <div className="relative z-10">
                 <CodeBlock code={beat.code} tone="light" />
               </div>
             </motion.div>

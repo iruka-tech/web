@@ -59,63 +59,62 @@ export function AppShell({ children, telegramLinked }: AppShellProps) {
   };
 
   return (
-    <div className="min-h-screen bg-main">
-      <div className="pointer-events-none absolute inset-0 bg-line-grid opacity-30" aria-hidden="true" />
-      <div className="relative z-10">
-        <header className="border-b border-border/80 bg-background/85 backdrop-blur-md">
-          <div className="page-gutter">
-            <div className="page-frame py-4">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex items-center gap-4">
-                  <Link href="/app" className="no-underline">
-                    <span className="font-zen text-lg text-foreground">Megabat</span>
-                  </Link>
-                  <span className="hidden text-xs uppercase tracking-[0.3em] text-secondary sm:block">Console</span>
+    <div className="relative min-h-screen pb-8 pt-4">
+      <div className="page-gutter relative z-10">
+        <header className="ui-panel px-4 py-4 sm:px-5">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
+              <Link href="/app" className="flex items-center gap-3 no-underline">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-[0.65rem] border border-border bg-[color:var(--surface-panel)]">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--signal-copper)]" />
+                </span>
+                <div className="min-w-0">
+                  <div className="font-display text-[1.5rem] leading-none text-foreground">Megabat</div>
+                  <div className="mt-1 text-[0.68rem] uppercase tracking-[0.28em] text-secondary">
+                    Operator Console
+                  </div>
                 </div>
+              </Link>
+            </div>
 
-                <nav className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto pb-1 lg:justify-center lg:pb-0">
-                  {navItems.map((item) => {
-                    const active = isActivePath(pathname, item.href);
+            <nav className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto pb-1 scrollbar-hide xl:justify-center xl:pb-0">
+              {navItems.map((item) => {
+                const active = isActivePath(pathname, item.href);
 
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        aria-current={active ? 'page' : undefined}
-                        className={cn(
-                          'inline-flex items-center gap-2 rounded-sm border px-4 py-2 text-sm no-underline transition-colors',
-                          active
-                            ? 'border-[#ff6b35]/30 bg-background text-foreground'
-                            : 'border-transparent bg-transparent text-secondary hover:border-border hover:bg-background/70 hover:text-foreground'
-                        )}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </nav>
-
-                <div className="flex items-center gap-2 self-start lg:self-auto">
-                  <Link href={createSignalHref} className="no-underline">
-                    <Button size="sm" variant="secondary" className="gap-2">
-                      <CreateActionIcon className="h-4 w-4" />
-                      {createSignalLabel}
-                    </Button>
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? 'page' : undefined}
+                    data-active={active}
+                    className={cn(
+                      'ui-option inline-flex items-center gap-2 px-4 py-2.5 text-sm no-underline',
+                      active && 'border-[color:color-mix(in_oklch,var(--signal-copper)_36%,var(--stroke-strong))] bg-[color:color-mix(in_oklch,var(--signal-copper)_10%,var(--surface-inset))] text-foreground'
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.label}</span>
                   </Link>
-                  <Button variant="secondary" size="sm" className="gap-2" onClick={handleLogout} disabled={isLoggingOut}>
-                    <RiLogoutCircleRLine className="h-4 w-4" />
-                    {isLoggingOut ? 'Logging out...' : 'Logout'}
-                  </Button>
-                </div>
-              </div>
+                );
+              })}
+            </nav>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href={createSignalHref} className="no-underline">
+                <Button size="sm" className="gap-2">
+                  <CreateActionIcon className="h-4 w-4" />
+                  {createSignalLabel}
+                </Button>
+              </Link>
+              <Button variant="secondary" size="sm" className="gap-2" onClick={handleLogout} disabled={isLoggingOut}>
+                <RiLogoutCircleRLine className="h-4 w-4" />
+                {isLoggingOut ? 'Logging out...' : 'Logout'}
+              </Button>
             </div>
           </div>
         </header>
 
-        <main className="page-gutter py-8">
-          <div className="page-frame min-w-0">{children}</div>
-        </main>
+        <main className="page-frame mt-6 min-w-0">{children}</main>
       </div>
     </div>
   );

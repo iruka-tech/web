@@ -242,8 +242,8 @@ export function MorphoMarketSignalBuilder() {
         <Card className="space-y-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-secondary">Protocol source</p>
-              <h2 className="mt-2 font-zen text-2xl">Morpho markets</h2>
+              <p className="ui-stat-label">Protocol source</p>
+              <h2 className="mt-3 font-display text-[1.8rem] leading-none text-foreground">Morpho markets</h2>
               <p className="mt-2 text-sm text-secondary">
                 Pick a Morpho market, pick suppliers, and let Megabat watch for coordinated exits.
               </p>
@@ -261,7 +261,7 @@ export function MorphoMarketSignalBuilder() {
           </div>
 
           {selectedMarket && !isMarketPickerExpanded ? (
-            <div className="rounded-sm border border-border/80 bg-background/50 p-4">
+            <div className="ui-panel-ghost p-4">
               <p className="text-sm text-foreground">{selectedEntitySummary}</p>
               <p className="mt-1 font-mono text-xs text-secondary" title={selectedMarket.marketId}>
                 {formatCompactAddress(selectedMarket.marketId)}
@@ -269,7 +269,7 @@ export function MorphoMarketSignalBuilder() {
             </div>
           ) : (
             <>
-              <label className="flex flex-col gap-2 text-sm text-secondary">
+              <label className="ui-field">
                 Search markets
                 <div className="relative">
                   <RiSearchLine className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary" />
@@ -278,13 +278,13 @@ export function MorphoMarketSignalBuilder() {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Search loan / collateral pair or market id"
-                    className="w-full rounded-sm border border-border bg-transparent py-2 pl-9 pr-3 text-sm text-foreground"
+                    className="ui-input pl-9"
                   />
                 </div>
               </label>
 
               {resultsLoading ? <p className="text-sm text-secondary">Loading market data...</p> : null}
-              {loadError ? <p className="text-sm text-red-500">{loadError}</p> : null}
+              {loadError ? <p className="ui-notice text-sm" data-tone="danger">{loadError}</p> : null}
 
               <div className="grid gap-3">
                 {markets.map((market) => {
@@ -298,11 +298,8 @@ export function MorphoMarketSignalBuilder() {
                         setSelectedMarket(market);
                         setIsMarketPickerExpanded(false);
                       }}
-                      className={`rounded-sm border px-4 py-3 text-left transition-colors ${
-                        active
-                          ? 'border-[#1f2328] bg-background text-foreground'
-                          : 'border-border bg-background/70 text-secondary hover:bg-hovered hover:text-foreground'
-                      }`}
+                      data-active={active}
+                      className="ui-option px-4 py-3 text-left"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -323,7 +320,7 @@ export function MorphoMarketSignalBuilder() {
                 })}
 
                 {!resultsLoading && markets.length === 0 ? (
-                  <div className="rounded-sm border border-dashed border-border px-4 py-3 text-sm text-secondary">
+                  <div className="ui-panel-ghost px-4 py-3 text-sm text-secondary">
                     No Morpho markets matched this search yet.
                   </div>
                 ) : null}
@@ -335,8 +332,8 @@ export function MorphoMarketSignalBuilder() {
         <Card className="space-y-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-secondary">Selection</p>
-              <h2 className="mt-2 font-zen text-2xl">{selectedEntitySummary}</h2>
+              <p className="ui-stat-label">Selection</p>
+              <h2 className="mt-3 font-display text-[1.8rem] leading-none text-foreground">{selectedEntitySummary}</h2>
               {selectedMarket ? (
                 <p className="mt-1 font-mono text-xs text-secondary" title={selectedMarket.marketId}>
                   {formatCompactAddress(selectedMarket.marketId)}
@@ -353,9 +350,8 @@ export function MorphoMarketSignalBuilder() {
               return (
                 <label
                   key={item.address}
-                  className={`flex cursor-pointer items-center justify-between gap-3 rounded-sm border px-3 py-2 text-sm ${
-                    active ? 'border-[#1f2328] bg-background text-foreground' : 'border-border bg-background/70 text-secondary'
-                  }`}
+                  data-active={active}
+                  className="ui-option flex cursor-pointer items-center justify-between gap-3 px-3 py-2 text-sm"
                 >
                   <div className="flex items-center gap-3">
                     <input
@@ -377,42 +373,42 @@ export function MorphoMarketSignalBuilder() {
             })}
 
             {!suppliersLoading && selectedMarket && suppliers.length === 0 ? (
-              <div className="rounded-sm border border-dashed border-border px-4 py-3 text-sm text-secondary">
+              <div className="ui-panel-ghost px-4 py-3 text-sm text-secondary">
                 No supplier balances were returned for this market.
               </div>
             ) : null}
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field">
               Required suppliers
               <input
                 type="number"
                 min="1"
                 value={requiredCount}
                 onChange={(event) => setRequiredCount(event.target.value)}
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field">
               Supply drop (%)
               <input
                 type="number"
                 min="1"
                 value={dropPercent}
                 onChange={(event) => setDropPercent(event.target.value)}
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm text-secondary">
+            <label className="ui-field">
               Window
               <input
                 type="text"
                 value={windowDuration}
                 onChange={(event) => setWindowDuration(event.target.value)}
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
@@ -425,30 +421,30 @@ export function MorphoMarketSignalBuilder() {
               onSnoozeMinutesChange={setSnoozeMinutes}
             />
 
-            <label className="flex flex-col gap-2 text-sm text-secondary sm:col-span-2">
+            <label className="ui-field sm:col-span-2">
               Signal name
               <input
                 type="text"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Optional custom name"
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm text-secondary sm:col-span-2">
+            <label className="ui-field sm:col-span-2">
               Description
               <input
                 type="text"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 placeholder="Optional description shown in Megabat"
-                className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+                className="ui-input"
               />
             </label>
           </div>
 
-          {submitError ? <p className="text-sm text-red-500">{submitError}</p> : null}
+          {submitError ? <p className="ui-notice text-sm" data-tone="danger">{submitError}</p> : null}
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button onClick={handleCreate} disabled={Boolean(previewError) || isSubmitting || !selectedMarket || selectionCount === 0}>
@@ -460,47 +456,47 @@ export function MorphoMarketSignalBuilder() {
 
       <Card className="space-y-5">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-secondary">Preview</p>
-          <h2 className="mt-2 font-zen text-2xl">Morpho market supplier watch</h2>
+          <p className="ui-stat-label">Preview</p>
+          <h2 className="mt-3 font-display text-[1.8rem] leading-none text-foreground">Morpho market supplier watch</h2>
           <p className="mt-2 text-sm text-secondary">
             Generates a Morpho market supplier-exit signal from your backend-indexed market layer, keeping protocol-level detail separate from the broader vault flow.
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-sm border border-border/80 bg-background/50 p-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-secondary">Selected</p>
-            <p className="mt-2 break-all font-zen text-xl">{selectionCount}</p>
+          <div className="ui-stat">
+            <p className="ui-stat-label">Selected</p>
+            <p className="ui-stat-value break-all">{selectionCount}</p>
           </div>
-          <div className="rounded-sm border border-border/80 bg-background/50 p-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-secondary">Required</p>
-            <p className="mt-2 break-all font-zen text-xl">{requiredCount || '0'}</p>
+          <div className="ui-stat">
+            <p className="ui-stat-label">Required</p>
+            <p className="ui-stat-value break-all">{requiredCount || '0'}</p>
           </div>
-          <div className="rounded-sm border border-border/80 bg-background/50 p-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-secondary">Drop %</p>
-            <p className="mt-2 break-all font-zen text-xl">{dropPercent ? `${dropPercent}%` : '—'}</p>
+          <div className="ui-stat">
+            <p className="ui-stat-label">Drop %</p>
+            <p className="ui-stat-value break-all">{dropPercent ? `${dropPercent}%` : '—'}</p>
           </div>
-          <div className="rounded-sm border border-border/80 bg-background/50 p-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-secondary">Window</p>
-            <p className="mt-2 break-all font-zen text-xl">{windowDuration || '—'}</p>
+          <div className="ui-stat">
+            <p className="ui-stat-label">Window</p>
+            <p className="ui-stat-value break-all">{windowDuration || '—'}</p>
           </div>
         </div>
 
         {!previewError && previewPayload && previewDefinition ? (
           <>
-            <div className="rounded-sm border border-border/80 bg-background/50 p-4">
+            <div className="ui-panel-ghost p-4">
               <p className="text-sm text-secondary">{describeSignalDefinition(previewPayload.definition)}</p>
             </div>
             <CodeBlock
               code={previewDefinition}
               language="json"
               filename="protocol-signal-preview.json"
-              tone="dark"
+              tone="light"
               showLineNumbers
             />
           </>
         ) : (
-          <div className="rounded-sm border border-red-500/30 bg-red-500/5 p-4 text-sm text-red-400">
+          <div className="ui-notice text-sm" data-tone="danger">
             {previewError ?? 'Select a market and supplier set to generate a preview.'}
           </div>
         )}

@@ -20,48 +20,48 @@ export function RepeatPolicyFields({
 }: RepeatPolicyFieldsProps) {
   return (
     <>
-      <label className="flex flex-col gap-2 text-sm text-secondary">
+      <label className="ui-field">
         Repeat behavior
         <select
           value={mode}
           onChange={(event) => onModeChange(event.target.value as SignalRepeatPolicyMode)}
-          className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+          className="ui-select"
         >
           <option value="cooldown">Cooldown</option>
           <option value="post_first_alert_snooze">Post-first alert snooze</option>
           <option value="until_resolved">Until resolved</option>
         </select>
-        <span className="text-xs text-secondary">{getSignalRepeatPolicyHint(mode)}</span>
+        <span className="ui-helper">{getSignalRepeatPolicyHint(mode)}</span>
       </label>
 
       {mode === 'post_first_alert_snooze' ? (
-        <label className="flex flex-col gap-2 text-sm text-secondary">
+        <label className="ui-field">
           Snooze after first alert (minutes)
           <input
             type="number"
             min="1"
             value={snoozeMinutes}
             onChange={(event) => onSnoozeMinutesChange(event.target.value)}
-            className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+            className="ui-input"
           />
-          <span className="text-xs text-secondary">
+          <span className="ui-helper">
             Telegram `Why`, `Snooze 1h`, and `Snooze 1d` actions stay backend-managed.
           </span>
         </label>
       ) : mode === 'cooldown' ? (
-        <label className="flex flex-col gap-2 text-sm text-secondary">
+        <label className="ui-field">
           Cooldown (minutes)
           <input
             type="number"
             min="0"
             value={cooldownMinutes}
             onChange={(event) => onCooldownMinutesChange(event.target.value)}
-            className="rounded-sm border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+            className="ui-input"
           />
-          <span className="text-xs text-secondary">Megabat uses this value only for cooldown repeat mode.</span>
+          <span className="ui-helper">Megabat uses this value only for cooldown repeat mode.</span>
         </label>
       ) : (
-        <div className="rounded-sm border border-border/80 bg-background/50 p-4 text-sm text-secondary">
+        <div className="ui-panel-ghost p-4 text-sm text-secondary">
           Megabat sends one alert per incident, then waits until the signal evaluates false before alerting again.
         </div>
       )}

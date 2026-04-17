@@ -3,100 +3,80 @@
 import { motion } from 'framer-motion';
 import { RiRobot2Line } from 'react-icons/ri';
 import { SectionTag } from './ui/SectionTag';
-import { GridDivider } from './ui/GridDivider';
+import { CodeBlock } from './ui/CodeBlock';
 
 const agentCode = `app.post('/megabat-webhook', async (req, res) => {
-  const {
-    signal_id,
-    signal_name,
-    triggered_at,
-    scope,
-    conditions_met,
-    context,
-  } = req.body;
+  const { signal_id, signal_name, context, conditions_met } = req.body;
 
   await routeSignal({
     signalId: signal_id,
     signalName: signal_name,
-    triggeredAt: triggered_at,
     chainId: context?.chain_id,
     marketId: context?.market_id,
-    address: context?.address,
-    scope,
     matchedConditions: conditions_met,
   });
 
   res.status(200).send('OK');
 });`;
 
+const agentNotes = [
+  'One authoring surface across state, indexed, and raw sources.',
+  'Structured webhook payloads with scope, context, and condition explanations.',
+  'Continuous monitoring without custom polling loops or brittle event glue.',
+];
+
 export function ForAgents() {
   return (
-    <section id="for-agents" className="relative">
-      <GridDivider rows={4} />
-      
-      <div className="py-16 md:py-24">
-        <div className="page-gutter">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left content */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <SectionTag>For Agents</SectionTag>
-              
-              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl mt-4 mb-4">
-                Give your agent a <span className="text-[#ff6b35]">clean detection surface</span>.
-              </h2>
-              
-              <p className="text-secondary leading-relaxed mb-6">
-                Megabat works naturally with agents because the DSL is structured enough for them to express what
-                should trigger, and the runtime is durable enough to keep evaluating after they stop polling. Agents
-                can combine metric sugar, raw state refs, indexed metrics, and raw event scans, then route actions
-                from the structured context Megabat returns.
-              </p>
+    <section id="for-agents" className="relative py-16 md:py-24">
+      <div className="page-gutter">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45 }}
+            className="ui-panel p-6 sm:p-7"
+          >
+            <SectionTag>For Agents</SectionTag>
+            <h2 className="ui-section-title mt-5">Give agents one durable detection surface instead of a pile of moving chain reads.</h2>
+            <p className="ui-copy mt-4">
+              Megabat works naturally with agents because the authoring model is structured enough for them to
+              express intent, and the runtime is durable enough to keep evaluating after they stop polling.
+            </p>
 
-              <ul className="space-y-3 text-secondary">
-                <li className="flex items-center gap-3">
-                  <RiRobot2Line className="w-5 h-5 text-[#ff6b35]" />
-                  <span>One surface across state, indexed, and raw sources</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <RiRobot2Line className="w-5 h-5 text-[#ff6b35]" />
-                  <span>Webhook payloads with exact scope, matched conditions, and context</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <RiRobot2Line className="w-5 h-5 text-[#ff6b35]" />
-                  <span>Continuous monitoring without bespoke polling loops and filters</span>
-                </li>
-              </ul>
-            </motion.div>
-
-            {/* Right - code example */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <div className="relative rounded-lg overflow-hidden border border-border">
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-surface border-b border-border">
-                  <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-                  </div>
-                  <span className="text-xs text-secondary ml-2">webhook-handler.js</span>
+            <div className="mt-8 space-y-3">
+              {agentNotes.map((note) => (
+                <div key={note} className="ui-panel-ghost flex items-start gap-3 px-4 py-3">
+                  <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-[0.45rem] border border-border bg-[color:color-mix(in_oklch,var(--signal-copper)_10%,var(--surface-inset))] text-[color:var(--signal-copper)]">
+                    <RiRobot2Line className="h-4 w-4" />
+                  </span>
+                  <p className="text-sm leading-relaxed text-secondary">{note}</p>
                 </div>
-                <pre className="p-4 bg-background text-sm overflow-x-auto">
-                  <code className="font-mono text-secondary leading-relaxed whitespace-pre">
-                    {agentCode}
-                  </code>
-                </pre>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45, delay: 0.08 }}
+            className="ui-panel p-6 sm:p-7"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="ui-kicker">Webhook Handler</div>
+                <h3 className="mt-3 font-display text-[1.8rem] leading-none text-foreground">Route the signal, not the noise.</h3>
               </div>
-            </motion.div>
-          </div>
+              <span className="ui-chip" data-tone="accent">
+                Runtime
+              </span>
+            </div>
+
+            <div className="mt-6">
+              <CodeBlock code={agentCode} language="javascript" filename="webhook-handler.js" tone="light" />
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

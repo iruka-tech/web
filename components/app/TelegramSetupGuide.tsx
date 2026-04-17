@@ -83,12 +83,12 @@ export function TelegramSetupGuide({
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="w-full max-w-2xl rounded-[16px] border border-border bg-background shadow-2xl shadow-slate-950/20"
+            className="ui-panel w-full max-w-2xl"
           >
-            <div className="flex items-start justify-between gap-4 border-b border-border/80 px-6 py-5 sm:px-7">
+            <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-5 sm:px-7">
               <div className="min-w-0">
-                <p className="text-xs uppercase tracking-[0.3em] text-secondary">Telegram onboarding</p>
-                <h2 id={titleId} className="mt-2 font-zen text-2xl text-foreground">
+                <p className="ui-stat-label">Telegram onboarding</p>
+                <h2 id={titleId} className="mt-3 font-display text-[1.9rem] leading-none text-foreground">
                   Connect Telegram
                 </h2>
               </div>
@@ -102,8 +102,8 @@ export function TelegramSetupGuide({
             <div className="space-y-6 px-6 py-6 sm:px-7">
               <div className="grid gap-3">
                 {guideSteps.map((step, index) => (
-                  <div key={step.title} className="flex gap-4 rounded-md border border-border/80 bg-surface p-4">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-[#229ED9]/10 text-sm text-[#229ED9]">
+                  <div key={step.title} className="ui-panel-ghost flex gap-4 p-4">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[0.75rem] border border-border bg-[color:color-mix(in_oklch,var(--signal-telegram)_10%,var(--surface-inset))] text-sm text-[color:var(--signal-telegram)]">
                       {index + 1}
                     </div>
                     <div>
@@ -114,9 +114,9 @@ export function TelegramSetupGuide({
                 ))}
               </div>
 
-              <div className="rounded-md border border-border/80 bg-surface p-4">
+              <div className="ui-panel-ghost p-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-[#229ED9]/10 text-[#229ED9]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.45rem] border border-border bg-[color:color-mix(in_oklch,var(--signal-telegram)_10%,var(--surface-inset))] text-[color:var(--signal-telegram)]">
                     <RiTelegram2Line className="h-5 w-5" />
                   </div>
                   <div>

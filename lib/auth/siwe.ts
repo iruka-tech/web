@@ -18,7 +18,7 @@ export const buildSiweMessage = ({
   const message = new SiweMessage({
     domain,
     address,
-    statement: 'Sign in to Megabat to manage your DeFi signals.',
+    statement: 'Sign in to Megabat to manage your signals.',
     uri,
     version: '1',
     chainId,
