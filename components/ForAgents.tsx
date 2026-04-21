@@ -6,23 +6,23 @@ import { SectionTag } from './ui/SectionTag';
 import { CodeBlock } from './ui/CodeBlock';
 
 const agentCode = `app.post('/iruka-webhook', async (req, res) => {
-  const { signal_id, signal_name, context, conditions_met } = req.body;
+  const { signal_id, context, conditions_met, trigger_input } = req.body;
 
-  await routeSignal({
+  await agent.enqueue({
+    task: 'investigate-iruka-signal',
     signalId: signal_id,
-    signalName: signal_name,
     chainId: context?.chain_id,
-    marketId: context?.market_id,
-    matchedConditions: conditions_met,
+    why: conditions_met?.map((condition) => condition.summary),
+    input: trigger_input
   });
 
   res.status(200).send('OK');
 });`;
 
 const agentNotes = [
-  'One authoring surface across state, indexed, and raw sources.',
-  'Structured webhook payloads with scope, context, and condition explanations.',
-  'Continuous monitoring without custom polling loops or brittle event glue.',
+  'Use one authoring model for state, indexed history, raw events, and arithmetic expressions.',
+  'Simulate rules and search for first trigger points before trusting production alerts.',
+  'Receive condition summaries, scope context, and optional trigger input instead of raw log noise.',
 ];
 
 export function ForAgents() {
@@ -37,11 +37,11 @@ export function ForAgents() {
             transition={{ duration: 0.45 }}
             className="ui-panel p-6 sm:p-7"
           >
-            <SectionTag>For Agents</SectionTag>
-            <h2 className="ui-section-title mt-5">Give agents one durable detection surface instead of a pile of moving chain reads.</h2>
+            <SectionTag>For Autonomous Agents</SectionTag>
+            <h2 className="ui-section-title mt-5">Let the agent reason about the response, not the watch loop.</h2>
             <p className="ui-copy mt-4">
-              Iruka works naturally with agents because the authoring model is structured enough for them to
-              express intent, and the runtime is durable enough to keep evaluating after they stop polling.
+              The hard part is not writing one RPC call. It is keeping that call meaningful across windows,
+              sources, retries, and delivery state. Iruka turns that into a saved backend rule.
             </p>
 
             <div className="mt-8 space-y-3">
@@ -65,11 +65,11 @@ export function ForAgents() {
           >
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="ui-kicker">Webhook Handler</div>
-                <h3 className="mt-3 font-display text-[1.8rem] leading-none text-foreground">Route the signal, not the noise.</h3>
+                <div className="ui-kicker">Agent Runtime</div>
+                <h3 className="mt-3 font-display text-[1.8rem] leading-none text-foreground">Route the reason, not the raw feed.</h3>
               </div>
               <span className="ui-chip" data-tone="accent">
-                Runtime
+                Webhook
               </span>
             </div>
 

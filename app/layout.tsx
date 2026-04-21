@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import { JetBrains_Mono, Public_Sans } from 'next/font/google';
+import { JetBrains_Mono, Zen_Kaku_Gothic_New } from 'next/font/google';
 import './globals.css';
 import { WagmiProviders } from '@/components/auth/WagmiProviders';
 
-const publicSans = Public_Sans({
+const zenKakuGothic = Zen_Kaku_Gothic_New({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-body',
-  weight: ['300', '400', '500', '600'],
+  weight: ['400', '500', '700'],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -43,14 +43,16 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: 'Iruka - Open Data Signals for Smarter Agents',
+      default: 'Iruka - Signal Layer for Autonomous Agents',
       template: '%s | Iruka',
     },
     description:
-      'Iruka watches RPC state, indexed history, and raw events continuously, turning open data into structured signals your agent can actually use.',
+      'Iruka gives agent builders one API for durable conditions across onchain state, indexed history, raw events, simulation, and structured delivery.',
     keywords: [
       'open data agents',
       'agent signals',
+      'autonomous agents',
+      'onchain automation',
       'blockchain alerts',
       'state monitoring',
       'indexed history',
@@ -78,8 +80,8 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: 'Iruka - Open Data Signals for Smarter Agents',
-      description: 'Iruka keeps watch across state, indexed history, and raw events, then emits structured signals only when the pattern matches.',
+      title: 'Iruka - Signal Layer for Autonomous Agents',
+      description: 'Build on top of a signal layer that only speaks when the pattern is real.',
       url: siteUrl,
       siteName: 'Iruka',
       locale: 'en_US',
@@ -89,19 +91,19 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `${siteUrl}/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Iruka - Open data signals for smarter agents',
+          alt: 'Iruka - Signal layer for autonomous agents',
           type: 'image/png',
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Iruka - Open Data Signals for Smarter Agents',
-      description: 'Iruka keeps watch across state, indexed history, and raw events, then emits structured signals only when the pattern matches.',
+      title: 'Iruka - Signal Layer for Autonomous Agents',
+      description: 'Build on top of a signal layer that only speaks when the pattern is real.',
       images: [
         {
           url: `${siteUrl}/twitter-image`,
-          alt: 'Iruka - Open data signals for smarter agents',
+          alt: 'Iruka - Signal layer for autonomous agents',
         },
       ],
     },
@@ -150,7 +152,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${publicSans.variable} ${jetbrainsMono.variable} antialiased`} suppressHydrationWarning>
+      <body className={`${zenKakuGothic.variable} ${jetbrainsMono.variable} antialiased`} suppressHydrationWarning>
         <WagmiProviders>
           {children}
         </WagmiProviders>

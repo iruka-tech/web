@@ -4,39 +4,41 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { RiCheckLine, RiFileCopyLine, RiRobot2Line } from 'react-icons/ri';
 import { CodeBlock } from './ui/CodeBlock';
-import { IRUKA_ARCHITECTURE_DOCS_URL } from '@/lib/iruka-links';
+import { IRUKA_DOCS_WRITING_SIGNALS_URL } from '@/lib/iruka-links';
 
 const steps = [
   {
     number: 1,
-    title: 'Teach the agent the surface',
-    description: 'Give the agent the Iruka primitives and DSL shape it can author against.',
+    title: 'Give the agent the contract',
+    description: 'Tell it the public shape: scope, window, source blocks, conditions, delivery, repeat policy.',
     code: `## Capabilities
-- Monitor open data sources for changes
-- Track market state aliases
-- Query raw event presets
-- Receive structured webhooks`,
+- Use source.kind = alias | state | indexed_event | raw_event | expression
+- Compare with threshold, change, aggregate, or group
+- Test with simulation before activation
+- Receive conditions_met in webhook and history payloads`,
     language: 'markdown',
     filename: 'iruka-skill.md',
   },
   {
     number: 2,
-    title: 'Create the signal',
-    description: 'Post one definition to Iruka instead of building bespoke watcher loops.',
-    code: `curl -X POST https://your-iruka-host/api/v1/signals \\
+    title: 'Let it register durable intent',
+    description: 'The agent posts one saved rule instead of maintaining a cron job and event decoder.',
+    code: `curl -X POST https://api.iruka.tech/api/v1/signals \\
   -H "X-API-Key: $IRUKA_API_KEY" \\
-  -H "Content-Type: application/json"`,
+  -H "Content-Type: application/json" \\
+  -d @signal.json`,
     language: 'bash',
     filename: 'create-signal.sh',
   },
   {
     number: 3,
-    title: 'React to delivery',
-    description: 'Use the webhook payload as the execution surface for downstream automation.',
+    title: 'Route the explained trigger',
+    description: 'Use the webhook or history payload to decide the next autonomous action.',
     code: `{
   "signal_id": "sig_abc123",
-  "conditions_met": [],
-  "context": { "chain_id": 1 }
+  "conditions_met": [{ "summary": "100 > 50" }],
+  "context": { "chain_id": 1 },
+  "trigger_input": null
 }`,
     language: 'json',
     filename: 'webhook-response.json',
@@ -57,9 +59,9 @@ export function AgentOnboarding() {
       <div className="page-gutter">
         <div className="mx-auto max-w-3xl text-center">
           <div className="ui-kicker justify-center">Agent Integration</div>
-          <h2 className="ui-section-title mt-5">Three clear handoff steps for agent-based monitoring.</h2>
+          <h2 className="ui-section-title mt-5">A simple handoff contract for autonomous builders.</h2>
           <p className="ui-copy mx-auto mt-4">
-            The integration flow should be teachable, inspectable, and deliberate. No extra ornamental onboarding layer is needed.
+            Your agent needs a contract it can keep using without re-learning the backend every task.
           </p>
         </div>
 
@@ -102,10 +104,10 @@ export function AgentOnboarding() {
         </div>
 
         <div className="mt-8 text-center">
-          <a href={IRUKA_ARCHITECTURE_DOCS_URL} target="_blank" rel="noopener noreferrer" className="no-underline">
+          <a href={IRUKA_DOCS_WRITING_SIGNALS_URL} target="_blank" rel="noopener noreferrer" className="no-underline">
             <span className="ui-button px-5 py-3.5" data-variant="primary">
               <RiRobot2Line className="h-5 w-5" />
-              Read Full Agent Docs
+              Read Writing Signals
             </span>
           </a>
         </div>

@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { RiArrowRightUpLine, RiBookLine, RiDiscordFill, RiLoginCircleLine, RiMenuLine, RiCloseLine } from 'react-icons/ri';
+import { RiArrowRightUpLine, RiBookLine, RiLoginCircleLine, RiMenuLine, RiCloseLine } from 'react-icons/ri';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { IRUKA_DOCS_OVERVIEW_URL } from '@/lib/iruka-links';
 
 const navLinks = [
   { href: IRUKA_DOCS_OVERVIEW_URL, label: 'Docs', icon: RiBookLine, external: true },
-  { href: 'https://discord.gg/Ur4dwN3aPS', label: 'Discord', icon: RiDiscordFill, external: true },
 ];
 
 function BrandMark() {

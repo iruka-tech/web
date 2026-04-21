@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { RiBookOpenLine, RiDiscordLine } from 'react-icons/ri';
+import Link from 'next/link';
+import { RiBookOpenLine, RiLoginCircleLine } from 'react-icons/ri';
 import { IRUKA_DOCS_OVERVIEW_URL } from '@/lib/iruka-links';
 
 export function FinalCTA() {
@@ -16,20 +17,20 @@ export function FinalCTA() {
           className="ui-hero px-6 py-8 text-center sm:px-8 sm:py-10"
         >
           <div className="relative z-10 mx-auto max-w-3xl">
-            <div className="ui-kicker justify-center">Iruka</div>
-            <h2 className="ui-section-title mt-5">Build on top of a signal layer that only speaks when the pattern is real.</h2>
+            <div className="ui-kicker justify-center">Start Building</div>
+            <h2 className="ui-section-title mt-5">A durable signal layer for autonomous workflows.</h2>
             <p className="ui-copy mx-auto mt-4">
-              Define the condition once, then let Iruka keep evaluating telemetry until operators
-              or agents actually need to react.
+              Define the condition once. Let Iruka handle sources, windows, simulation, repeat policy,
+              delivery, and explainable history until an agent has a reason to act.
             </p>
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a href="https://discord.gg/Ur4dwN3aPS" target="_blank" rel="noopener noreferrer" className="no-underline">
+              <Link href="/login" className="no-underline">
                 <span className="ui-button px-5 py-3.5" data-variant="primary">
-                  <RiDiscordLine className="h-4 w-4" />
-                  Join Discord
+                  <RiLoginCircleLine className="h-4 w-4" />
+                  Open Console
                 </span>
-              </a>
+              </Link>
               <a href={IRUKA_DOCS_OVERVIEW_URL} target="_blank" rel="noopener noreferrer" className="no-underline">
                 <span className="ui-button px-5 py-3.5" data-variant="ghost">
                   <RiBookOpenLine className="h-4 w-4" />

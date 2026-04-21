@@ -1,7 +1,7 @@
 {
-  "name": "Iruka - Open Data Signals for Smarter Agents",
+  "name": "Iruka - Signal Layer for Autonomous Agents",
   "short_name": "Iruka",
-  "description": "Structured open-data signals for DeFi agents and operators.",
+  "description": "A signal layer that only speaks when the pattern is real.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f7f6ef",

@@ -78,6 +78,8 @@
     overflow-x: hidden;
     color: var(--ink-primary);
     font-family: var(--font-body), sans-serif;
+    font-kerning: normal;
+    font-feature-settings: "kern" 1, "palt" 1;
     -webkit-text-size-adjust: 100%;
     background: var(--surface-canvas);
   }
@@ -241,7 +243,7 @@
   .ui-display {
     font-family: var(--font-body), sans-serif;
     font-size: 3.75rem;
-    line-height: 1.04;
+    line-height: 1.06;
     font-weight: 400;
     letter-spacing: 0;
     text-wrap: balance;
@@ -250,7 +252,7 @@
   .ui-section-title {
     font-family: var(--font-body), sans-serif;
     font-size: 2.2rem;
-    line-height: 1.12;
+    line-height: 1.14;
     font-weight: 400;
     letter-spacing: 0;
     text-wrap: balance;
@@ -259,7 +261,7 @@
   .ui-page-title {
     font-family: var(--font-body), sans-serif;
     font-size: 2.15rem;
-    line-height: 1.12;
+    line-height: 1.14;
     font-weight: 400;
     letter-spacing: 0;
     text-wrap: balance;
@@ -268,7 +270,7 @@
   .ui-copy {
     max-width: 72ch;
     color: color-mix(in oklch, var(--ink-primary) 78%, var(--ink-secondary));
-    line-height: 1.62;
+    line-height: 1.66;
   }
 
   .ui-copy-strong {

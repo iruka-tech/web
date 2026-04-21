@@ -10,43 +10,80 @@ const examples = [
   {
     id: 'whale-exit',
     icon: RiFlashlightLine,
-    title: 'Whale exit alert',
-    description: 'A coordinated supplier exit over seven days.',
-    filename: 'whale-alert.json',
+    title: 'Grouped state change',
+    description: 'Detect when enough tracked vault owners unwind in one window.',
+    filename: 'grouped-state-change.json',
     code: `{
-  "name": "Whale Exit Alert",
+  "name": "Holder exit cluster",
   "definition": {
-    "scope": { "chains": [1], "markets": ["0xMarket"], "protocol": "morpho" },
+    "scope": { "chains": [1], "protocol": "all" },
     "window": { "duration": "7d" },
-    "conditions": [{ "...": "..." }]
+    "conditions": [
+      {
+        "type": "group",
+        "addresses": ["0xA", "0xB", "0xC"],
+        "requirement": { "count": 2, "of": 3 },
+        "conditions": [
+          {
+            "type": "change",
+            "source": { "kind": "alias", "name": "ERC4626.Position.shares" },
+            "direction": "decrease",
+            "by": { "percent": 20 },
+            "contract_address": "0xVault"
+          }
+        ]
+      }
+    ]
   }
 }`,
   },
   {
     id: 'utilization',
     icon: RiShieldLine,
-    title: 'Utilization spike',
-    description: 'A threshold on a stable market state alias.',
+    title: 'State alias threshold',
+    description: 'Compare one protocol-aware state block to a target.',
     filename: 'utilization-alert.json',
     code: `{
   "name": "High Utilization Warning",
   "definition": {
     "scope": { "chains": [1], "markets": ["0xMarket"], "protocol": "morpho" },
-    "conditions": [{ "type": "threshold", "metric": "Morpho.Market.utilization" }]
+    "window": { "duration": "1h" },
+    "conditions": [
+      {
+        "type": "threshold",
+        "source": { "kind": "alias", "name": "Morpho.Market.utilization" },
+        "operator": ">",
+        "value": 0.9,
+        "market_id": "0xMarket"
+      }
+    ]
   }
 }`,
   },
   {
     id: 'raw-events',
     icon: RiStackLine,
-    title: 'Raw swap scan',
-    description: 'A raw-events preset that watches DEX movement directly.',
+    title: 'Input-triggered check',
+    description: 'Save a rule that another system can wake up through the trigger endpoint.',
     filename: 'raw-events-alert.json',
     code: `{
-  "name": "Swap Volume Burst",
+  "name": "Agent requested review",
   "definition": {
+    "trigger": { "type": "input" },
     "scope": { "chains": [1], "protocol": "all" },
-    "conditions": [{ "type": "raw-events", "event": { "kind": "swap" } }]
+    "window": { "duration": "30m" },
+    "conditions": [
+      {
+        "type": "threshold",
+        "source": {
+          "kind": "raw_event",
+          "aggregation": "count",
+          "event": { "kind": "swap", "protocols": ["uniswap_v3"] }
+        },
+        "operator": ">",
+        "value": 25
+      }
+    ]
   }
 }`,
   },
@@ -60,10 +97,10 @@ export function CodeExamples() {
     <section id="examples" className="relative py-16 md:py-24">
       <div className="page-gutter">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="ui-kicker justify-center">Examples</div>
-          <h2 className="ui-section-title mt-5">Real payloads, restrained presentation.</h2>
+          <div className="ui-kicker justify-center">Payloads</div>
+          <h2 className="ui-section-title mt-5">Examples your agent can emit directly.</h2>
           <p className="ui-copy mx-auto mt-4">
-            Code should feel like part of the product system, not a disconnected GitHub widget dropped into the page.
+            These use the current backend direction: source blocks first, compatibility sugar only when useful.
           </p>
         </div>
 

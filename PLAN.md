@@ -64,7 +64,7 @@ Show real DSL examples:
 - POST /simulate - Test without deploying
 
 ### 7. Footer
-- Links: Docs, Discord, iruka.tech
+- Links: Docs, iruka.tech
 
 ## Tech Stack
 - **Framework:** Next.js 14 (App Router)

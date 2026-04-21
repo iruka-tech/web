@@ -16,61 +16,79 @@ type UseCase = {
 
 const useCases: UseCase[] = [
   {
-    id: 'vault-withdrawal-cluster',
-    title: 'Vault withdrawal cluster',
-    summary: 'Contract-scoped state monitoring for coordinated ERC-4626 share withdrawals.',
+    id: 'net-flow-agent',
+    title: 'Net flow trigger',
+    summary: 'Let an agent track inbound minus outbound value without writing log scanners.',
     details: [
-      'Watch 3 of 5 tracked owners over one window.',
-      'Use stable state aliases instead of rebuilding plumbing.',
-      'Author large integer thresholds as decimal strings when needed.',
+      'Compose two raw event blocks with an expression source.',
+      'Aggregate decoded ERC-20 Transfer value over one window.',
+      'Wake the agent only when net flow crosses a threshold.',
     ],
     code: `{
-  "name": "Vault withdrawal cluster",
+  "name": "Net USDC flow",
   "definition": {
     "scope": { "chains": [1], "protocol": "all" },
+    "window": { "duration": "1h" },
     "conditions": [
       {
-        "type": "group",
-        "requirement": { "count": 3, "of": 5 },
-        "conditions": [
-          {
-            "type": "change",
-            "metric": "ERC4626.Position.shares",
-            "direction": "decrease",
-            "by": { "absolute": "1000000000000000000" }
+        "type": "threshold",
+        "source": {
+          "kind": "expression",
+          "op": "sub",
+          "left": {
+            "kind": "raw_event",
+            "aggregation": "sum",
+            "field": "value",
+            "event": { "kind": "erc20_transfer" },
+            "filters": [{ "field": "to", "op": "eq", "value": "0xAgentVault" }]
+          },
+          "right": {
+            "kind": "raw_event",
+            "aggregation": "sum",
+            "field": "value",
+            "event": { "kind": "erc20_transfer" },
+            "filters": [{ "field": "from", "op": "eq", "value": "0xAgentVault" }]
           }
-        ]
+        },
+        "operator": ">",
+        "value": 0
       }
-    ],
-    "window": { "duration": "7d" }
+    ]
   }
 }`,
   },
   {
-    id: 'treasury-outflow',
-    title: 'Treasury outflow',
-    summary: 'Raw-event monitoring for large ERC-20 movement out of one treasury or vault.',
+    id: 'holder-cluster',
+    title: 'Holder cluster change',
+    summary: 'Let an agent detect coordinated ERC-4626 owner movement with grouped state checks.',
     details: [
-      'Read decoded Transfer logs directly.',
-      'Filter to one sender and one token.',
-      'Trigger only when gross outflow crosses the threshold.',
+      'Track N of M addresses without duplicating condition definitions.',
+      'Use change conditions over state-backed aliases.',
+      'Keep incident reminders quiet with repeat policy.',
     ],
     code: `{
-  "name": "Treasury outflow",
+  "name": "Vault holder exits",
   "definition": {
     "scope": { "chains": [1], "protocol": "all" },
+    "window": { "duration": "7d" },
     "conditions": [
       {
-        "type": "raw-events",
-        "aggregation": "sum",
-        "field": "value",
-        "operator": ">=",
-        "value": 5000000,
-        "filters": [{ "field": "from", "op": "eq", "value": "0xTreasury" }]
+        "type": "group",
+        "addresses": ["0xA", "0xB", "0xC"],
+        "requirement": { "count": 2, "of": 3 },
+        "conditions": [
+          {
+            "type": "change",
+            "source": { "kind": "alias", "name": "ERC4626.Position.shares" },
+            "direction": "decrease",
+            "by": { "percent": 20 },
+            "contract_address": "0xVault"
+          }
+        ]
       }
-    ],
-    "window": { "duration": "2h" }
-  }
+    ]
+  },
+  "repeat_policy": { "mode": "until_resolved" }
 }`,
   },
 ];
@@ -84,10 +102,10 @@ export function Capabilities() {
       <div className="page-gutter">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)]">
           <div className="ui-panel p-6 sm:p-7">
-            <SectionTag>Detection Patterns</SectionTag>
-            <h2 className="ui-section-title mt-5">Iruka can watch subtle movement without collapsing back to one-off infra.</h2>
+            <SectionTag>What You Can Build</SectionTag>
+            <h2 className="ui-section-title mt-5">Concrete automation patterns an agent can author today.</h2>
             <p className="ui-copy mt-4">
-              Pick a concrete pattern to inspect how the DSL turns a noisy chain surface into one durable watch.
+              The current backend accepts source blocks, grouped checks, expressions, windows, and delivery policy.
             </p>
 
             <div className="mt-8 space-y-3">
@@ -132,7 +150,7 @@ export function Capabilities() {
               <span className="ui-chip" data-tone="accent">
                 {activeUseCase.title}
               </span>
-              <span className="ui-chip">DSL Preview</span>
+              <span className="ui-chip">Backend DSL</span>
             </div>
 
             <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,0.64fr)_minmax(0,1fr)]">

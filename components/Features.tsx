@@ -1,29 +1,39 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { RiDatabase2Line, RiGitBranchLine, RiShieldCheckLine, RiTimeLine } from 'react-icons/ri';
+import { RiDatabase2Line, RiGitBranchLine, RiHistoryLine, RiPulseLine, RiShieldCheckLine, RiTimeLine } from 'react-icons/ri';
 import { Card } from './ui/Card';
 
 const features = [
   {
     icon: RiGitBranchLine,
-    title: 'Composable logic',
-    description: 'Model conditions with nested groups and reusable threshold patterns that mirror real strategy logic.',
+    title: 'One numeric-block model',
+    description: 'State reads, indexed events, raw logs, and expressions all become sources your agent can compare.',
   },
   {
     icon: RiTimeLine,
-    title: 'Window-aware alerting',
-    description: 'Use time windows and repeat policy to suppress churn before it ever reaches operators or agents.',
+    title: 'Window and repeat state',
+    description: 'Iruka keeps rolling windows, cooldowns, post-first-alert snoozes, and until-resolved incidents out of agent code.',
   },
   {
     icon: RiDatabase2Line,
-    title: 'Multiple source families',
-    description: 'Author one watch across current state, indexed history, and raw event scans without splitting tools.',
+    title: 'Provider routing and gating',
+    description: 'RPC, indexed reads, and HyperSync raw scans stay behind the API, with health and capability checks before runtime failure.',
   },
   {
     icon: RiShieldCheckLine,
-    title: 'Structured delivery',
-    description: 'Deliver matched conditions and scope context instead of a noisy event stream that still needs interpretation.',
+    title: 'Explainable delivery',
+    description: 'Webhooks and history include condition results and conditions_met, so an agent knows why it woke up.',
+  },
+  {
+    icon: RiPulseLine,
+    title: 'Scheduled or input-triggered',
+    description: 'Default scheduled evaluation covers monitoring; input triggers let your system wake a saved signal from another event.',
+  },
+  {
+    icon: RiHistoryLine,
+    title: 'Simulation before activation',
+    description: 'Use simulation and first-trigger search to test a rule over a range before trusting it in production.',
   },
 ];
 
@@ -32,10 +42,10 @@ export function Features() {
     <section id="features" className="relative py-16 md:py-24">
       <div className="page-gutter">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="ui-kicker justify-center">System Traits</div>
-          <h2 className="ui-section-title mt-5">Iruka stays focused on disciplined detection instead of ornamental dashboard clutter.</h2>
+          <div className="ui-kicker justify-center">What Agents Get</div>
+          <h2 className="ui-section-title mt-5">The boring reliability layer your agent should not rewrite.</h2>
           <p className="ui-copy mx-auto mt-4">
-            The design system should reflect the same posture as the product: quiet where it can be, explicit when it matters.
+            These are the hard pieces of onchain automation that look simple until they have to run every hour.
           </p>
         </div>
 

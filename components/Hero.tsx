@@ -7,18 +7,29 @@ import { SectionTag } from './ui/SectionTag';
 import { IRUKA_DOCS_OVERVIEW_URL } from '@/lib/iruka-links';
 
 const previewSignals = [
-  { label: 'State', value: 'Vault shares dropped 22% across 3 of 5 addresses', tone: 'accent' },
-  { label: 'Indexed', value: 'Net supply turned negative over the last 6h', tone: 'default' },
-  { label: 'Raw', value: 'USDC transfer burst crossed the 1M threshold', tone: 'telegram' },
+  { label: 'Sources', value: 'State, indexed history, raw logs, and expressions in one model', tone: 'accent' },
+  { label: 'Runtime', value: 'Windows, repeat policy, simulation, and capability checks handled server-side', tone: 'default' },
+  { label: 'Output', value: 'Webhook, Telegram, history, and conditions_met for agent action', tone: 'telegram' },
 ] as const;
 
-const previewCode = `signal.when({
-  state: "ERC4626.Position.shares",
-  indexed: "Morpho.Flow.netSupply",
-  raw: "erc20_transfer",
-  logic: "AND",
-  window: "6h"
-});`;
+const previewCode = `{
+  "trigger": { "type": "schedule" },
+  "scope": { "chains": [1], "protocol": "all" },
+  "window": { "duration": "1h" },
+  "conditions": [
+    {
+      "type": "threshold",
+      "source": {
+        "kind": "expression",
+        "op": "sub",
+        "left": { "kind": "raw_event", "aggregation": "sum" },
+        "right": { "kind": "raw_event", "aggregation": "sum" }
+      },
+      "operator": ">",
+      "value": 0
+    }
+  ]
+}`;
 
 export function Hero() {
   const scrollToSection = () => {
@@ -38,7 +49,7 @@ export function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45 }}
               >
-                <SectionTag>Iruka</SectionTag>
+                <SectionTag>For Agent Builders</SectionTag>
               </motion.div>
 
               <motion.p
@@ -47,7 +58,7 @@ export function Hero() {
                 transition={{ duration: 0.45, delay: 0.08 }}
                 className="mt-5 ui-kicker"
               >
-                For Operators And Agent Builders
+                Stop making agents maintain data plumbing
               </motion.p>
 
               <motion.h1
@@ -56,7 +67,7 @@ export function Hero() {
                 transition={{ duration: 0.45, delay: 0.14 }}
                 className="ui-display mt-4"
               >
-                Onchain conditions, kept quietly in view.
+                Build on top of a signal layer that only speaks when the pattern is real.
               </motion.h1>
 
               <motion.p
@@ -65,8 +76,9 @@ export function Hero() {
                 transition={{ duration: 0.45, delay: 0.2 }}
                 className="ui-copy mt-6 text-base sm:text-lg"
               >
-                Iruka turns state, indexed history, and raw events into a clean operating surface.
-                Define the condition once, then let the system carry the monitoring.
+                Autonomous agents should decide and act, not maintain polling loops, event decoders,
+                retry logic, time windows, and alert deduplication. Iruka gives them one API for
+                durable conditions across onchain state, history, raw events, and structured delivery.
               </motion.p>
 
               <motion.div
@@ -77,7 +89,7 @@ export function Hero() {
               >
                 <button onClick={scrollToSection} className="w-fit">
                   <span className="ui-button px-5 py-3.5" data-variant="primary">
-                    See The Flow
+                    See What It Handles
                     <RiArrowDownLine className="h-4 w-4" />
                   </span>
                 </button>
@@ -98,13 +110,13 @@ export function Hero() {
             >
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="ui-kicker">Condition Set</div>
+                  <div className="ui-kicker">Agent handoff</div>
                   <h2 className="mt-3 font-display text-[1.35rem] leading-tight text-foreground">
-                    Quiet monitoring, clear handoff.
+                    One saved rule becomes a reliable trigger surface.
                   </h2>
                 </div>
                 <span className="ui-chip" data-tone="accent">
-                  Ready
+                  API
                 </span>
               </div>
 
@@ -122,7 +134,7 @@ export function Hero() {
                         {signal.label}
                       </span>
                       <span className="text-[0.72rem] uppercase tracking-[0.18em] text-[color:var(--ink-muted)]">
-                        Tracking
+                        Built in
                       </span>
                     </div>
                     <p className="mt-3 text-sm leading-relaxed text-secondary">{signal.value}</p>
@@ -131,7 +143,7 @@ export function Hero() {
               </div>
 
               <div className="ui-panel-ghost p-4">
-                <div className="ui-kicker">Definition</div>
+                <div className="ui-kicker">Signal definition</div>
                 <div className="mt-4">
                   <CodeBlock code={previewCode} language="typescript" showHeader={false} tone="light" />
                 </div>

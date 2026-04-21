@@ -7,50 +7,48 @@ import { SectionTag } from './ui/SectionTag';
 const storyBeats = [
   {
     id: 'problem',
-    tag: 'Problem',
-    title: 'Feeds are not decisions.',
+    tag: 'Hard Part',
+    title: 'Agents are bad at long-running chain vigilance.',
     content:
-      'Polling state, querying indexed history, and subscribing to raw events all produce motion. Operators still need a trusted condition that separates signal from churn.',
+      'An agent can write scripts, but keeping them reliable is the painful part: archive RPC reads, indexed history, raw log scans, window state, retries, duplicate suppression, and explainable alerts all become infrastructure.',
     code: `rpc.read("balanceOf", owner)
 index.query("ProtocolEvent", window)
-events.on("Transfer", notify)
+events.scan("Transfer", filters)
+cron.retryUntilHealthy()
 
-// Plenty of motion.
-// Still no decision surface.`,
+// The agent is now maintaining infra.
+// It still needs a trustworthy trigger.`,
   },
   {
     id: 'insight',
     tag: 'Abstraction',
-    title: 'Describe the condition, not the plumbing.',
+    title: 'Iruka gives the agent one numeric-block model.',
     content:
-      'Iruka turns the watch target into one explicit pattern: scope, thresholds, time windows, and boolean logic. The result is a durable rule instead of a stack of one-off reads.',
+      'The current backend accepts source blocks for state, indexed events, raw events, and expressions. Your agent describes the number it wants watched, then compares it with threshold, change, aggregate, or group logic.',
     code: `{
   "scope": { "chains": [1], "protocol": "all" },
+  "window": { "duration": "2h" },
   "conditions": [
     {
-      "type": "change",
-      "metric": "ERC4626.Position.shares",
-      "direction": "decrease",
-      "by": { "percent": 20 }
-    },
-    {
-      "type": "raw-events",
-      "aggregation": "sum",
-      "field": "value",
+      "type": "threshold",
+      "source": {
+        "kind": "raw_event",
+        "aggregation": "sum",
+        "field": "value",
+        "event": { "kind": "erc20_transfer" }
+      },
       "operator": ">",
       "value": 1000000
     }
-  ],
-  "logic": "AND",
-  "window": { "duration": "2h" }
+  ]
 }`,
   },
   {
     id: 'runtime',
     tag: 'Runtime',
-    title: 'Iruka keeps watch after setup.',
+    title: 'The backend owns evaluation and handoff.',
     content:
-      'Once the pattern exists, Iruka owns the continuous evaluation loop, manages windows, and delivers structured context only when the pattern actually resolves.',
+      'Iruka stores the rule, checks source-family capability before accepting it, simulates and finds first trigger points, applies repeat policy, and delivers conditions_met so agents can act without re-interpreting a raw event stream.',
     code: `POST /api/v1/signals
 {
   "name": "Vault withdrawal cluster",
@@ -67,11 +65,11 @@ export function Story() {
     <section id="story" className="relative py-16 md:py-24">
       <div className="page-gutter">
         <div className="mb-10 max-w-3xl">
-          <SectionTag>Why Iruka</SectionTag>
-          <h2 className="ui-section-title mt-5">Iruka keeps exact conditions legible without turning open data into raw telemetry.</h2>
+          <SectionTag>First Principles</SectionTag>
+          <h2 className="ui-section-title mt-5">The thing your agent needs is not another feed. It needs a dependable trigger.</h2>
           <p className="ui-copy mt-4">
-            The product exists to make monitoring composable, durable, and useful for the person or agent
-            that needs to act. Every layer below exists to support that one outcome.
+            Iruka is for the jobs that are tedious to keep correct in agent code: source routing,
+            rolling windows, grouped targets, event aggregation, historical simulation, and delivery state.
           </p>
         </div>
 

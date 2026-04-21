@@ -1,8 +1,12 @@
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { Story } from '@/components/Story';
+import { HowItWorks } from '@/components/HowItWorks';
+import { Features } from '@/components/Features';
 import { Capabilities } from '@/components/Capabilities';
 import { ForAgents } from '@/components/ForAgents';
+import { CodeExamples } from '@/components/CodeExamples';
+import { AgentOnboarding } from '@/components/AgentOnboarding';
 import { FinalCTA } from '@/components/FinalCTA';
 import { Footer } from '@/components/Footer';
 
@@ -13,8 +17,12 @@ export default function MarketingHome() {
       <main className="relative z-10">
         <Hero />
         <Story />
+        <HowItWorks />
+        <Features />
         <Capabilities />
         <ForAgents />
+        <CodeExamples />
+        <AgentOnboarding />
         <FinalCTA />
       </main>
       <Footer />

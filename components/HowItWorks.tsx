@@ -7,30 +7,31 @@ import { CodeBlock } from './ui/CodeBlock';
 const steps = [
   {
     icon: RiCodeSSlashLine,
-    title: 'Define',
-    description: 'Compose the condition with metric sugar, raw state refs, or raw-event scans.',
+    title: 'Ask for an outcome',
+    description: 'Give the agent a goal like “alert me if this vault starts losing tracked holders.”',
     code: `{
-  "logic": "AND",
-  "window": { "duration": "7d" },
-  "conditions": [{ "...": "..." }]
+  "goal": "watch 3 of 5 vault owners",
+  "window": "7d",
+  "delivery": "telegram"
 }`,
   },
   {
     icon: RiCloudLine,
-    title: 'Register',
-    description: 'Post the signal once. Iruka owns the continuous evaluation loop from there.',
+    title: 'Let it write a signal',
+    description: 'The agent emits one Iruka definition with scope, source blocks, condition logic, window, and repeat policy.',
     code: `POST /api/v1/signals
 X-API-Key: iruka_...
-{ "name": "High-Signal Watch" }`,
+{ "definition": { "...": "numeric blocks" } }`,
   },
   {
     icon: RiNotification3Line,
-    title: 'React',
-    description: 'Receive the structured alert only when the full pattern actually resolves.',
+    title: 'React to a trigger',
+    description: 'Iruka returns matched conditions and context through webhook, Telegram, or history so the agent can act.',
     code: `{
   "triggered": true,
-  "conditions_met": [],
-  "context": { "chain_id": 1 }
+  "conditions_met": [{ "summary": "100 > 50" }],
+  "context": { "chain_id": 1 },
+  "trigger_input": null
 }`,
   },
 ];
@@ -40,10 +41,10 @@ export function HowItWorks() {
     <section id="how-it-works" className="relative py-16 md:py-24">
       <div className="page-gutter">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="ui-kicker justify-center">Flow</div>
-          <h2 className="ui-section-title mt-5">Three disciplined steps from watch definition to structured delivery.</h2>
+          <div className="ui-kicker justify-center">Agent Workflow</div>
+          <h2 className="ui-section-title mt-5">From natural goal to durable signal trigger.</h2>
           <p className="ui-copy mx-auto mt-4">
-            The product flow should read like the monitoring model itself: define the condition, let Iruka keep watch, then react only when signal arrives.
+            Iruka is the persistent sensing layer your agent can call once and rely on later.
           </p>
         </div>
 

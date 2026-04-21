@@ -93,8 +93,8 @@ function SocialImage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ fontSize: '52px', lineHeight: 1.08, fontWeight: 500 }}>
-              Onchain conditions, kept quietly in view.
+            <div style={{ fontSize: '48px', lineHeight: 1.08, fontWeight: 500 }}>
+              A signal layer that only speaks when the pattern is real.
             </div>
             <div style={{ fontSize: '22px', lineHeight: 1.5, color: '#566270' }}>
               State, indexed history, and raw events for agents built on open data.

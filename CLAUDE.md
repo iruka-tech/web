@@ -37,7 +37,7 @@ Use the repo design system and keep product surfaces restrained, precise, and op
 
 ### 1. Header
 - Logo: "Iruka" (left)
-- Nav: Docs | Discord (right)
+- Nav: Docs (right)
 - Dark mode toggle
 - Sticky, transparent initially, solid on scroll
 - Mobile: hamburger menu
@@ -88,7 +88,7 @@ Simple table:
 | POST | /simulate | Test signal |
 
 ### 8. Footer
-- Links: Docs, Discord
+- Links: Docs
 - iruka.tech link
 - Copyright
 
