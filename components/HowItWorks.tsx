@@ -1,79 +1,103 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { RiCloudLine, RiCodeSSlashLine, RiNotification3Line } from 'react-icons/ri';
 import { CodeBlock } from './ui/CodeBlock';
 
-const steps = [
+const canonicalSnippet = `{
+  "version": "1",
+  "name": "Morpho supplier unwind watch",
+  "triggers": [
+    {
+      "type": "schedule",
+      "schedule": { "kind": "interval", "interval_seconds": 300 }
+    }
+  ],
+  "definition": {
+    "scope": { "chains": [1], "markets": ["0xMarket"], "protocol": "morpho" },
+    "window": { "duration": "7d" },
+    "logic": "AND",
+    "conditions": [{ "...": "..." }]
+  },
+  "delivery": [{ "type": "telegram" }],
+  "metadata": {
+    "description": "Trigger when 2 of 3 tracked suppliers each reduce supply shares by >=20%.",
+    "repeat_policy": { "mode": "until_resolved" }
+  }
+}`;
+
+const triggerVariationSnippet = `[
   {
-    icon: RiCodeSSlashLine,
-    title: 'Ask for an outcome',
-    description: 'Give the agent a goal like “alert me if this vault starts losing tracked holders.”',
-    code: `{
-  "goal": "watch 3 of 5 vault owners",
-  "window": "7d",
-  "delivery": "telegram"
-}`,
+    "type": "schedule",
+    "schedule": { "kind": "interval", "interval_seconds": 300 }
   },
   {
-    icon: RiCloudLine,
-    title: 'Let it write a signal',
-    description: 'The agent emits one Iruka definition with scope, source blocks, condition logic, window, and repeat policy.',
-    code: `POST /api/v1/signals
-X-API-Key: iruka_...
-{ "definition": { "...": "numeric blocks" } }`,
+    "type": "schedule",
+    "schedule": { "kind": "cron", "expression": "0 8 * * *" }
   },
   {
-    icon: RiNotification3Line,
-    title: 'React to a trigger',
-    description: 'Iruka returns matched conditions and context through webhook, Telegram, or history so the agent can act.',
-    code: `{
-  "triggered": true,
-  "conditions_met": [{ "summary": "100 > 50" }],
-  "context": { "chain_id": 1 },
-  "trigger_input": null
-}`,
-  },
-];
+    "type": "iruka_signal",
+    "id": "sig_upstream_abc123"
+  }
+]
+
+// "external" is in the target schema but public input is not live yet.`;
+
+const deliverySnippet = `[
+  { "type": "telegram" }
+]`;
 
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="relative py-16 md:py-24">
       <div className="page-gutter">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="ui-kicker justify-center">Agent Workflow</div>
-          <h2 className="ui-section-title mt-5">From natural goal to durable signal trigger.</h2>
+          <div className="ui-kicker justify-center">Public Schema</div>
+          <h2 className="ui-section-title mt-5">One canonical envelope for signal creation.</h2>
           <p className="ui-copy mx-auto mt-4">
-            Iruka is the persistent sensing layer your agent can call once and rely on later.
+            Use one payload shape for authoring. Keep trigger and delivery variation focused in small blocks.
           </p>
         </div>
 
         <motion.div
-          className="mt-10 grid gap-4 lg:grid-cols-3"
+          className="mt-10 grid gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
         >
-          {steps.map((step, index) => (
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35 } } }}
+            className="ui-panel p-5"
+          >
+            <div className="ui-kicker">Canonical request</div>
+            <div className="mt-5">
+              <CodeBlock code={canonicalSnippet} language="json" filename="signal.json" tone="light" showLineNumbers />
+            </div>
+          </motion.div>
+
+          <div className="space-y-4">
             <motion.div
-              key={step.title}
               variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35 } } }}
               className="ui-panel p-5"
             >
-              <div className="flex items-center justify-between">
-                <span className="ui-chip" data-tone="accent">
-                  0{index + 1}
-                </span>
-                <step.icon className="h-5 w-5 text-[color:var(--signal-copper)]" />
-              </div>
-              <h3 className="mt-5 font-display text-[1.55rem] leading-none text-foreground">{step.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-secondary">{step.description}</p>
-              <div className="mt-5">
-                <CodeBlock code={step.code} tone="light" showHeader={false} />
+              <div className="ui-kicker">Trigger variations</div>
+              <p className="mt-3 text-sm text-secondary">Public trigger types today: schedule and iruka_signal.</p>
+              <div className="mt-4">
+                <CodeBlock code={triggerVariationSnippet} language="json" tone="light" showHeader={false} />
               </div>
             </motion.div>
-          ))}
+
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35 } } }}
+              className="ui-panel p-5"
+            >
+              <div className="ui-kicker">Delivery</div>
+              <p className="mt-3 text-sm text-secondary">Public managed delivery currently routes through Telegram.</p>
+              <div className="mt-4">
+                <CodeBlock code={deliverySnippet} language="json" tone="light" showHeader={false} />
+              </div>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>

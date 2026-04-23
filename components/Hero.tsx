@@ -7,28 +7,31 @@ import { SectionTag } from './ui/SectionTag';
 import { IRUKA_DOCS_OVERVIEW_URL } from '@/lib/iruka-links';
 
 const previewSignals = [
-  { label: 'Sources', value: 'State, indexed history, raw logs, and expressions in one model', tone: 'accent' },
-  { label: 'Runtime', value: 'Windows, repeat policy, simulation, and capability checks handled server-side', tone: 'default' },
-  { label: 'Output', value: 'Webhook, Telegram, history, and conditions_met for agent action', tone: 'telegram' },
+  { label: 'Envelope', value: 'version, name, triggers, definition, delivery, metadata', tone: 'accent' },
+  { label: 'Runtime', value: 'Schedule evaluation, simulation, and repeat-policy handling stay server-side', tone: 'default' },
+  { label: 'Delivery', value: 'Current public delivery target is Telegram', tone: 'telegram' },
 ] as const;
 
 const previewCode = `{
-  "trigger": { "type": "schedule" },
-  "scope": { "chains": [1], "protocol": "all" },
-  "window": { "duration": "1h" },
-  "conditions": [
+  "version": "1",
+  "name": "Vault holder exits",
+  "triggers": [
     {
-      "type": "threshold",
-      "source": {
-        "kind": "expression",
-        "op": "sub",
-        "left": { "kind": "raw_event", "aggregation": "sum" },
-        "right": { "kind": "raw_event", "aggregation": "sum" }
-      },
-      "operator": ">",
-      "value": 0
+      "type": "schedule",
+      "schedule": { "kind": "interval", "interval_seconds": 300 }
     }
-  ]
+  ],
+  "definition": {
+    "scope": { "chains": [1], "protocol": "all" },
+    "window": { "duration": "7d" },
+    "logic": "AND",
+    "conditions": [{ "...": "..." }]
+  },
+  "delivery": [{ "type": "telegram" }],
+  "metadata": {
+    "description": "Alert when 2 of 3 tracked holders reduce shares by >=20%.",
+    "repeat_policy": { "mode": "until_resolved" }
+  }
 }`;
 
 export function Hero() {
@@ -78,7 +81,7 @@ export function Hero() {
               >
                 Autonomous agents should decide and act, not maintain polling loops, event decoders,
                 retry logic, time windows, and alert deduplication. Iruka gives them one API for
-                durable conditions across onchain state, history, raw events, and structured delivery.
+                durable conditions across onchain state and history with structured delivery.
               </motion.p>
 
               <motion.div

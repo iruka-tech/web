@@ -23,12 +23,12 @@ const features = [
   {
     icon: RiShieldCheckLine,
     title: 'Explainable delivery',
-    description: 'Webhooks and history include condition results and conditions_met, so an agent knows why it woke up.',
+    description: 'Delivery payloads include condition context so an agent can act on clear trigger reasons.',
   },
   {
     icon: RiPulseLine,
-    title: 'Scheduled or input-triggered',
-    description: 'Default scheduled evaluation covers monitoring; input triggers let your system wake a saved signal from another event.',
+    title: 'Scheduled and signal-chained',
+    description: 'Use schedule and iruka_signal trigger types now; external trigger support is in the target schema.',
   },
   {
     icon: RiHistoryLine,
