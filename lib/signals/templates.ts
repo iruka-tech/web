@@ -295,9 +295,7 @@ const buildManagedTelegramSignal = (
     delivery: [{ type: 'telegram' }],
     metadata: {
       description,
-    },
-    policy: {
-      repeat: metadataRepeatPolicy,
+      repeat_policy: metadataRepeatPolicy,
     },
   };
 };
