@@ -41,9 +41,10 @@ const editFrames = [
   },
   {
     label: 'Tune repeat behavior',
-    note: 'Cooldown policy stays separate from the trigger.',
-    code: `"policy": {
-  "repeat": {
+    note: 'Cooldown policy belongs in metadata, separate from the trigger.',
+    code: `"metadata": {
+  "description": "Watch coordinated supplier exits.",
+  "repeat_policy": {
     "mode": "cooldown",
     "cooldown_minutes": 60
   }

@@ -178,10 +178,7 @@ export type SignalDelivery = TelegramSignalDelivery;
 
 export interface SignalMetadata {
   description?: string;
-}
-
-export interface SignalPolicy {
-  repeat: SignalRepeatPolicy;
+  repeat_policy?: SignalRepeatPolicy;
 }
 
 export interface PublicSignalEnvelope {
@@ -191,7 +188,6 @@ export interface PublicSignalEnvelope {
   definition: SignalDefinition;
   delivery: SignalDelivery[];
   metadata?: SignalMetadata;
-  policy: SignalPolicy;
 }
 
 export interface SignalRecord {
@@ -203,7 +199,6 @@ export interface SignalRecord {
   definition: SignalDefinition;
   delivery: SignalDelivery[];
   metadata?: SignalMetadata | null;
-  policy: SignalPolicy;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -220,7 +215,6 @@ export interface UpdateSignalRequest {
   definition?: SignalDefinition;
   delivery?: SignalDelivery[];
   metadata?: SignalMetadata;
-  policy?: SignalPolicy;
   is_active?: boolean;
 }
 
