@@ -3,7 +3,6 @@ import { Hero } from '@/components/Hero';
 import { Story } from '@/components/Story';
 import { HowItWorks } from '@/components/HowItWorks';
 import { Features } from '@/components/Features';
-import { AgentOnboarding } from '@/components/AgentOnboarding';
 import { FinalCTA } from '@/components/FinalCTA';
 import { Footer } from '@/components/Footer';
 
@@ -16,7 +15,6 @@ export default function MarketingHome() {
         <Story />
         <HowItWorks />
         <Features />
-        <AgentOnboarding />
         <FinalCTA />
       </main>
       <Footer />
