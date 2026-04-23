@@ -28,15 +28,12 @@ export const normalizeSignalRepeatPolicy = (
   repeatPolicy?: SignalRepeatPolicy | null
 ): SignalRepeatPolicy => repeatPolicy ?? DEFAULT_SIGNAL_REPEAT_POLICY;
 
-export const describeSignalRepeatPolicy = (
-  repeatPolicy?: SignalRepeatPolicy | null,
-  cooldownMinutes?: number | null
-) => {
+export const describeSignalRepeatPolicy = (repeatPolicy?: SignalRepeatPolicy | null) => {
   const resolvedPolicy = normalizeSignalRepeatPolicy(repeatPolicy);
 
   switch (resolvedPolicy.mode) {
     case 'cooldown':
-      return `Cooldown ${resolvedPolicy.cooldown_minutes ?? cooldownMinutes ?? 0}m`;
+      return `Cooldown ${resolvedPolicy.cooldown_minutes ?? 0}m`;
     case 'post_first_alert_snooze':
       return `Post-first snooze ${resolvedPolicy.snooze_minutes}m`;
     case 'until_resolved':

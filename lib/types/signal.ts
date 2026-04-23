@@ -123,10 +123,6 @@ export interface SignalDefinition {
   window: TimeWindow;
 }
 
-export interface LegacyManagedSignalDelivery {
-  provider: 'telegram';
-}
-
 export type SignalRepeatPolicyMode = 'cooldown' | 'post_first_alert_snooze' | 'until_resolved';
 
 export interface CooldownRepeatPolicy {
@@ -197,17 +193,12 @@ export interface PublicSignalEnvelope {
 export interface SignalRecord {
   id: string;
   user_id?: string;
-  version?: string;
+  version: string;
   name: string;
-  triggers?: SignalTrigger[];
+  triggers: SignalTrigger[];
   definition: SignalDefinition;
-  delivery?: SignalDelivery[] | LegacyManagedSignalDelivery | null;
+  delivery: SignalDelivery[];
   metadata?: SignalMetadata | null;
-  // Legacy response compatibility during schema migration.
-  description?: string | null;
-  webhook_url?: string | null;
-  cooldown_minutes?: number | null;
-  repeat_policy?: SignalRepeatPolicy | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
