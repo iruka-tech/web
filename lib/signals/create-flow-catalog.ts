@@ -81,9 +81,9 @@ export const HUMAN_SIGNAL_CATEGORIES: HumanSignalCategoryOption[] = [
   {
     id: 'tokens',
     title: 'Tokens',
-    summary: 'Token balance alerts',
+    summary: 'ERC-20 alerts',
     helpText:
-      'Start from common ERC-20 tokens like USDC, WETH, and sUSDe, then watch one holder address for balance changes over time.',
+      'Start from common ERC-20 tokens like USDC, USDT, and WETH, then either watch one holder balance or aggregate exact transfer routes over time.',
   },
 ];
 

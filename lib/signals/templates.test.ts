@@ -116,11 +116,12 @@ test('whale movement templates stay compatible with the current Iruka docs schem
   }
 });
 
-test('erc20 raw-event templates stay compatible with the current Iruka docs schema', () => {
+test('erc20 event aggregation templates stay compatible with the current Iruka docs schema', () => {
   const payload = buildSignalTemplate({
-    templateId: 'erc20-inflow-watch',
+    templateId: 'erc20-event-aggregation-watch',
     tokenContract: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    watchedAddress: '0x1111111111111111111111111111111111111111',
+    fromAddress: '0x1111111111111111111111111111111111111111',
+    toAddress: '0x2222222222222222222222222222222222222222',
   });
 
   assertDocCompatibleTemplatePayload(payload);
@@ -129,15 +130,21 @@ test('erc20 raw-event templates stay compatible with the current Iruka docs sche
   if (condition.type === 'raw-events') {
     assert.equal(condition.aggregation, 'sum');
     assert.equal(condition.field, 'value');
+    assert.deepEqual(condition.filters, [
+      { field: 'from', op: 'eq', value: '0x1111111111111111111111111111111111111111' },
+      { field: 'to', op: 'eq', value: '0x2222222222222222222222222222222222222222' },
+    ]);
   }
 });
 
-test('erc20 balance drop templates stay compatible with the current Iruka docs schema', () => {
+test('erc20 balance templates support percent decreases', () => {
   const payload = buildSignalTemplate({
-    templateId: 'erc20-balance-drop-watch',
+    templateId: 'erc20-balance-watch',
     tokenContract: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
     watchedAddress: '0x1111111111111111111111111111111111111111',
-    dropPercent: 20,
+    balanceDirection: 'decrease',
+    thresholdMode: 'percent',
+    percentThreshold: 20,
     windowDuration: '2h',
   });
 
@@ -151,6 +158,26 @@ test('erc20 balance drop templates stay compatible with the current Iruka docs s
     assert.equal(condition.contract_address, '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48');
     assert.equal(condition.address, '0x1111111111111111111111111111111111111111');
     assert.deepEqual(condition.window, { duration: '2h' });
+  }
+});
+
+test('erc20 balance templates support absolute increases', () => {
+  const payload = buildSignalTemplate({
+    templateId: 'erc20-balance-watch',
+    tokenContract: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    watchedAddress: '0x1111111111111111111111111111111111111111',
+    balanceDirection: 'increase',
+    thresholdMode: 'absolute',
+    absoluteThreshold: '5000000',
+    windowDuration: '6h',
+  });
+
+  const condition = payload.definition.conditions[0];
+  assert.equal(condition?.type, 'change');
+  if (condition?.type === 'change') {
+    assert.equal(condition.direction, 'increase');
+    assert.deepEqual(condition.by, { absolute: '5000000' });
+    assert.deepEqual(condition.window, { duration: '6h' });
   }
 });
 
@@ -171,9 +198,9 @@ test('erc4626 withdraw templates stay compatible with the current Iruka docs sch
 
 test('signal templates forward post-first-alert snooze repeat policy', () => {
   const payload = buildSignalTemplate({
-    templateId: 'erc20-inflow-watch',
+    templateId: 'erc20-event-aggregation-watch',
     tokenContract: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    watchedAddress: '0x1111111111111111111111111111111111111111',
+    toAddress: '0x1111111111111111111111111111111111111111',
     repeatPolicy: {
       mode: 'post_first_alert_snooze',
       snooze_minutes: 1440,

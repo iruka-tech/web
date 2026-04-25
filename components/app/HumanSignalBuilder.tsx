@@ -19,12 +19,14 @@ import {
   getHumanSignalCategory,
   type HumanSignalCategoryId,
 } from '@/lib/signals/create-flow-catalog';
+import type { SignalTemplateId } from '@/lib/signals/templates';
 import { CUSTOM_TEMPLATE_PATH } from '@/lib/telegram/setup-flow';
 import type { SupportedVaultProtocolId } from '@/lib/vault-discovery/types';
 
 export function HumanSignalBuilder() {
   const [category, setCategory] = useState<HumanSignalCategoryId>('vaults');
   const [selectedVaultProtocol, setSelectedVaultProtocol] = useState<SupportedVaultProtocolId>('morpho');
+  const [selectedTokenTemplate, setSelectedTokenTemplate] = useState<SignalTemplateId>('erc20-balance-watch');
   const selectedCategory = getHumanSignalCategory(category);
 
   return (
@@ -97,21 +99,48 @@ export function HumanSignalBuilder() {
                 </div>
               ))
             : [
-                <div key="erc20-balance" className="ui-panel p-5 text-left lg:col-span-3">
+                <button
+                  key="erc20-balance"
+                  type="button"
+                  onClick={() => setSelectedTokenTemplate('erc20-balance-watch')}
+                  data-active={selectedTokenTemplate === 'erc20-balance-watch'}
+                  className="ui-option p-5 text-left"
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="ui-stat-label">Live now</p>
-                      <h2 className="mt-3 font-display text-[1.65rem] leading-none text-foreground">ERC-20 balance change</h2>
+                      <h2 className="mt-3 font-display text-[1.65rem] leading-none text-foreground">Custom ERC-20 balance</h2>
                       <p className="mt-2 max-w-2xl text-sm text-secondary">
-                        Start from USDC, WETH, or sUSDe, then point the alert at any holder address and any ERC-20 contract.
+                        Track one holder and alert on balance increases or decreases by percent or absolute amount.
                       </p>
                     </div>
                     <HelpHint
-                      text="This builder uses archive RPC-backed ERC-20 balance reads, so you can alert on percent decreases over a rolling window instead of only raw transfer bursts."
+                      text="Uses archive RPC-backed ERC-20 balance reads, so alerts reflect true balance change over the window instead of gross transfer flow."
                       align="right"
                     />
                   </div>
-                </div>,
+                </button>,
+                <button
+                  key="erc20-events"
+                  type="button"
+                  onClick={() => setSelectedTokenTemplate('erc20-event-aggregation-watch')}
+                  data-active={selectedTokenTemplate === 'erc20-event-aggregation-watch'}
+                  className="ui-option p-5 text-left lg:col-span-2"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="ui-stat-label">Live now</p>
+                      <h2 className="mt-3 font-display text-[1.65rem] leading-none text-foreground">Event aggregation</h2>
+                      <p className="mt-2 max-w-2xl text-sm text-secondary">
+                        Aggregate ERC-20 transfer value over the last x hours with exact token, from, and to address filters.
+                      </p>
+                    </div>
+                    <HelpHint
+                      text="Uses raw ERC-20 Transfer events. You can filter exact from and to addresses together and alert on aggregated transfer value over the window."
+                      align="right"
+                    />
+                  </div>
+                </button>,
               ]}
       </div>
 
@@ -120,7 +149,12 @@ export function HumanSignalBuilder() {
       ) : category === 'protocols' ? (
         <MorphoMarketSignalBuilder />
       ) : (
-        <SignalBuilderForm initialPreset="erc20-balance-drop-watch" telegramLinked />
+        <SignalBuilderForm
+          key={selectedTokenTemplate}
+          initialPreset={selectedTokenTemplate}
+          telegramLinked
+          hideTemplateSelector
+        />
       )}
 
       <Card className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

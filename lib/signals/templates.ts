@@ -2,6 +2,7 @@ import type {
   ChangeCondition,
   CreateSignalRequest,
   GroupCondition,
+  NumericInput,
   RawEventKind,
   RawEventsCondition,
   SignalCondition,
@@ -13,13 +14,13 @@ import type {
 } from '@/lib/types/signal';
 import { DEFAULT_SIGNAL_REPEAT_POLICY, normalizeSignalRepeatPolicy } from '@/lib/signals/repeat-policy';
 
-export type SignalTemplateKind = 'morpho-whale' | 'erc20-transfer' | 'erc20-balance-drop' | 'erc4626-withdraw';
+export type SignalTemplateKind = 'morpho-whale' | 'erc20-transfer' | 'erc20-balance' | 'erc4626-withdraw';
 
 export type WhaleTemplateId = 'whale-exit-trio' | 'whale-exit-pair' | 'single-whale-exit';
-export type Erc20TransferTemplateId = 'erc20-inflow-watch' | 'erc20-outflow-watch';
-export type Erc20BalanceDropTemplateId = 'erc20-balance-drop-watch';
+export type Erc20TransferTemplateId = 'erc20-event-aggregation-watch';
+export type Erc20BalanceTemplateId = 'erc20-balance-watch';
 export type Erc4626WithdrawTemplateId = 'erc4626-withdraw-percent-watch';
-export type SignalTemplateId = WhaleTemplateId | Erc20TransferTemplateId | Erc20BalanceDropTemplateId | Erc4626WithdrawTemplateId;
+export type SignalTemplateId = WhaleTemplateId | Erc20TransferTemplateId | Erc20BalanceTemplateId | Erc4626WithdrawTemplateId;
 
 interface BaseSignalTemplatePreset<TId extends SignalTemplateId, TKind extends SignalTemplateKind, TDefaults> {
   id: TId;
@@ -51,18 +52,19 @@ export type Erc20TransferTemplatePreset = BaseSignalTemplatePreset<
     windowDuration: string;
     cooldownMinutes: number;
   }
-> & {
-  direction: 'inflow' | 'outflow';
-};
+>;
 
-export type Erc20BalanceDropTemplatePreset = BaseSignalTemplatePreset<
-  Erc20BalanceDropTemplateId,
-  'erc20-balance-drop',
+export type Erc20BalanceTemplatePreset = BaseSignalTemplatePreset<
+  Erc20BalanceTemplateId,
+  'erc20-balance',
   {
     chainId: number;
     windowDuration: string;
     cooldownMinutes: number;
-    dropPercent: number;
+    direction: 'increase' | 'decrease';
+    thresholdMode: 'percent' | 'absolute';
+    percentThreshold: number;
+    absoluteThreshold: NumericInput;
   }
 >;
 
@@ -81,7 +83,7 @@ export type Erc4626WithdrawTemplatePreset = BaseSignalTemplatePreset<
 export type SignalTemplatePreset =
   | WhaleSignalTemplatePreset
   | Erc20TransferTemplatePreset
-  | Erc20BalanceDropTemplatePreset
+  | Erc20BalanceTemplatePreset
   | Erc4626WithdrawTemplatePreset;
 
 interface BaseTemplateRequest<TId extends SignalTemplateId> {
@@ -104,14 +106,18 @@ export interface WhaleTemplateRequest extends BaseTemplateRequest<WhaleTemplateI
 
 export interface Erc20TransferTemplateRequest extends BaseTemplateRequest<Erc20TransferTemplateId> {
   tokenContract: string;
-  watchedAddress: string;
+  fromAddress?: string;
+  toAddress?: string;
   amountThreshold?: number;
 }
 
-export interface Erc20BalanceDropTemplateRequest extends BaseTemplateRequest<Erc20BalanceDropTemplateId> {
+export interface Erc20BalanceTemplateRequest extends BaseTemplateRequest<Erc20BalanceTemplateId> {
   tokenContract: string;
   watchedAddress: string;
-  dropPercent?: number;
+  balanceDirection?: 'increase' | 'decrease';
+  thresholdMode?: 'percent' | 'absolute';
+  percentThreshold?: number;
+  absoluteThreshold?: NumericInput;
 }
 
 export interface Erc4626WithdrawTemplateRequest extends BaseTemplateRequest<Erc4626WithdrawTemplateId> {
@@ -124,7 +130,7 @@ export interface Erc4626WithdrawTemplateRequest extends BaseTemplateRequest<Erc4
 export type SignalTemplateRequest =
   | WhaleTemplateRequest
   | Erc20TransferTemplateRequest
-  | Erc20BalanceDropTemplateRequest
+  | Erc20BalanceTemplateRequest
   | Erc4626WithdrawTemplateRequest;
 
 export interface SignalFocusDetails {
@@ -185,12 +191,11 @@ export const SIGNAL_TEMPLATE_PRESETS: SignalTemplatePreset[] = [
     },
   },
   {
-    id: 'erc20-inflow-watch',
+    id: 'erc20-event-aggregation-watch',
     kind: 'erc20-transfer',
-    title: 'ERC-20 Inflow Watch',
-    description: 'Use Iruka’s `raw-events` ERC-20 transfer preset to sum gross inbound value to one address.',
-    accent: 'raw-events · sum(value) to address',
-    direction: 'inflow',
+    title: 'ERC-20 Event Aggregation',
+    description: 'Aggregate ERC-20 transfer value over a rolling window with exact token, from, and to filters.',
+    accent: 'raw-events · sum(value) · exact filters',
     defaults: {
       chainId: 1,
       amountThreshold: 1000000,
@@ -199,28 +204,17 @@ export const SIGNAL_TEMPLATE_PRESETS: SignalTemplatePreset[] = [
     },
   },
   {
-    id: 'erc20-outflow-watch',
-    kind: 'erc20-transfer',
-    title: 'ERC-20 Outflow Watch',
-    description: 'Use Iruka’s `raw-events` ERC-20 transfer preset to sum gross outbound value from one address.',
-    accent: 'raw-events · sum(value) from address',
-    direction: 'outflow',
+    id: 'erc20-balance-watch',
+    kind: 'erc20-balance',
+    title: 'Custom ERC-20 Balance Watch',
+    description: 'Track one holder balance and alert on ERC-20 increases or decreases by percent or absolute amount.',
+    accent: 'archive RPC · balanceOf(address) · flexible threshold',
     defaults: {
       chainId: 1,
-      amountThreshold: 1000000,
-      windowDuration: '24h',
-      cooldownMinutes: 15,
-    },
-  },
-  {
-    id: 'erc20-balance-drop-watch',
-    kind: 'erc20-balance-drop',
-    title: 'ERC-20 Balance Drop %',
-    description: 'Track one holder address and alert when the ERC-20 balance drops by a percentage over a rolling window.',
-    accent: 'archive RPC · balanceOf(address) · % drop',
-    defaults: {
-      chainId: 1,
-      dropPercent: 20,
+      direction: 'decrease',
+      thresholdMode: 'percent',
+      percentThreshold: 20,
+      absoluteThreshold: '1000000',
       windowDuration: '2h',
       cooldownMinutes: 15,
     },
@@ -409,6 +403,14 @@ const getWhaleChangeCondition = (definition: SignalDefinition) =>
 const getErc4626WithdrawCondition = (definition: SignalDefinition) =>
   getGroupChangeCondition(definition, 'ERC4626.Position.shares');
 
+const getErc20BalanceCondition = (definition: SignalDefinition) =>
+  definition.conditions.find(
+    (condition): condition is ChangeCondition =>
+      condition.type === 'change' &&
+      ((condition.source?.kind === 'alias' && condition.source.name === 'ERC20.Position.balance') ||
+        condition.metric === 'ERC20.Position.balance')
+  );
+
 const getRawEventsCondition = (definition: SignalDefinition) =>
   definition.conditions.find((condition): condition is RawEventsCondition => condition.type === 'raw-events');
 
@@ -512,12 +514,16 @@ const getRawEventFilterStringValue = (condition: RawEventsCondition, field: stri
   return typeof filter?.value === 'string' ? normalizeAddress(filter.value) : null;
 };
 
+const getRawEventFromAddress = (condition: RawEventsCondition) => getRawEventFilterStringValue(condition, 'from');
+
+const getRawEventToAddress = (condition: RawEventsCondition) => getRawEventFilterStringValue(condition, 'to');
+
 const getRawEventFlowDirection = (condition: RawEventsCondition): 'inflow' | 'outflow' | null => {
-  if (getRawEventFilterStringValue(condition, 'to')) {
+  if (getRawEventToAddress(condition) && !getRawEventFromAddress(condition)) {
     return 'inflow';
   }
 
-  if (getRawEventFilterStringValue(condition, 'from')) {
+  if (getRawEventFromAddress(condition) && !getRawEventToAddress(condition)) {
     return 'outflow';
   }
 
@@ -525,7 +531,7 @@ const getRawEventFlowDirection = (condition: RawEventsCondition): 'inflow' | 'ou
 };
 
 const getRawEventTrackedAddress = (condition: RawEventsCondition) =>
-  getRawEventFilterStringValue(condition, 'to') ?? getRawEventFilterStringValue(condition, 'from');
+  getRawEventToAddress(condition) ?? getRawEventFromAddress(condition);
 
 const getRawEventTokenAddress = (condition: RawEventsCondition) => {
   const address = condition.event.contract_addresses?.[0];
@@ -565,6 +571,15 @@ export const describeSignalDefinition = (definition: SignalDefinition) => {
     return `${erc4626Withdraw.group.requirement.count} of ${erc4626Withdraw.group.addresses.length} tracked owners reduce vault shares by at least ${erc4626Withdraw.change.by.percent}% within ${duration}.`;
   }
 
+  const erc20Balance = getErc20BalanceCondition(definition);
+  if (erc20Balance) {
+    const duration = erc20Balance.window?.duration ?? definition.window.duration;
+    const holder = erc20Balance.address ? formatCompactIdentifier(erc20Balance.address) : 'holder';
+    const token = erc20Balance.contract_address ? formatCompactIdentifier(erc20Balance.contract_address) : 'asset';
+    const amount = 'percent' in erc20Balance.by ? `${erc20Balance.by.percent}%` : `${erc20Balance.by.absolute} absolute`;
+    return `${token} balance for ${holder} ${erc20Balance.direction}s by at least ${amount} within ${duration}.`;
+  }
+
   const rawEvents = getRawEventsCondition(definition);
   if (rawEvents) {
     const duration = rawEvents.window?.duration ?? definition.window.duration;
@@ -572,6 +587,13 @@ export const describeSignalDefinition = (definition: SignalDefinition) => {
       const direction = getRawEventFlowDirection(rawEvents);
       const trackedAddress = getRawEventTrackedAddress(rawEvents);
       const tokenAddress = getRawEventTokenAddress(rawEvents);
+      const fromAddress = getRawEventFromAddress(rawEvents);
+      const toAddress = getRawEventToAddress(rawEvents);
+
+      if (fromAddress && toAddress && rawEvents.aggregation === 'sum' && rawEvents.field === 'value') {
+        const tokenSummary = tokenAddress ? ` for ${formatCompactIdentifier(tokenAddress)}` : '';
+        return `ERC-20 transfers from ${formatCompactIdentifier(fromAddress)} to ${formatCompactIdentifier(toAddress)}${tokenSummary} exceed ${rawEvents.value} base units within ${duration}.`;
+      }
 
       if (direction && trackedAddress && rawEvents.aggregation === 'sum' && rawEvents.field === 'value') {
         const directionLabel = direction === 'inflow' ? 'inflow to' : 'outflow from';
@@ -717,6 +739,22 @@ export const getSignalFocusDetails = (definition: SignalDefinition): SignalFocus
     };
   }
 
+  const erc20Balance = getErc20BalanceCondition(definition);
+  if (erc20Balance?.contract_address) {
+    return {
+      label: 'Asset',
+      value: normalizeAddress(erc20Balance.contract_address),
+      hint:
+        erc20Balance.address && primaryChainId !== null
+          ? `${erc20Balance.direction === 'increase' ? 'Holder gains' : 'Holder losses'} · ${formatCompactIdentifier(erc20Balance.address)} · Chain ${primaryChainId}`
+          : erc20Balance.address
+            ? `${erc20Balance.direction === 'increase' ? 'Holder gains' : 'Holder losses'} · ${formatCompactIdentifier(erc20Balance.address)}`
+            : primaryChainId !== null
+              ? `Chain ${primaryChainId}`
+              : undefined,
+    };
+  }
+
   const contractAddress = definition.conditions.map(getConditionContractAddress).find(Boolean);
   if (contractAddress) {
     return {
@@ -731,17 +769,21 @@ export const getSignalFocusDetails = (definition: SignalDefinition): SignalFocus
     const tokenAddress = getRawEventTokenAddress(rawEvents);
     const trackedAddress = getRawEventTrackedAddress(rawEvents);
     const direction = getRawEventFlowDirection(rawEvents);
+    const fromAddress = getRawEventFromAddress(rawEvents);
+    const toAddress = getRawEventToAddress(rawEvents);
 
     if (tokenAddress) {
       return {
         label: 'Asset',
         value: tokenAddress,
         hint:
-          trackedAddress && direction
-            ? `${direction === 'inflow' ? 'Inflow to' : 'Outflow from'} ${formatCompactIdentifier(trackedAddress)}`
-            : trackedAddress
-              ? `Address ${formatCompactIdentifier(trackedAddress)}`
-              : undefined,
+          fromAddress && toAddress
+            ? `From ${formatCompactIdentifier(fromAddress)} to ${formatCompactIdentifier(toAddress)}`
+            : trackedAddress && direction
+              ? `${direction === 'inflow' ? 'Inflow to' : 'Outflow from'} ${formatCompactIdentifier(trackedAddress)}`
+              : trackedAddress
+                ? `Address ${formatCompactIdentifier(trackedAddress)}`
+                : undefined,
       };
     }
 
@@ -880,10 +922,14 @@ export const buildErc20TransferTemplate = (input: Erc20TransferTemplateRequest):
   const repeatPolicy = normalizeSignalRepeatPolicy(input.repeatPolicy);
   const amountThreshold = input.amountThreshold ?? preset.defaults.amountThreshold;
   const tokenContract = parseRequiredAddress(input.tokenContract, 'Token contract address');
-  const watchedAddress = parseRequiredAddress(input.watchedAddress, 'Watched address');
-  const watchedField = preset.direction === 'inflow' ? 'to' : 'from';
+  const fromAddress = input.fromAddress?.trim() ? parseRequiredAddress(input.fromAddress, 'From address') : null;
+  const toAddress = input.toAddress?.trim() ? parseRequiredAddress(input.toAddress, 'To address') : null;
 
   assertPositiveChainId(chainId);
+
+  if (!fromAddress && !toAddress) {
+    throw new SignalTemplateError('Provide at least one transfer filter address.');
+  }
 
   if (!Number.isFinite(amountThreshold) || amountThreshold <= 0) {
     throw new SignalTemplateError('Transfer threshold must be greater than 0.');
@@ -913,23 +959,43 @@ export const buildErc20TransferTemplate = (input: Erc20TransferTemplateRequest):
           contract_addresses: [tokenContract],
         },
         filters: [
-          {
-            field: watchedField,
-            op: 'eq',
-            value: watchedAddress,
-          },
+          ...(fromAddress
+            ? [
+                {
+                  field: 'from',
+                  op: 'eq' as const,
+                  value: fromAddress,
+                },
+              ]
+            : []),
+          ...(toAddress
+            ? [
+                {
+                  field: 'to',
+                  op: 'eq' as const,
+                  value: toAddress,
+                },
+              ]
+            : []),
         ],
       },
     ],
   };
 
-  const directionLabel = preset.direction === 'inflow' ? 'inflow' : 'outflow';
-  const generatedName = `ERC-20 ${directionLabel} watch: ${formatCompactIdentifier(watchedAddress)} in ${windowDuration}`;
+  const routeLabel = fromAddress && toAddress
+    ? `${formatCompactIdentifier(fromAddress)} → ${formatCompactIdentifier(toAddress)}`
+    : fromAddress
+      ? `from ${formatCompactIdentifier(fromAddress)}`
+      : `to ${formatCompactIdentifier(toAddress!)}`;
+  const generatedName = `ERC-20 event aggregation: ${routeLabel} in ${windowDuration}`;
+  const routeDescription = [fromAddress ? `from ${fromAddress}` : null, toAddress ? `to ${toAddress}` : null]
+    .filter(Boolean)
+    .join(' ');
 
   return buildManagedTelegramSignal(
     input.name?.trim() || generatedName,
     input.description?.trim() ||
-      `Uses the Iruka raw-events ERC-20 transfer preset for ${tokenContract} and triggers when gross ${directionLabel} for ${watchedAddress} exceeds ${amountThreshold} base units over ${windowDuration}.`,
+      `Uses Iruka raw-event ERC-20 transfers for ${tokenContract} and triggers when aggregated transfer value ${routeDescription} exceeds ${amountThreshold} base units over ${windowDuration}.`,
     definition,
     cooldownMinutes,
     repeatPolicy,
@@ -937,24 +1003,34 @@ export const buildErc20TransferTemplate = (input: Erc20TransferTemplateRequest):
   );
 };
 
-export const buildErc20BalanceDropTemplate = (input: Erc20BalanceDropTemplateRequest): CreateSignalRequest => {
+export const buildErc20BalanceTemplate = (input: Erc20BalanceTemplateRequest): CreateSignalRequest => {
   const preset = getPreset(input.templateId);
-  if (preset.kind !== 'erc20-balance-drop') {
-    throw new SignalTemplateError(`Template ${input.templateId} is not an ERC-20 balance-drop template.`);
+  if (preset.kind !== 'erc20-balance') {
+    throw new SignalTemplateError(`Template ${input.templateId} is not an ERC-20 balance template.`);
   }
 
   const chainId = input.chainId ?? preset.defaults.chainId;
   const windowDuration = input.windowDuration?.trim() || preset.defaults.windowDuration;
   const cooldownMinutes = input.cooldownMinutes ?? preset.defaults.cooldownMinutes;
   const repeatPolicy = normalizeSignalRepeatPolicy(input.repeatPolicy);
-  const dropPercent = input.dropPercent ?? preset.defaults.dropPercent;
+  const balanceDirection = input.balanceDirection ?? preset.defaults.direction;
+  const thresholdMode = input.thresholdMode ?? preset.defaults.thresholdMode;
+  const percentThreshold = input.percentThreshold ?? preset.defaults.percentThreshold;
+  const absoluteThreshold = input.absoluteThreshold ?? preset.defaults.absoluteThreshold;
   const tokenContract = parseRequiredAddress(input.tokenContract, 'Token contract address');
   const watchedAddress = parseRequiredAddress(input.watchedAddress, 'Holder address');
 
   assertPositiveChainId(chainId);
 
-  if (!Number.isFinite(dropPercent) || dropPercent <= 0) {
-    throw new SignalTemplateError('Balance drop percent must be greater than 0.');
+  if (thresholdMode === 'percent') {
+    if (!Number.isFinite(percentThreshold) || percentThreshold <= 0) {
+      throw new SignalTemplateError('Balance change percent must be greater than 0.');
+    }
+  } else {
+    const parsedAbsolute = typeof absoluteThreshold === 'string' ? Number(absoluteThreshold) : absoluteThreshold;
+    if (!Number.isFinite(parsedAbsolute) || parsedAbsolute <= 0) {
+      throw new SignalTemplateError('Absolute balance threshold must be greater than 0.');
+    }
   }
 
   assertNonNegativeCooldown(cooldownMinutes);
@@ -969,10 +1045,15 @@ export const buildErc20BalanceDropTemplate = (input: Erc20BalanceDropTemplateReq
       {
         type: 'change',
         source: { kind: 'alias', name: 'ERC20.Position.balance' },
-        direction: 'decrease',
-        by: {
-          percent: dropPercent,
-        },
+        direction: balanceDirection,
+        by:
+          thresholdMode === 'percent'
+            ? {
+                percent: percentThreshold,
+              }
+            : {
+                absolute: absoluteThreshold,
+              },
         window: {
           duration: windowDuration,
         },
@@ -983,12 +1064,13 @@ export const buildErc20BalanceDropTemplate = (input: Erc20BalanceDropTemplateReq
     ],
   };
 
-  const generatedName = `ERC-20 balance drop: ${formatCompactIdentifier(watchedAddress)} -${dropPercent}% in ${windowDuration}`;
+  const thresholdLabel = thresholdMode === 'percent' ? `${percentThreshold}%` : `${absoluteThreshold} absolute`;
+  const generatedName = `ERC-20 balance ${balanceDirection}: ${formatCompactIdentifier(watchedAddress)} ${thresholdLabel} in ${windowDuration}`;
 
   return buildManagedTelegramSignal(
     input.name?.trim() || generatedName,
     input.description?.trim() ||
-      `Uses archive RPC ERC-20 balance reads for ${tokenContract} and triggers when ${watchedAddress} is down at least ${dropPercent}% over ${windowDuration}.`,
+      `Uses archive RPC ERC-20 balance reads for ${tokenContract} and triggers when ${watchedAddress} ${balanceDirection === 'increase' ? 'gains' : 'loses'} at least ${thresholdLabel} over ${windowDuration}.`,
     definition,
     cooldownMinutes,
     repeatPolicy,
@@ -1083,11 +1165,10 @@ export const buildSignalTemplate = (input: SignalTemplateRequest): CreateSignalR
     case 'whale-exit-pair':
     case 'single-whale-exit':
       return buildWhaleMovementTemplate(input);
-    case 'erc20-inflow-watch':
-    case 'erc20-outflow-watch':
+    case 'erc20-event-aggregation-watch':
       return buildErc20TransferTemplate(input);
-    case 'erc20-balance-drop-watch':
-      return buildErc20BalanceDropTemplate(input);
+    case 'erc20-balance-watch':
+      return buildErc20BalanceTemplate(input);
     case 'erc4626-withdraw-percent-watch':
       return buildErc4626WithdrawTemplate(input);
   }
