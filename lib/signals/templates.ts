@@ -428,6 +428,31 @@ const RAW_EVENT_LABELS: Record<RawEventKind, string> = {
 
 const getRawEventLabel = (kind: RawEventKind) => RAW_EVENT_LABELS[kind];
 
+const getNumericConditionLabel = (condition: Pick<SignalCondition, 'type'> & {
+  metric?: string;
+  state_ref?: { protocol: string; entity_type: string; field: string };
+  source?: { kind: 'alias'; name: string } | { kind: 'state'; state_ref: { protocol: string; entity_type: string; field: string } };
+}) => {
+  if (condition.source?.kind === 'alias') {
+    return condition.source.name;
+  }
+
+  if (condition.source?.kind === 'state') {
+    const stateRef = condition.source.state_ref;
+    return `${stateRef.protocol}.${stateRef.entity_type}.${stateRef.field}`;
+  }
+
+  if (condition.metric) {
+    return condition.metric;
+  }
+
+  if (condition.state_ref) {
+    return `${condition.state_ref.protocol}.${condition.state_ref.entity_type}.${condition.state_ref.field}`;
+  }
+
+  return condition.type;
+};
+
 export const describeSignalSchedule = (schedule: SignalSchedule) => {
   if (schedule.kind === 'interval') {
     const seconds = schedule.interval_seconds;
@@ -625,13 +650,13 @@ export const describeSignalDefinition = (definition: SignalDefinition) => {
   }
 
   if (firstCondition.type === 'threshold') {
-    return `${firstCondition.metric} ${firstCondition.operator} ${firstCondition.value}`;
+    return `${getNumericConditionLabel(firstCondition)} ${firstCondition.operator} ${firstCondition.value}`;
   }
 
   if (firstCondition.type === 'change') {
     const amount =
       'percent' in firstCondition.by ? `${firstCondition.by.percent}%` : `${firstCondition.by.absolute} absolute`;
-    return `${firstCondition.metric} ${firstCondition.direction} by ${amount}`;
+    return `${getNumericConditionLabel(firstCondition)} ${firstCondition.direction} by ${amount}`;
   }
 
   return `${definition.conditions.length} condition signal`;

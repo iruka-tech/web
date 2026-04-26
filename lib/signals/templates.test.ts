@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import type { CreateSignalRequest, SignalCondition } from '@/lib/types/signal';
-import { SignalTemplateError, buildSignalTemplate } from './templates';
+import type { CreateSignalRequest, SignalCondition, SignalDefinition } from '@/lib/types/signal';
+import { SignalTemplateError, buildSignalTemplate, describeSignalDefinition } from './templates';
 
 const assertDocCompatibleCondition = (condition: SignalCondition) => {
   if (condition.type === 'threshold' || condition.type === 'change') {
-    assert.notEqual(Boolean(condition.metric), Boolean(condition.state_ref), `${condition.type} must use exactly one of metric or state_ref`);
+    const sourceCount = Number(Boolean(condition.metric)) + Number(Boolean(condition.state_ref)) + Number(Boolean(condition.source));
+    assert.equal(sourceCount, 1, `${condition.type} must use exactly one numeric source`);
   }
 
   if (condition.type === 'raw-events') {
@@ -179,6 +180,25 @@ test('erc20 balance templates support absolute increases', () => {
     assert.deepEqual(condition.by, { absolute: '5000000' });
     assert.deepEqual(condition.window, { duration: '6h' });
   }
+});
+
+test('describeSignalDefinition uses alias sources for threshold summaries', () => {
+  const definition: SignalDefinition = {
+    window: { duration: '5m' },
+    conditions: [
+      {
+        type: 'threshold',
+        source: { kind: 'alias', name: 'ERC20.Position.balance' },
+        operator: '>',
+        value: '100000000000000000000000',
+        chain_id: 1,
+        contract_address: '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8',
+        address: '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8',
+      },
+    ],
+  };
+
+  assert.equal(describeSignalDefinition(definition), 'ERC20.Position.balance > 100000000000000000000000');
 });
 
 test('erc4626 withdraw templates stay compatible with the current Iruka docs schema', () => {
