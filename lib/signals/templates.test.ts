@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { CreateSignalRequest, SignalCondition, SignalDefinition } from '@/lib/types/signal';
-import { SignalTemplateError, buildSignalTemplate, describeSignalDefinition } from './templates';
+import { SignalTemplateError, buildSignalTemplate, describeSignalDefinition, getSignalTargetingSummary } from './templates';
 
 const assertDocCompatibleCondition = (condition: SignalCondition) => {
   if (condition.type === 'threshold' || condition.type === 'change') {
@@ -199,6 +199,34 @@ test('describeSignalDefinition uses alias sources for threshold summaries', () =
   };
 
   assert.equal(describeSignalDefinition(definition), 'ERC20.Position.balance > 100000000000000000000000');
+});
+
+test('describeSignalDefinition parses Uniswap v3 sqrtPriceX96 threshold state refs', () => {
+  const definition: SignalDefinition = {
+    window: { duration: '5m' },
+    conditions: [
+      {
+        type: 'threshold',
+        source: {
+          kind: 'state',
+          state_ref: {
+            protocol: 'uniswap_v3',
+            entity_type: 'Pool',
+            field: 'sqrtPriceX96',
+            filters: [
+              { field: 'chainId', op: 'eq', value: 1 },
+              { field: 'contractAddress', op: 'eq', value: '0x1111111111111111111111111111111111111111' },
+            ],
+          },
+        },
+        operator: '>=',
+        value: '75162434512514376853788557312',
+      },
+    ],
+  };
+
+  assert.equal(describeSignalDefinition(definition), 'uniswap_v3.Pool.sqrtPriceX96 >= 75162434512514376853788557312');
+  assert.equal(getSignalTargetingSummary(definition), 'Pool: 0x1111…1111 · 1 pool condition · Chain 1');
 });
 
 test('erc4626 withdraw templates stay compatible with the current Iruka docs schema', () => {

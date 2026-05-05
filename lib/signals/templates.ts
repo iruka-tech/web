@@ -3,6 +3,7 @@ import type {
   CreateSignalRequest,
   GroupCondition,
   NumericInput,
+  PublicStateRef,
   RawEventKind,
   RawEventsCondition,
   SignalCondition,
@@ -464,6 +465,24 @@ const getLpPoolChangeConditions = (definition: SignalDefinition) =>
       (condition.source.state_ref.protocol === 'uniswap_v3' || condition.source.state_ref.protocol === 'uniswap_v4')
   );
 
+const getConditionStateRef = (condition: SignalCondition): PublicStateRef | null => {
+  if ('source' in condition && condition.source?.kind === 'state') {
+    return condition.source.state_ref;
+  }
+
+  if ('state_ref' in condition && condition.state_ref) {
+    return condition.state_ref;
+  }
+
+  return null;
+};
+
+const getLpPoolStateConditions = (definition: SignalDefinition) =>
+  definition.conditions.filter((condition) => {
+    const stateRef = getConditionStateRef(condition);
+    return stateRef?.protocol === 'uniswap_v3' || stateRef?.protocol === 'uniswap_v4';
+  });
+
 const getRawEventsCondition = (definition: SignalDefinition) =>
   definition.conditions.find((condition): condition is RawEventsCondition => condition.type === 'raw-events');
 
@@ -547,12 +566,7 @@ const getConditionEntityId = (condition: SignalCondition): string | null => {
 };
 
 const getStateRefFilterValue = (condition: SignalCondition, field: string): string | null => {
-  const stateRef =
-    'source' in condition && condition.source?.kind === 'state'
-      ? condition.source.state_ref
-      : 'state_ref' in condition
-        ? condition.state_ref
-        : undefined;
+  const stateRef = getConditionStateRef(condition);
   const filter = stateRef?.filters.find((item) => item.field === field && item.op === 'eq' && typeof item.value === 'string');
   return typeof filter?.value === 'string' ? normalizeAddress(filter.value) : null;
 };
@@ -582,6 +596,12 @@ const getConditionContractAddress = (condition: SignalCondition): string | null 
 const getConditionChainId = (condition: SignalCondition): number | null => {
   if ('chain_id' in condition && typeof condition.chain_id === 'number') {
     return condition.chain_id;
+  }
+
+  const stateRef = getConditionStateRef(condition);
+  const chainIdFilter = stateRef?.filters.find((filter) => filter.field === 'chainId' && filter.op === 'eq');
+  if (typeof chainIdFilter?.value === 'number') {
+    return chainIdFilter.value;
   }
 
   if (condition.type === 'group') {
@@ -858,15 +878,15 @@ export const getSignalFocusDetails = (definition: SignalDefinition): SignalFocus
     };
   }
 
-  const lpChanges = getLpPoolChangeConditions(definition);
-  if (lpChanges.length > 0) {
-    const stateRef = lpChanges[0].source?.kind === 'state' ? lpChanges[0].source.state_ref : null;
+  const lpStateConditions = getLpPoolStateConditions(definition);
+  if (lpStateConditions.length > 0) {
+    const stateRef = getConditionStateRef(lpStateConditions[0]);
     const contractAddressFilter = stateRef?.filters.find((filter) => filter.field === 'contractAddress' && filter.op === 'eq');
     const contractAddress = typeof contractAddressFilter?.value === 'string' ? normalizeAddress(contractAddressFilter.value) : null;
     return {
       label: 'Pool',
       value: contractAddress ?? 'unknown',
-      hint: `${lpChanges.length} pool condition${lpChanges.length === 1 ? '' : 's'}${primaryChainId !== null ? ` · Chain ${primaryChainId}` : ''}`,
+      hint: `${lpStateConditions.length} pool condition${lpStateConditions.length === 1 ? '' : 's'}${primaryChainId !== null ? ` · Chain ${primaryChainId}` : ''}`,
     };
   }
 
