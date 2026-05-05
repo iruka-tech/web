@@ -229,6 +229,37 @@ test('describeSignalDefinition parses Uniswap v3 sqrtPriceX96 threshold state re
   assert.equal(getSignalTargetingSummary(definition), 'Pool: 0x1111…1111 · 1 pool condition · Chain 1');
 });
 
+test('describeSignalDefinition parses Curve dy threshold state refs', () => {
+  const definition: SignalDefinition = {
+    window: { duration: '5m' },
+    conditions: [
+      {
+        type: 'threshold',
+        source: {
+          kind: 'state',
+          state_ref: {
+            protocol: 'curve',
+            entity_type: 'Pool',
+            field: 'dy',
+            filters: [
+              { field: 'chainId', op: 'eq', value: 1 },
+              { field: 'contractAddress', op: 'eq', value: '0xEcb0F0d68C19BdAaDAEbE24f6752A4Db34e2c2cb' },
+              { field: 'i', op: 'eq', value: 0 },
+              { field: 'j', op: 'eq', value: 1 },
+              { field: 'dx', op: 'eq', value: '1000000000000000000' },
+            ],
+          },
+        },
+        operator: '>=',
+        value: '900000000000000000',
+      },
+    ],
+  };
+
+  assert.equal(describeSignalDefinition(definition), 'curve.Pool.dy >= 900000000000000000');
+  assert.equal(getSignalTargetingSummary(definition), 'Pool: 0xEcb0…c2cb · 1 pool condition · Chain 1');
+});
+
 test('erc4626 withdraw templates stay compatible with the current Iruka docs schema', () => {
   const payload = buildSignalTemplate({
     templateId: 'erc4626-withdraw-percent-watch',
