@@ -6,6 +6,7 @@ import { DaimoModal } from '@daimo/sdk/web';
 import { Button } from '@/components/ui/Button';
 import { createBillingCheckoutSession } from '@/lib/api/billing';
 import type { BillingCheckoutSession } from '@/lib/billing/checkout';
+import { getCheckoutUiProvider } from '@/lib/billing/checkout';
 
 export function UpgradeProButton() {
   const router = useRouter();
@@ -26,6 +27,7 @@ export function UpgradeProButton() {
   };
 
   const returnUrl = typeof window === 'undefined' ? undefined : window.location.origin + window.location.pathname;
+  const checkoutUiProvider = checkout ? getCheckoutUiProvider(checkout) : null;
 
   return (
     <div className="flex flex-col items-start gap-2 sm:items-end">
@@ -33,7 +35,10 @@ export function UpgradeProButton() {
         {isCreating ? 'Starting…' : 'Upgrade'}
       </Button>
       {error ? <p className="max-w-56 text-xs text-red-700">{error}</p> : null}
-      {checkout ? (
+      {checkout && !checkoutUiProvider ? (
+        <p className="max-w-56 text-xs text-red-700">Payment provider is not available yet.</p>
+      ) : null}
+      {checkoutUiProvider === 'daimo' && checkout?.clientSecret ? (
         <DaimoModal
           key={checkout.sessionId}
           sessionId={checkout.sessionId}

@@ -34,3 +34,23 @@ test('normalizeBillingCheckoutSession rejects unusable checkout payloads', () =>
     null,
   );
 });
+
+test('normalizeBillingCheckoutSession accepts reserved provider identifiers without requiring Daimo client secret', () => {
+  const session = normalizeBillingCheckoutSession({
+    checkout_id: '550e8400-e29b-41d4-a716-446655440000',
+    provider: 'x402',
+    session_id: 'x402_session_123',
+    status: 'requires_payment',
+    expires_at: null,
+    client_secret: null,
+  });
+
+  assert.deepEqual(session, {
+    checkoutId: '550e8400-e29b-41d4-a716-446655440000',
+    provider: 'x402',
+    sessionId: 'x402_session_123',
+    status: 'requires_payment',
+    expiresAt: null,
+    clientSecret: null,
+  });
+});
