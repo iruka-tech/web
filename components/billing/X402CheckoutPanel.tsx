@@ -2,7 +2,7 @@
 
 import { x402Client } from '@x402/core/client';
 import type { PaymentRequired } from '@x402/core/types';
-import { ExactEvmScheme } from '@x402/evm';
+import { ExactEvmSchemeV1 } from '@x402/evm/v1';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { base } from 'viem/chains';
@@ -10,7 +10,7 @@ import { useConnection, useSwitchChain, useWalletClient } from 'wagmi';
 import { Button } from '@/components/ui/Button';
 import { ApiError } from '@/lib/api/client';
 import { createBillingCheckoutSession, finalizeBillingCheckoutSession } from '@/lib/api/billing';
-import { BillingCheckoutSession, X402PaymentPayload } from '@/lib/billing/checkout';
+import { BillingCheckoutSession, X402PaymentPayload, getX402RequirementAmount } from '@/lib/billing/checkout';
 
 const usdcAddress = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
 const treasuryAddress = '0xF4cABf9F20426177c2d74bFBB738919C28c2356e';
@@ -48,7 +48,7 @@ export function X402CheckoutPanel() {
   const [error, setError] = useState<string | null>(null);
 
   const requirement = session?.x402PaymentRequirements?.accepts[0];
-  const amount = useMemo(() => formatUsdcAmount(requirement?.amount), [requirement?.amount]);
+  const amount = useMemo(() => formatUsdcAmount(getX402RequirementAmount(requirement)), [requirement]);
   const isBusy = status === 'creating' || status === 'signing' || status === 'finalizing';
   const canFinalize = Boolean(session && paymentPayload) && status !== 'succeeded';
   const primaryLabel = paymentPayload
@@ -87,7 +87,7 @@ export function X402CheckoutPanel() {
       signTypedData: (message: Parameters<typeof walletClient.signTypedData>[0]) =>
         walletClient.signTypedData(message),
     };
-    const paymentClient = new x402Client().register('eip155:8453', new ExactEvmScheme(signer));
+    const paymentClient = new x402Client().registerV1('base', new ExactEvmSchemeV1(signer));
     const signedPayload = (await paymentClient.createPaymentPayload(
       checkoutSession.x402PaymentRequirements as PaymentRequired,
     )) as X402PaymentPayload;
