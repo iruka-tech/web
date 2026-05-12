@@ -1,7 +1,7 @@
 export type BillingPlanKey = 'pro_monthly';
-export type BillingProvider = 'daimo' | 'x402' | 'mpp';
+export type BillingProvider = 'x402' | 'mpp';
 
-const BILLING_PROVIDERS = new Set<BillingProvider>(['daimo', 'x402', 'mpp']);
+const BILLING_PROVIDERS = new Set<BillingProvider>(['x402', 'mpp']);
 
 export interface BillingCheckoutSession {
   checkoutId: string;
@@ -36,20 +36,12 @@ export function normalizeBillingCheckoutSession(payload: unknown): BillingChecko
     return null;
   }
 
-  const normalizedProvider = provider as BillingProvider;
   return {
     checkoutId: checkout_id,
-    provider: normalizedProvider,
+    provider: provider as BillingProvider,
     sessionId: session_id,
     status,
     expiresAt: typeof expires_at === 'string' ? expires_at : null,
     clientSecret: typeof client_secret === 'string' ? client_secret : null,
   };
-}
-
-export function getCheckoutUiProvider(session: BillingCheckoutSession): 'daimo' | null {
-  if (session.provider === 'daimo' && session.clientSecret) {
-    return 'daimo';
-  }
-  return null;
 }
