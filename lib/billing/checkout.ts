@@ -7,15 +7,20 @@ export interface X402PaymentRequirements {
   scheme: 'exact';
   network: string;
   asset: string;
-  amount: string;
+  amount?: string;
+  maxAmountRequired?: string;
+  resource?: string;
+  description?: string;
+  mimeType?: string;
+  outputSchema?: Record<string, unknown>;
   payTo: string;
   maxTimeoutSeconds: number;
   extra: Record<string, unknown>;
 }
 
 export interface X402PaymentRequired {
-  x402Version: 2;
-  resource: {
+  x402Version: 1 | 2;
+  resource?: {
     url: string;
     description?: string;
     mimeType?: string;
@@ -24,9 +29,11 @@ export interface X402PaymentRequired {
 }
 
 export interface X402PaymentPayload {
-  x402Version: 2;
+  x402Version: 1 | 2;
   resource?: X402PaymentRequired['resource'];
-  accepted: X402PaymentRequirements;
+  accepted?: X402PaymentRequirements;
+  scheme?: string;
+  network?: string;
   payload: Record<string, unknown>;
   extensions?: Record<string, unknown>;
 }
@@ -47,15 +54,19 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const optionalStringOrNull = (value: unknown) =>
   typeof value === 'string' || value === null || value === undefined;
 
+export const getX402RequirementAmount = (requirement: X402PaymentRequirements | undefined) =>
+  requirement?.amount ?? requirement?.maxAmountRequired ?? '';
+
 const normalizeX402Requirement = (value: unknown): X402PaymentRequirements | null => {
   if (!isRecord(value)) {
     return null;
   }
+  const amount = typeof value.amount === 'string' ? value.amount : typeof value.maxAmountRequired === 'string' ? value.maxAmountRequired : '';
   if (
     value.scheme !== 'exact' ||
     typeof value.network !== 'string' ||
     typeof value.asset !== 'string' ||
-    typeof value.amount !== 'string' ||
+    !amount ||
     typeof value.payTo !== 'string' ||
     typeof value.maxTimeoutSeconds !== 'number' ||
     !isRecord(value.extra)
@@ -67,7 +78,12 @@ const normalizeX402Requirement = (value: unknown): X402PaymentRequirements | nul
     scheme: 'exact',
     network: value.network,
     asset: value.asset,
-    amount: value.amount,
+    amount: typeof value.amount === 'string' ? value.amount : undefined,
+    maxAmountRequired: typeof value.maxAmountRequired === 'string' ? value.maxAmountRequired : undefined,
+    resource: typeof value.resource === 'string' ? value.resource : undefined,
+    description: typeof value.description === 'string' ? value.description : undefined,
+    mimeType: typeof value.mimeType === 'string' ? value.mimeType : undefined,
+    outputSchema: isRecord(value.outputSchema) ? value.outputSchema : undefined,
     payTo: value.payTo,
     maxTimeoutSeconds: value.maxTimeoutSeconds,
     extra: value.extra,
@@ -78,7 +94,7 @@ const normalizeX402PaymentRequirements = (value: unknown): X402PaymentRequired |
   if (value === null || value === undefined) {
     return null;
   }
-  if (!isRecord(value) || value.x402Version !== 2 || !isRecord(value.resource)) {
+  if (!isRecord(value) || (value.x402Version !== 1 && value.x402Version !== 2)) {
     return null;
   }
 
@@ -91,13 +107,17 @@ const normalizeX402PaymentRequirements = (value: unknown): X402PaymentRequired |
     return null;
   }
 
+  const resource = isRecord(value.resource)
+    ? {
+        url: typeof value.resource.url === 'string' ? value.resource.url : '',
+        description: typeof value.resource.description === 'string' ? value.resource.description : undefined,
+        mimeType: typeof value.resource.mimeType === 'string' ? value.resource.mimeType : undefined,
+      }
+    : undefined;
+
   return {
-    x402Version: 2,
-    resource: {
-      url: typeof value.resource.url === 'string' ? value.resource.url : '',
-      description: typeof value.resource.description === 'string' ? value.resource.description : undefined,
-      mimeType: typeof value.resource.mimeType === 'string' ? value.resource.mimeType : undefined,
-    },
+    x402Version: value.x402Version,
+    resource,
     accepts: normalizedAccepts as X402PaymentRequirements[],
   };
 };

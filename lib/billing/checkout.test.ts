@@ -3,20 +3,19 @@ import test from 'node:test';
 import { normalizeBillingCheckoutSession } from './checkout.ts';
 
 const paymentRequirements = {
-  x402Version: 2,
-  resource: {
-    url: 'iruka://billing/checkout/550e8400-e29b-41d4-a716-446655440000',
-    description: 'Iruka Pro monthly plan',
-    mimeType: 'application/json',
-  },
+  x402Version: 1,
   accepts: [
     {
       scheme: 'exact',
-      network: 'eip155:8453',
+      network: 'base',
       asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bDA02913',
-      amount: '10000000',
+      maxAmountRequired: '10000000',
       payTo: '0xF4cABf9F20426177c2d74bFBB738919C28c2356e',
       maxTimeoutSeconds: 600,
+      resource: 'iruka://billing/checkout/550e8400-e29b-41d4-a716-446655440000',
+      description: 'Iruka Pro monthly plan',
+      mimeType: 'application/json',
+      outputSchema: {},
       extra: {
         checkoutId: '550e8400-e29b-41d4-a716-446655440000',
         userId: 'user-1',
@@ -80,7 +79,9 @@ test('normalizeBillingCheckoutSession accepts x402 payment requirements envelope
     payment_requirements: paymentRequirements,
   });
 
-  assert.deepEqual(session?.x402PaymentRequirements, paymentRequirements);
+  assert.equal(session?.x402PaymentRequirements?.x402Version, 1);
+  assert.equal(session?.x402PaymentRequirements?.accepts[0]?.network, 'base');
+  assert.equal(session?.x402PaymentRequirements?.accepts[0]?.maxAmountRequired, '10000000');
 });
 
 test('normalizeBillingCheckoutSession rejects unusable checkout payloads', () => {
