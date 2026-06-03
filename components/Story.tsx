@@ -3,61 +3,49 @@
 import { motion } from 'framer-motion';
 import { SectionTag } from './ui/SectionTag';
 
-const storyBeats = [
+const storyRows = [
   {
-    id: 'problem',
-    tag: '01',
-    title: 'Watcher code keeps recreating the same fragile loop.',
-    content:
-      'Every alert needs scheduling, data reads, repeat control, and delivery routing before it can say anything useful.',
+    label: 'Before',
+    title: 'Every agent rebuilds the same monitoring loop.',
+    content: 'Schedules, RPC reads, event backfills, repeat rules, and notification routing get buried inside local scripts.',
   },
   {
-    id: 'contract',
-    tag: '02',
-    title: 'Iruka makes the wake-up contract explicit.',
-    content:
-      'Triggers wake the signal. Definitions check the condition. Delivery routes the reason. Each part can change without hiding intent in glue code.',
+    label: 'Iruka',
+    title: 'The wake-up rule becomes a shared contract.',
+    content: 'Triggers, definitions, delivery, and metadata stay visible as one saved signal that humans can inspect and agents can reuse.',
   },
   {
-    id: 'result',
-    tag: '03',
-    title: 'Agents receive a reason, not a stream of chores.',
-    content:
-      'The rule stays readable enough for humans to edit and stable enough for agents to build on.',
+    label: 'After',
+    title: 'Agents receive the matched reason instead of a stream.',
+    content: 'The notification includes context about what changed, so the next action starts from evidence rather than polling.',
   },
 ];
 
 export function Story() {
   return (
-    <section id="story" className="story-band relative py-18 md:py-28">
+    <section id="story" className="story-section relative py-16 md:py-24">
       <div className="page-gutter">
-        <div className="story-band-header grid gap-8 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-end">
-          <div>
-            <SectionTag>First principles</SectionTag>
-            <p className="ui-kicker mt-5">The hidden cost of alerts</p>
-          </div>
-          <div>
-            <h2 className="ui-section-title">Define the trigger contract instead of wiring another watcher.</h2>
-            <p className="ui-copy mt-5">
-              The product value is not more backend plumbing. It is one visible rule that names when it wakes, what it checks, and where the result goes.
-            </p>
-          </div>
+        <div className="story-intro">
+          <SectionTag>Why it exists</SectionTag>
+          <h2 className="ui-section-title mt-5">Monitoring belongs in a contract, not in every agent runtime.</h2>
         </div>
 
-        <div className="story-ladder mt-12 grid gap-4 lg:grid-cols-3">
-          {storyBeats.map((beat, index) => (
-            <motion.div
-              key={beat.id}
+        <div className="story-timeline mt-12">
+          {storyRows.map((row, index) => (
+            <motion.article
+              key={row.label}
               initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.35, delay: index * 0.06 }}
-              className="ui-panel story-card px-5 py-5"
+              transition={{ duration: 0.35, delay: index * 0.05 }}
+              className="story-row"
             >
-              <div className="story-card-index">{beat.tag}</div>
-              <h3 className="mt-5 font-display text-[1.55rem] leading-tight text-foreground">{beat.title}</h3>
-              <p className="mt-4 text-sm leading-relaxed text-secondary">{beat.content}</p>
-            </motion.div>
+              <div className="story-row-label">{row.label}</div>
+              <div>
+                <h3>{row.title}</h3>
+                <p>{row.content}</p>
+              </div>
+            </motion.article>
           ))}
         </div>
       </div>

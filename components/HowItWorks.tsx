@@ -3,59 +3,39 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CodeBlock } from './ui/CodeBlock';
+import { SectionTag } from './ui/SectionTag';
 
 const editFrames = [
   {
-    label: 'Start with an interval',
-    note: 'A recurring check is just one trigger entry.',
-    code: `"triggers": [
+    label: 'Schedule',
+    note: 'Wake on interval or UTC cron.',
+    code: `"triggers": [{
+  "type": "schedule",
+  "schedule": { "kind": "cron", "expression": "0 8 * * *" }
+}]`,
+  },
   {
-    "type": "schedule",
-    "schedule": { "kind": "interval", "interval_seconds": 300 }
-  }
+    label: 'Compose',
+    note: 'Let one signal wake another.',
+    code: `"triggers": [
+  { "type": "schedule", "schedule": { "kind": "interval", "interval_seconds": 300 } },
+  { "type": "iruka_signal", "id": "sig_upstream_abc123" }
 ]`,
   },
   {
-    label: 'Change to cron',
-    note: 'Swap the schedule style without touching the definition.',
-    code: `"triggers": [
-  {
-    "type": "schedule",
-    "schedule": { "kind": "cron", "expression": "0 8 * * *" }
-  }
-]`,
-  },
-  {
-    label: 'Add another wake-up path',
-    note: 'Multiple triggers live in the same array.',
-    code: `"triggers": [
-  {
-    "type": "schedule",
-    "schedule": { "kind": "cron", "expression": "0 8 * * *" }
-  },
-  {
-    "type": "iruka_signal",
-    "id": "sig_upstream_abc123"
-  }
-]`,
-  },
-  {
-    label: 'Tune repeat behavior',
-    note: 'Cooldown policy belongs in metadata, separate from the trigger.',
-    code: `"metadata": {
-  "description": "Watch coordinated supplier exits.",
-  "repeat_policy": {
-    "mode": "cooldown",
-    "cooldown_minutes": 60
-  }
-}`,
-  },
-  {
-    label: 'Route delivery',
-    note: 'Notification routing is one small field.',
+    label: 'Route',
+    note: 'Keep delivery separate from the condition.',
     code: `"delivery": [
   { "type": "telegram" }
 ]`,
+  },
+  {
+    label: 'Repeat',
+    note: 'Control repeats in metadata.',
+    code: `"metadata": {
+  "description": "Watch coordinated supplier exits.",
+  "repeat_policy": { "mode": "cooldown", "cooldown_minutes": 60 }
+}`,
   },
 ];
 
@@ -66,92 +46,73 @@ function TypingCode() {
 
   useEffect(() => {
     if (visibleChars < frame.code.length) {
-      const timeout = window.setTimeout(() => setVisibleChars((value) => value + 3), 18);
+      const timeout = window.setTimeout(() => setVisibleChars((value) => value + 4), 16);
       return () => window.clearTimeout(timeout);
     }
 
     const timeout = window.setTimeout(() => {
       setFrameIndex((value) => (value + 1) % editFrames.length);
       setVisibleChars(0);
-    }, 1600);
+    }, 1400);
     return () => window.clearTimeout(timeout);
   }, [frame.code.length, visibleChars]);
 
   const typedCode = useMemo(() => frame.code.slice(0, visibleChars), [frame.code, visibleChars]);
 
   return (
-    <div className="ui-panel p-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="ui-kicker">Schema edit</div>
-          <h3 className="mt-4 font-display text-[1.5rem] leading-none text-foreground">{frame.label}</h3>
-          <p className="mt-3 text-sm leading-relaxed text-secondary">{frame.note}</p>
-        </div>
-        <span className="ui-chip" data-tone="accent">
-          {frameIndex + 1}/{editFrames.length}
-        </span>
+    <div className="schema-workbench">
+      <div>
+        <div className="schema-frame-label">{frame.label}</div>
+        <h3>{frame.note}</h3>
       </div>
-
-      <div className="mt-5">
-        <CodeBlock code={typedCode || ' '} language="json" filename="signal.patch.json" tone="light" showLineNumbers={false} />
-      </div>
+      <CodeBlock code={typedCode || ' '} language="json" filename="signal.patch.json" tone="light" showLineNumbers={false} />
     </div>
   );
 }
 
-const principles = [
-  {
-    title: 'Triggers wake it',
-    description: 'Use interval, cron, or signal-to-signal triggers in one array.',
-  },
-  {
-    title: 'Definition checks it',
-    description: 'The monitored condition stays stable while trigger style changes.',
-  },
-  {
-    title: 'Delivery routes it',
-    description: 'Telegram delivery is configured separately from wake-up logic.',
-  },
+const boundaries = [
+  ['triggers[]', 'when the signal wakes'],
+  ['definition', 'what condition must match'],
+  ['delivery[]', 'where the reason lands'],
+  ['metadata', 'how repeats and descriptions behave'],
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="relative py-16 md:py-24">
+    <section id="how-it-works" className="schema-section relative py-16 md:py-24">
       <div className="page-gutter">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="ui-kicker justify-center">Public Schema</div>
-          <h2 className="ui-section-title mt-5">Changing trigger style should feel like editing one field.</h2>
-          <p className="ui-copy mx-auto mt-4">
-            Start with one trigger, swap the schedule style, add another wake-up path, or tune cooldown without rewriting the signal.
-          </p>
-        </div>
-
-        <motion.div
-          className="mt-10 grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]"
-          initial={false}
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
-        >
+        <div className="schema-layout">
           <motion.div
-            variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35 } } }}
-            className="grid gap-4"
+            initial={false}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.35 }}
+            className="schema-copy"
           >
-            {principles.map((item) => (
-              <div key={item.title} className="ui-panel p-5">
-                <div className="ui-kicker">Field boundary</div>
-                <h3 className="mt-4 font-display text-[1.35rem] leading-none text-foreground">{item.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-secondary">{item.description}</p>
-              </div>
-            ))}
+            <SectionTag>Public schema</SectionTag>
+            <h2 className="ui-section-title mt-5">Change the wake-up path without rewriting the condition.</h2>
+            <p className="ui-copy mt-5">
+              The schema is small on purpose. Triggers decide when to run, the definition decides what to inspect, and delivery decides where the matched reason goes.
+            </p>
+            <div className="boundary-list mt-8">
+              {boundaries.map(([name, description]) => (
+                <div key={name} className="boundary-row">
+                  <span>{name}</span>
+                  <strong>{description}</strong>
+                </div>
+              ))}
+            </div>
           </motion.div>
 
           <motion.div
-            variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35 } } }}
+            initial={false}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.35, delay: 0.06 }}
           >
             <TypingCode />
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

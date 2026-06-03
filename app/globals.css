@@ -536,205 +536,473 @@
     mask-image: linear-gradient(to top, black 0%, transparent 42%);
   }
 
-  .marketing-bolder {
-    --surface-canvas-deep: oklch(0.13 0.034 253);
-    --surface-canvas: oklch(0.18 0.04 252);
-    --surface-panel: oklch(0.235 0.038 250);
-    --surface-panel-strong: oklch(0.29 0.048 246);
-    --surface-muted: oklch(0.255 0.036 248);
-    --surface-inset: oklch(0.17 0.034 252);
-    --surface-hover: oklch(0.34 0.052 246);
-    --ink-primary: oklch(0.96 0.012 92);
-    --ink-secondary: oklch(0.84 0.02 96);
-    --ink-muted: oklch(0.69 0.024 104);
-    --stroke-soft: oklch(0.42 0.04 248);
-    --stroke-strong: oklch(0.58 0.065 238);
-    --signal-copper: oklch(0.75 0.155 55);
-    --signal-ember: oklch(0.69 0.18 35);
-    --signal-alert: oklch(0.68 0.19 28);
-    --signal-success: oklch(0.72 0.13 154);
-    --signal-telegram: oklch(0.73 0.12 220);
+  .marketing-redesign {
+    --surface-canvas-deep: oklch(0.25 0.03 238);
+    --surface-canvas: oklch(0.955 0.012 228);
+    --surface-panel: oklch(0.99 0.004 228);
+    --surface-panel-strong: oklch(0.93 0.018 226);
+    --surface-muted: oklch(0.9 0.018 226);
+    --surface-inset: oklch(0.965 0.01 228);
+    --surface-hover: oklch(0.885 0.024 226);
+    --ink-primary: oklch(0.21 0.035 244);
+    --ink-secondary: oklch(0.38 0.03 238);
+    --ink-muted: oklch(0.53 0.026 232);
+    --stroke-soft: oklch(0.8 0.022 226);
+    --stroke-strong: oklch(0.62 0.04 230);
+    --signal-copper: oklch(0.54 0.12 44);
+    --signal-ember: oklch(0.58 0.15 34);
+    --signal-alert: oklch(0.55 0.16 28);
+    --signal-success: oklch(0.49 0.11 158);
+    --signal-telegram: oklch(0.52 0.11 224);
     --shadow-panel: none;
     color: var(--ink-primary);
     background:
-      radial-gradient(circle at 8% 12%, color-mix(in oklch, var(--signal-copper) 18%, transparent) 0, transparent 28rem),
-      radial-gradient(circle at 88% 4%, color-mix(in oklch, var(--signal-telegram) 16%, transparent) 0, transparent 30rem),
-      linear-gradient(150deg, var(--surface-canvas-deep), var(--surface-canvas) 42%, oklch(0.14 0.036 258));
+      radial-gradient(circle at 78% 7%, color-mix(in oklch, var(--signal-telegram) 16%, transparent) 0, transparent 24rem),
+      linear-gradient(180deg, oklch(0.985 0.004 230), var(--surface-canvas) 42%, oklch(0.92 0.016 228));
   }
 
-  .marketing-bolder::before {
+  .marketing-redesign::before {
     content: "";
     position: fixed;
-    inset: auto -8rem -18rem auto;
-    width: min(46rem, 70vw);
-    height: min(46rem, 70vw);
+    inset: 0 auto 0 0;
+    width: clamp(0.35rem, 0.8vw, 0.75rem);
     pointer-events: none;
-    border: 1px solid color-mix(in oklch, var(--signal-copper) 24%, transparent);
-    transform: rotate(-18deg);
-    opacity: 0.52;
+    background: linear-gradient(180deg, var(--surface-canvas-deep), var(--signal-copper), var(--signal-telegram));
   }
 
-  .marketing-bolder .page-gutter {
-    width: min(100% - 1.25rem, 88rem);
+  .marketing-redesign .page-gutter {
+    width: min(100% - 1.5rem, 82rem);
   }
 
-  .marketing-bolder .ui-panel,
-  .marketing-bolder .ui-panel-ghost,
-  .marketing-bolder .ui-hero,
-  .marketing-bolder .ui-menu,
-  .marketing-bolder .ui-option {
-    border-color: color-mix(in oklch, var(--stroke-soft) 78%, transparent);
-    background: color-mix(in oklch, var(--surface-panel) 88%, transparent);
+  .marketing-redesign .ui-panel,
+  .marketing-redesign .ui-panel-ghost,
+  .marketing-redesign .ui-hero,
+  .marketing-redesign .ui-menu,
+  .marketing-redesign .ui-option {
+    border-color: color-mix(in oklch, var(--stroke-soft) 80%, transparent);
+    background: color-mix(in oklch, var(--surface-panel) 94%, transparent);
   }
 
-  .marketing-bolder .ui-panel-ghost {
-    background: color-mix(in oklch, var(--surface-inset) 70%, transparent);
-  }
-
-  .marketing-bolder .ui-display {
-    max-width: 11ch;
-    font-size: clamp(3.4rem, 8.5vw, 6rem);
-    line-height: 0.92;
+  .marketing-redesign .ui-display {
+    max-width: 12ch;
+    font-size: clamp(3.3rem, 7.8vw, 5.9rem);
+    line-height: 0.94;
     letter-spacing: -0.035em;
+    color: var(--ink-primary);
   }
 
-  .marketing-bolder .ui-section-title {
-    font-size: clamp(2.45rem, 5vw, 4.75rem);
-    line-height: 0.98;
+  .marketing-redesign .ui-section-title {
+    max-width: 13ch;
+    font-size: clamp(2.25rem, 4.6vw, 4.35rem);
+    line-height: 1;
     letter-spacing: -0.03em;
+    color: var(--ink-primary);
   }
 
-  .marketing-bolder .ui-copy {
-    max-width: 66ch;
-    color: color-mix(in oklch, var(--ink-primary) 82%, var(--ink-secondary));
+  .marketing-redesign .ui-copy {
+    max-width: 58ch;
+    color: color-mix(in oklch, var(--ink-primary) 72%, var(--ink-secondary));
   }
 
-  .marketing-bolder .ui-kicker {
+  .marketing-redesign .ui-kicker {
     text-transform: none;
     letter-spacing: 0.01em;
-    font-size: 0.82rem;
-    color: color-mix(in oklch, var(--signal-copper) 68%, var(--ink-primary));
+    font-size: 0.84rem;
+    color: var(--signal-copper);
   }
 
-  .marketing-bolder .ui-kicker::before {
-    width: 1.75rem;
+  .marketing-redesign .ui-kicker::before {
+    width: 1.5rem;
     background: var(--signal-copper);
   }
 
-  .marketing-bolder .ui-chip {
-    border-color: color-mix(in oklch, var(--stroke-soft) 72%, transparent);
-    background: color-mix(in oklch, var(--surface-inset) 82%, transparent);
+  .marketing-redesign .ui-chip {
+    border-color: color-mix(in oklch, var(--stroke-soft) 80%, transparent);
+    background: color-mix(in oklch, var(--surface-panel) 92%, transparent);
     color: var(--ink-secondary);
   }
 
-  .marketing-bolder .ui-chip[data-tone="accent"] {
-    border-color: color-mix(in oklch, var(--signal-copper) 48%, var(--stroke-soft));
-    background: color-mix(in oklch, var(--signal-copper) 18%, var(--surface-inset));
+  .marketing-redesign .ui-button[data-variant="primary"] {
+    border-color: var(--surface-canvas-deep);
+    background: var(--surface-canvas-deep);
+    color: white;
+  }
+
+  .marketing-redesign .ui-button[data-variant="secondary"] {
+    border-color: color-mix(in oklch, var(--surface-canvas-deep) 22%, var(--stroke-soft));
+    background: var(--surface-panel);
     color: var(--ink-primary);
   }
 
-  .marketing-bolder .ui-button[data-variant="primary"] {
-    border-color: color-mix(in oklch, var(--signal-copper) 76%, transparent);
-    background: var(--signal-copper);
-    color: var(--surface-canvas-deep);
-  }
-
-  .marketing-bolder .ui-button[data-variant="secondary"] {
-    background: color-mix(in oklch, var(--surface-panel-strong) 86%, transparent);
-    color: var(--ink-primary);
-  }
-
-  .marketing-bolder .ui-button[data-variant="ghost"] {
+  .marketing-redesign .ui-button[data-variant="ghost"] {
     color: var(--ink-secondary);
   }
 
-  .marketing-bolder .hero-stage {
-    min-height: 90vh;
+  .marketing-redesign .hero-stage {
+    min-height: 84vh;
   }
 
-  .marketing-bolder .signal-console {
-    background:
-      linear-gradient(180deg, color-mix(in oklch, var(--surface-panel-strong) 72%, transparent), color-mix(in oklch, var(--surface-inset) 84%, transparent));
-  }
-
-  .marketing-bolder .signal-console-status {
-    color: var(--ink-muted);
-    font-size: 0.72rem;
-  }
-
-  .marketing-bolder .signal-proofline {
+  .hero-shell {
     display: grid;
-    gap: 0.75rem;
+    grid-template-columns: minmax(0, 0.92fr) minmax(22rem, 0.78fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: center;
+    border-bottom: 1px solid color-mix(in oklch, var(--stroke-soft) 70%, transparent);
+    padding-bottom: clamp(2rem, 5vw, 4.5rem);
+  }
+
+  .hero-copy {
     max-width: 46rem;
   }
 
-  .marketing-bolder .signal-proofline-item {
-    display: grid;
-    grid-template-columns: 5.5rem minmax(0, 1fr);
-    align-items: baseline;
-    gap: 1rem;
-    border-top: 1px solid color-mix(in oklch, var(--stroke-soft) 70%, transparent);
-    padding-top: 0.85rem;
+  .signal-map {
+    position: relative;
+    min-height: 34rem;
+    border: 1px solid color-mix(in oklch, var(--surface-canvas-deep) 24%, var(--stroke-soft));
+    border-radius: 0.7rem;
+    background:
+      linear-gradient(135deg, color-mix(in oklch, var(--surface-panel) 96%, transparent), color-mix(in oklch, var(--surface-panel-strong) 86%, transparent)),
+      linear-gradient(to right, color-mix(in oklch, var(--stroke-soft) 45%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklch, var(--stroke-soft) 45%, transparent) 1px, transparent 1px);
+    background-size: auto, 4.5rem 4.5rem, 4.5rem 4.5rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    overflow: hidden;
   }
 
-  .marketing-bolder .signal-proofline-item span,
-  .marketing-bolder .story-card-index {
-    color: var(--signal-copper);
+  .signal-map::before {
+    content: "";
+    position: absolute;
+    inset: 20% -14% auto 18%;
+    height: 0.24rem;
+    transform: rotate(-18deg);
+    background: linear-gradient(90deg, transparent, var(--signal-copper), var(--signal-telegram), transparent);
+  }
+
+  .signal-map-topline {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid color-mix(in oklch, var(--stroke-soft) 72%, transparent);
+    padding-bottom: 1rem;
     font-family: var(--font-mono), monospace;
     font-size: 0.78rem;
+    color: var(--ink-muted);
   }
 
-  .marketing-bolder .signal-proofline-item strong {
+  .signal-map-topline strong {
+    color: var(--ink-primary);
+    font-weight: 500;
+  }
+
+  .signal-path {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .signal-node {
+    width: min(100%, 24rem);
+    border: 1px solid color-mix(in oklch, var(--stroke-soft) 86%, transparent);
+    border-radius: 0.55rem;
+    background: color-mix(in oklch, var(--surface-panel) 92%, transparent);
+    padding: 1rem;
+  }
+
+  .signal-node:nth-child(2) {
+    margin-left: auto;
+  }
+
+  .signal-node span,
+  .schema-frame-label,
+  .final-label,
+  .story-row-label,
+  .boundary-row span {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.72rem;
+    color: var(--signal-copper);
+  }
+
+  .signal-node strong {
+    display: block;
+    margin-top: 0.45rem;
     color: var(--ink-primary);
     font-weight: 400;
+    line-height: 1.35;
   }
 
-  .marketing-bolder .story-card:nth-child(2) {
-    transform: translateY(1.5rem);
+  .signal-node[data-active="true"] {
+    border-color: color-mix(in oklch, var(--signal-copper) 46%, var(--stroke-soft));
+    background: color-mix(in oklch, var(--signal-copper) 8%, var(--surface-panel));
   }
 
-  .marketing-bolder .story-card:nth-child(3) {
-    transform: translateY(3rem);
+  .signal-ledger {
+    position: relative;
+    z-index: 1;
+    margin-top: 1.25rem;
+    border: 1px solid color-mix(in oklch, var(--surface-canvas-deep) 22%, var(--stroke-soft));
+    border-radius: 0.55rem;
+    background: color-mix(in oklch, var(--surface-canvas-deep) 92%, transparent);
+    color: white;
+    padding: 1rem;
   }
 
-  .marketing-bolder .feature-card-featured {
-    min-height: 18rem;
-    padding: clamp(1.5rem, 4vw, 2.4rem);
+  .signal-ledger-header,
+  .signal-ledger-row,
+  .boundary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
 
-  .marketing-bolder .feature-card-featured h3 {
-    max-width: 18ch;
-    font-size: clamp(2rem, 4vw, 3.4rem);
+  .signal-ledger-header {
+    color: color-mix(in oklch, white 74%, var(--signal-telegram));
+    font-size: 0.82rem;
+  }
+
+  .signal-ledger-row {
+    border-top: 1px solid color-mix(in oklch, white 16%, transparent);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .signal-ledger-row span {
+    color: color-mix(in oklch, white 62%, transparent);
+    font-family: var(--font-mono), monospace;
+    font-size: 0.76rem;
+  }
+
+  .signal-ledger-row strong {
+    font-weight: 400;
+    text-align: right;
+  }
+
+  .story-intro,
+  .feature-header {
+    max-width: 50rem;
+  }
+
+  .story-timeline {
+    border-top: 1px solid color-mix(in oklch, var(--stroke-soft) 72%, transparent);
+  }
+
+  .story-row {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: clamp(1rem, 4vw, 4rem);
+    border-bottom: 1px solid color-mix(in oklch, var(--stroke-soft) 72%, transparent);
+    padding: clamp(1.25rem, 3vw, 2rem) 0;
+  }
+
+  .story-row h3 {
+    max-width: 34ch;
+    color: var(--ink-primary);
+    font-size: clamp(1.45rem, 2.4vw, 2.2rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  .story-row p {
+    max-width: 62ch;
+    margin-top: 0.75rem;
+    color: color-mix(in oklch, var(--ink-primary) 70%, var(--ink-secondary));
+    line-height: 1.65;
+  }
+
+  .schema-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(22rem, 1fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+  }
+
+  .schema-copy {
+    position: sticky;
+    top: 6rem;
+  }
+
+  .boundary-list {
+    border-top: 1px solid color-mix(in oklch, var(--stroke-soft) 72%, transparent);
+  }
+
+  .boundary-row {
+    border-bottom: 1px solid color-mix(in oklch, var(--stroke-soft) 72%, transparent);
+    padding: 0.95rem 0;
+  }
+
+  .boundary-row strong {
+    color: var(--ink-primary);
+    font-weight: 400;
+    text-align: right;
+  }
+
+  .schema-workbench {
+    border: 1px solid color-mix(in oklch, var(--surface-canvas-deep) 20%, var(--stroke-soft));
+    border-radius: 0.7rem;
+    background: var(--surface-panel);
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+  }
+
+  .schema-workbench h3 {
+    margin-top: 0.5rem;
+    color: var(--ink-primary);
+    font-size: clamp(1.35rem, 2.6vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .schema-workbench .code-block,
+  .schema-workbench pre {
+    max-height: 18rem;
+  }
+
+  .capability-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid color-mix(in oklch, var(--stroke-soft) 72%, transparent);
+    border-left: 1px solid color-mix(in oklch, var(--stroke-soft) 72%, transparent);
+  }
+
+  .capability-item {
+    min-height: 20rem;
+    border-right: 1px solid color-mix(in oklch, var(--stroke-soft) 72%, transparent);
+    border-bottom: 1px solid color-mix(in oklch, var(--stroke-soft) 72%, transparent);
+    background: color-mix(in oklch, var(--surface-panel) 68%, transparent);
+    padding: clamp(1.1rem, 2.5vw, 1.6rem);
+  }
+
+  .capability-icon {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in oklch, var(--signal-copper) 34%, var(--stroke-soft));
+    border-radius: 0.45rem;
+    color: var(--signal-copper);
+  }
+
+  .capability-item h3 {
+    margin-top: 5rem;
+    color: var(--ink-primary);
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .capability-item p {
+    margin-top: 1rem;
+    color: color-mix(in oklch, var(--ink-primary) 68%, var(--ink-secondary));
+    line-height: 1.6;
+  }
+
+  .final-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2rem;
+    align-items: end;
+    border: 1px solid var(--surface-canvas-deep);
+    border-radius: 0.8rem;
+    background: var(--surface-canvas-deep);
+    color: white;
+    padding: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .final-panel h2 {
+    max-width: 15ch;
+    margin-top: 1rem;
+    font-size: clamp(2.1rem, 5vw, 4.2rem);
     line-height: 0.98;
     letter-spacing: -0.03em;
   }
 
-  .marketing-bolder .feature-icon {
-    border-color: color-mix(in oklch, var(--signal-copper) 36%, var(--stroke-soft));
+  .final-label {
+    color: color-mix(in oklch, var(--signal-copper) 58%, white);
   }
 
-  .marketing-bolder .final-signal {
-    background:
-      radial-gradient(circle at 88% 12%, color-mix(in oklch, var(--signal-copper) 22%, transparent) 0, transparent 18rem),
-      color-mix(in oklch, var(--surface-panel-strong) 82%, transparent);
+  .final-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .final-panel .ui-button[data-variant="primary"] {
+    border-color: white;
+    background: white;
+    color: var(--surface-canvas-deep);
+  }
+
+  .final-panel .ui-button[data-variant="ghost"] {
+    border-color: color-mix(in oklch, white 22%, transparent);
+    color: white;
   }
 
   @media (max-width: 64rem) {
-    .marketing-bolder .ui-display {
-      max-width: 13ch;
-      font-size: clamp(2.8rem, 11vw, 5rem);
+    .hero-shell,
+    .schema-layout,
+    .final-panel {
+      grid-template-columns: 1fr;
     }
 
-    .marketing-bolder .story-card:nth-child(2),
-    .marketing-bolder .story-card:nth-child(3) {
-      transform: none;
+    .schema-copy {
+      position: static;
+    }
+
+    .capability-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .final-actions {
+      justify-content: flex-start;
     }
   }
 
   @media (max-width: 40rem) {
-    .marketing-bolder .signal-proofline-item {
+    .marketing-redesign .ui-display {
+      font-size: clamp(2.8rem, 15vw, 4rem);
+    }
+
+    .story-row {
       grid-template-columns: 1fr;
-      gap: 0.2rem;
+      gap: 0.75rem;
+    }
+
+    .signal-map {
+      min-height: 38rem;
+    }
+
+    .signal-node:nth-child(2) {
+      margin-left: 0;
+    }
+
+    .signal-ledger-row,
+    .boundary-row {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .signal-ledger-row strong,
+    .boundary-row strong {
+      text-align: left;
+    }
+
+    .capability-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .capability-item {
+      min-height: auto;
+    }
+
+    .capability-item h3 {
+      margin-top: 3rem;
     }
   }
 }
