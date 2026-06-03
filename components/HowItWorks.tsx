@@ -128,7 +128,7 @@ export function HowItWorks() {
 
         <motion.div
           className="mt-10 grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]"
-          initial="hidden"
+          initial={false}
           whileInView="visible"
           viewport={{ once: true }}
           variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}

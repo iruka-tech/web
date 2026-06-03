@@ -8,7 +8,7 @@ import { Footer } from '@/components/Footer';
 
 export default function MarketingHome() {
   return (
-    <div className="relative min-h-screen">
+    <div className="marketing-bolder relative min-h-screen overflow-hidden">
       <Header />
       <main className="relative z-10">
         <Hero />
